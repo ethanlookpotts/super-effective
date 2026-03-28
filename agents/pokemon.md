@@ -1,8 +1,8 @@
-# Sub-Agent: Pokémon Data Researcher
+# Agent Prompt: Pokémon Data Researcher
 
-Use this sub-agent when you need accurate Pokémon game data before writing or updating code.
+Use this prompt when you need accurate Pokémon game data before writing or updating code.
 
-## When to invoke
+## When to use
 
 - Verifying or expanding obtain methods for a game
 - Looking up boss teams, levels, or movesets
@@ -29,7 +29,7 @@ Output format: [specify — e.g. JSON array, markdown table, JS object literal]
 Rules:
 - Version exclusives must be labelled (e.g. FireRed only / LeafGreen only)
 - Encounter methods: Grass / Cave / Surf / Rod (Old/Good/Super) / Gift / Trade / Fossil / Event
-- Boss levels must be exact (check the specific game, not just the generation)
+- Boss levels must be exact for the specified game, not just the generation
 - If uncertain about any entry, flag it with ⚠️
 ```
 
@@ -40,32 +40,28 @@ Rules:
 - Physical types: Normal Fighting Flying Poison Ground Rock Bug Ghost Steel
 - Special types: Fire Water Grass Electric Ice Psychic Dragon Dark
 - Fairy type does NOT exist in Gen III
-- Steel does NOT resist Ghost or Dark in Gen II, but this changed — verify for Gen III
 
 ### FRLG-specific
-- Some Pokémon are version-exclusive (Ekans/Arbok = FR, Sandshrew/Sandslash = LG, etc.)
-- Sevii Islands unlock after defeating Blaine (adds Pokémon not available on mainland)
+- Some Pokémon are version-exclusive (e.g. Ekans/Arbok = FireRed, Sandshrew/Sandslash = LeafGreen)
+- Sevii Islands unlock after defeating Blaine — adds Pokémon not available on mainland
 - Trade evolutions (Gengar, Alakazam, Golem, Machamp) require link cable trade
 - Safari Zone encounters have low catch rates and limited steps
 
-### Data sources to reference
-- Bulbapedia (bulbapedia.bulbagarden.net) — most reliable wiki
+### Reliable sources
+- Bulbapedia (bulbapedia.bulbagarden.net) — most accurate wiki
 - Serebii (serebii.net) — good for encounter tables
 - PokeAPI (pokeapi.co) — programmatic access to official data
-- Smogon — competitive data, not always accurate for in-game
 
-## Output expectations
-
-Return data in the exact format needed for the app's data structures:
+## Expected output formats
 
 ```js
-// Obtain data format
+// Obtain data
 HOW[n] = ['Method: Location details'];
 
-// Location format
+// Location entry
 { name: 'Route Name', methods: [{ label: '🌿 Grass', p: ['Pokémon1', 'Pokémon2'] }] }
 
-// Boss format
+// Boss entry
 { name: 'Name', sub: 'City · Type', icon: '🔥', color: '#hex',
   tip: 'Tactical advice.',
   team: [{ name: 'Pokémon', lv: 42, types: ['Fire'] }] }

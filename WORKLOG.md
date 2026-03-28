@@ -27,16 +27,23 @@ Evolving into a multi-game companion app with playthrough support.
 ### Session 2 — Multi-File + New Features
 
 **Completed**
-- [x] Split single HTML into index.html + style.css + js/data.js + js/app.js
-- [x] Compact-encoded Pokémon and move arrays (string format, decoded at runtime)
-- [x] PokeAPI sprite CDN integration (official artwork in detail, small sprite in cards)
-- [x] Add to Party button on Search detail view (instant add with toast)
-- [x] PC Swap modal when party is full (bottom sheet, tap to swap out)
-- [x] Tappable coverage dots → jump to Search with type filter active
-- [x] Multi-playthrough support (isolated party/recents per run)
-- [x] Playthrough switcher in masthead
-- [x] renderModal() partial update optimisation (move search no longer full-rebuilds)
-- [x] README.md, CLAUDE.md, WORKLOG.md, agents/pokemon.md
+- [x] AGENTS.md as canonical build guide (CLAUDE.md thin-wraps it; agent-agnostic)
+- [x] README.md, WORKLOG.md, agents/pokemon.md (prompt-based, not Claude-specific)
+- [x] index.html shell created (links to style.css, js/data.js, js/app.js)
+
+**In progress**
+- [ ] style.css (extracted from original)
+- [ ] js/data.js (compact-encoded Pokémon + moves + all FRLG game data)
+- [ ] js/app.js (ported logic + new features below)
+
+**Pending**
+- [ ] Add to Party button on Search detail view (instant add with toast)
+- [ ] PC Swap modal when party is full (bottom sheet, tap to swap out)
+- [ ] Tappable coverage dots → jump to Search with type filter active
+- [ ] Multi-playthrough support (isolated party/recents per run)
+- [ ] Playthrough switcher in masthead
+- [ ] PokeAPI sprite CDN integration (official artwork in detail view)
+- [ ] renderModal() partial update optimisation (move search no longer full-rebuilds)
 
 ---
 
