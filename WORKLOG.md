@@ -24,34 +24,37 @@ Evolving into a multi-game companion app with playthrough support.
 - [x] Gym + Location Pokémon tappable → jump to Search
 - [x] 4-tab structure: SEARCH · PARTY · GYMS · WHERE AM I
 
-### Session 2 — Multi-File + New Features
+### Session 2 — Repo Setup & Architecture
 
 **Completed**
-- [x] AGENTS.md as canonical build guide (CLAUDE.md thin-wraps it; agent-agnostic)
-- [x] README.md, WORKLOG.md, agents/pokemon.md (prompt-based, not Claude-specific)
-- [x] index.html shell created (links to style.css, js/data.js, js/app.js)
+- [x] AGENTS.md as canonical build guide (agent-agnostic; works with Claude, Codex, Gemini)
+- [x] CLAUDE.md thin-wraps AGENTS.md via `@AGENTS.md` include
+- [x] README.md — overview, file map, GitHub Pages instructions (no personal info)
+- [x] WORKLOG.md — progress log, backlog, notes
+- [x] agents/pokemon.md — reusable data research prompt for any agent
+- [x] index.html shell — full UI structure, links to style.css + js files
+- [x] Implementation plan documented (phases 1–8, each = one commit)
 
-**In progress**
-- [ ] style.css (extracted from original)
-- [ ] js/data.js (compact-encoded Pokémon + moves + all FRLG game data)
-- [ ] js/app.js (ported logic + new features below)
+**Next session — pick up here**
 
-**Pending**
-- [ ] Add to Party button on Search detail view (instant add with toast)
-- [ ] PC Swap modal when party is full (bottom sheet, tap to swap out)
-- [ ] Tappable coverage dots → jump to Search with type filter active
-- [ ] Multi-playthrough support (isolated party/recents per run)
-- [ ] Playthrough switcher in masthead
-- [ ] PokeAPI sprite CDN integration (official artwork in detail view)
-- [ ] renderModal() partial update optimisation (move search no longer full-rebuilds)
+| # | Commit | What |
+|---|--------|------|
+| 1 | `style: extract CSS into style.css` | Port original CSS + add toast, add-party-btn, swap-row, pt-btn, tappable cdot styles |
+| 2 | `data: add js/data.js with compact Gen III game data` | Compact Pokémon + moves strings, verbatim HOW/CHART/BOSSES/LOCATIONS |
+| 3 | `feat: js/app.js core port with multi-playthrough state` | All original logic, store = {playthroughs, activePtId}, spriteUrl/artUrl helpers |
+| 4 | `feat: add-to-party button on Search detail` | Green button below header card, instant add + toast |
+| 5 | `feat: PC Swap modal when party is full` | Bottom sheet listing party, tap to swap out |
+| 6 | `feat: tappable coverage dots jump to Search type filter` | setTypeAndSearch(t) on every cdot onclick |
+| 7 | `feat: playthrough switcher in masthead` | openPtMenu, newPt, switchPt, deletePt |
+| 8 | Push branch | git push -u origin |
 
 ---
 
 ## Active Todos
 
-- [ ] `renderModal()` still fully rebuilds on move add/remove — could optimise further
-- [ ] Playthrough rename (currently only auto-named RUN 1, RUN 2…)
-- [ ] "IN PARTY" button state should open Party tab for quick editing
+- [ ] Playthrough rename UI (currently auto-named RUN 1, RUN 2 — no rename yet)
+- [ ] "✓ IN PARTY" button state → tap to jump to Party tab
+- [ ] renderModal() partial rebuild on move add/remove (currently full rebuild)
 
 ---
 
