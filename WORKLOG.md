@@ -71,8 +71,6 @@ test files. Then add GitHub Actions CI — see Backlog → Testing.
 
 ## Active Todos
 
-- [ ] Invoke Generator agent to produce test files from `e2e/e2e/specs/critical-journeys.md`
-- [ ] Add GitHub Actions CI for Playwright (`.github/workflows/test.yml`)
 - [ ] Push to main + configure GitHub Pages
 - [ ] Playthrough rename UI (currently auto-named RUN 1, RUN 2 — no rename yet)
 - [ ] "✓ IN PARTY" button state → tap to jump to Party tab
@@ -84,16 +82,14 @@ test files. Then add GitHub Actions CI — see Backlog → Testing.
 
 ### Testing
 
-Uses **Playwright Test Agents** (`npx playwright init-agents --loop=claude`). Three agents in `.claude/agents/`:
-- **playwright-test-planner** — explores the app and writes markdown specs in `e2e/specs/`
-- **playwright-test-generator** — converts specs into test files in `tests/`
-- **playwright-test-healer** — repairs failing tests when UI changes
+Playwright E2E — 6 tests passing. Three agent prompts in `agents/` for any AI to maintain tests:
+- `agents/playwright-planner.md` — write new spec plans in `e2e/specs/`
+- `agents/playwright-generator.md` — generate `e2e/*.spec.ts` from specs
+- `agents/playwright-healer.md` — repair broken tests after UI changes
 
-**Remaining work:**
-- [ ] Invoke Generator agent → produces `tests/critical-journeys.spec.ts` from `e2e/e2e/specs/critical-journeys.md`
-- [ ] Add `.github/workflows/test.yml` — runs `npm ci && npx playwright install chromium && npm test` on every PR
+CI runs on push to main and PRs via `.github/workflows/test.yml`.
 
-**Critical journeys** (plans in `e2e/e2e/specs/critical-journeys.md`):
+**Covered journeys** (`e2e/specs/critical-journeys.md` → `e2e/critical-journeys.spec.ts`):
 1. Search by name → Pikachu detail card with Electric badge
 2. Type filter pill → Electric browse list includes Pikachu
 3. Add to party → party slot filled
