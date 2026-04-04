@@ -98,10 +98,14 @@ CI runs on push to main and PRs via `.github/workflows/test.yml`.
 5. Where Am I tab → Viridian Forest, Safari Zone present
 
 ### High Priority
+- [ ] **[1] Investigate API alternatives** — research whether a maintained Pokémon API (e.g. PokéAPI, GraphQL variants) can replace or supplement hard-coded data for types, movesets, and Pokémon lists; document findings and recommendation in WORKLOG
+- [ ] **[2] Audit and correct data accuracy** — verify Gen III type chart, full Pokémon list (151), and move learnsets against authoritative sources (Bulbapedia, Serebii); fix any discrepancies in `js/data.js`
+- [ ] **[3] Filter move picker to learnable moves only** — when a Pokémon is selected in party, restrict the move picker to only moves that Pokémon can actually learn (level-up, TM/HM, tutor); requires accurate learnset data from [2]
 - [ ] Rival (Gary) battle encounters — similar to Gyms, location-triggered
 - [ ] TM/HM location reference ("where do I get Earthquake?")
 
 ### Medium Priority
+- [ ] **[4] Desktop responsive layout** — extend mobile-first layout to work well on wider screens (sidebar nav, wider cards, responsive breakpoints); keep mobile experience unchanged
 - [ ] Evolution tracker (level/stone/trade conditions)
 - [ ] Pokémon base stats display (Attack vs Sp.Atk to guide move choice)
 - [ ] Search by move name → show all Pokémon that can learn it
@@ -113,6 +117,7 @@ CI runs on push to main and PRs via `.github/workflows/test.yml`.
 - [ ] Diamond / Pearl / Platinum (Gen IV)
 
 ### Architecture
+- [ ] **[5] Evaluate modern web stack** — assess migrating to a modern stack (Next.js + React + Tailwind is the primary candidate; Svelte/SvelteKit is a lighter alternative) for better DX, component model, and community ecosystem; document trade-offs vs current no-build vanilla approach before committing
 - [ ] Game module loader (lazy-load data for selected game)
 - [ ] Per-game obtain data files
 - [ ] Shared type chart per generation (Gen I differs from Gen II+)
