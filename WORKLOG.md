@@ -61,21 +61,18 @@ Evolving into a multi-game companion app with playthrough support.
 
 Push to `main`, configure GitHub Pages (Settings → Pages → branch `main`, folder `/`).
 
-### Testing Infrastructure (HIGH PRIORITY — do next)
+### Generate tests from specs (do next)
 
-We need lightweight automated tests to guard critical user journeys. See **Backlog → Testing** below for the full plan. In short:
-
-- Use **Playwright** for end-to-end tests (headless browser)
-- Tests live in `tests/` and cover the 5 critical journeys
-- Run locally via `npx playwright test`
-- Run on PR via GitHub Actions (`.github/workflows/test.yml`)
-- Update AGENTS.md with: "Run `npx playwright test` to validate before committing"
+Playwright agent infrastructure is in place (`npm ci && npx playwright install chromium` to set up).
+Test plans are in `e2e/e2e/specs/critical-journeys.md`. Next step: invoke the **Generator** agent to produce
+test files. Then add GitHub Actions CI — see Backlog → Testing.
 
 ---
 
 ## Active Todos
 
-- [ ] Set up Playwright E2E tests + GitHub Actions CI (see Backlog → Testing)
+- [ ] Invoke Generator agent to produce test files from `e2e/e2e/specs/critical-journeys.md`
+- [ ] Add GitHub Actions CI for Playwright (`.github/workflows/test.yml`)
 - [ ] Push to main + configure GitHub Pages
 - [ ] Playthrough rename UI (currently auto-named RUN 1, RUN 2 — no rename yet)
 - [ ] "✓ IN PARTY" button state → tap to jump to Party tab
@@ -87,50 +84,21 @@ We need lightweight automated tests to guard critical user journeys. See **Backl
 
 ### Testing
 
-Set up **Playwright** E2E tests to guard critical user journeys. No build step — Playwright runs against a local `file://` URL or a simple static server.
+Uses **Playwright Test Agents** (`npx playwright init-agents --loop=claude`). Three agents in `.claude/agents/`:
+- **playwright-test-planner** — explores the app and writes markdown specs in `e2e/specs/`
+- **playwright-test-generator** — converts specs into test files in `tests/`
+- **playwright-test-healer** — repairs failing tests when UI changes
 
-**File structure:**
-```
-tests/
-  journeys.spec.js   # all E2E tests
-playwright.config.js  # config pointing at index.html
-.github/
-  workflows/
-    test.yml         # run Playwright on every PR
-```
+**Remaining work:**
+- [ ] Invoke Generator agent → produces `tests/critical-journeys.spec.ts` from `e2e/e2e/specs/critical-journeys.md`
+- [ ] Add `.github/workflows/test.yml` — runs `npm ci && npx playwright install chromium && npm test` on every PR
 
-**Critical journeys to cover (minimum viable suite):**
-1. **Search by name** — type "Pikachu", expect detail card appears with type badge "Electric"
-2. **Type filter** — tap Electric pill, expect browse list shows Pikachu
-3. **Add to party** — search Pikachu, tap "ADD TO PARTY", expect party slot filled
-4. **Gym render** — open Gyms tab, expect "Brock" card is present
-5. **Where Am I** — open Where Am I tab, expect "Viridian Forest" card is present
-
-**GitHub Actions config** (`.github/workflows/test.yml`):
-```yaml
-name: E2E Tests
-on: [pull_request]
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 20 }
-      - run: npm ci
-      - run: npx playwright install --with-deps chromium
-      - run: npx playwright test
-```
-
-**package.json** needed (minimal):
-```json
-{
-  "devDependencies": { "@playwright/test": "^1.44.0" },
-  "scripts": { "test": "playwright test" }
-}
-```
-
-**AGENTS.md addition**: Add "Run `npm test` before committing. All tests must pass." to the Working Principles section.
+**Critical journeys** (plans in `e2e/e2e/specs/critical-journeys.md`):
+1. Search by name → Pikachu detail card with Electric badge
+2. Type filter pill → Electric browse list includes Pikachu
+3. Add to party → party slot filled
+4. Gyms tab → Brock, Misty, Giovanni cards present
+5. Where Am I tab → Viridian Forest, Safari Zone present
 
 ### High Priority
 - [ ] Rival (Gary) battle encounters — similar to Gyms, location-triggered

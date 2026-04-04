@@ -3,7 +3,9 @@
 ## Working Principles
 
 - **Ask questions** — if anything is ambiguous, ask before implementing
-- **Small, focused commits** — one logical change per commit using conventional commit messages
+- **Small, focused commits** — one logical change per commit using conventional commit messages. Commit messages are single-line only — no body, no Co-Authored-By trailer.
+- **Run tests before committing** — `npm test` must pass. First-time setup: `npm ci && npx playwright install chromium`. Test plans live in `e2e/specs/`, generated tests in `e2e/`.
+- **Playwright agents** — use the three sub-agents in `.claude/agents/` to maintain tests: Planner writes specs, Generator produces test files from specs, Healer repairs failing tests. Re-run `npx playwright init-agents --loop=claude` when Playwright updates.
 - **Keep docs current** — update README, WORKLOG, and CLAUDE.md alongside code changes
 - **WORKLOG.md** tracks progress, active todos, backlog, and session notes — update it every session so the next agent can pick up instantly
 - **README.md** — brief repo overview: what it is, file map, how to run/deploy locally
@@ -96,12 +98,39 @@ Keep commits small and focused — one logical change per commit. Commit message
 
 ## Sub-Agent Prompts
 
-See `agents/pokemon.md` for the Pokémon data research prompt.
+All agent prompts live in `agents/` and are written for any AI (Claude, Codex, Gemini, etc.).
 
-Use sub-agents for:
-- Researching accurate game data (obtain methods, move learnsets, boss teams)
-- Auditing code for size/quality before large refactors
-- Designing UX flows before implementing
+| Prompt | When to use |
+|---|---|
+| `agents/pokemon.md` | Researching accurate game data (obtain methods, boss teams, move learnsets) |
+| `agents/playwright-planner.md` | Writing new E2E test plans in `e2e/specs/` |
+| `agents/playwright-generator.md` | Converting spec plans into runnable `e2e/*.spec.ts` files |
+| `agents/playwright-healer.md` | Repairing broken tests after UI changes |
+
+## E2E Testing
+
+Tests use [Playwright](https://playwright.dev). All test-related files live in `e2e/`:
+
+```
+e2e/
+  seed.spec.ts          # baseline environment setup (all tests build on this)
+  *.spec.ts             # generated test files (one per spec plan)
+  specs/
+    *.md                # human-readable test plans (source of truth for generators)
+```
+
+**Workflow:**
+1. When adding a feature, add a plan to `e2e/specs/` (or use `agents/playwright-planner.md`)
+2. Generate tests with `agents/playwright-generator.md`
+3. If tests break after a change, use `agents/playwright-healer.md` to repair them
+4. Run `npm test` before every commit — all tests must pass
+
+**Local setup:**
+```bash
+npm ci
+npx playwright install chromium
+npm test
+```
 
 ## Adding a New Game Module
 
