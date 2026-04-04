@@ -8,10 +8,9 @@ Use this prompt when executing a task from WORKLOG.md, managing the backlog, or 
 
 When no specific task is given, select the next task using this priority order:
 
-1. **Active Todos** — work top-to-bottom; unblock anything that has unsatisfied dependencies before starting it
-2. **Backlog › High Priority** — promote to Active Todos before starting, then execute
-3. **Backlog › Medium Priority** — only after High Priority is clear
-4. **Backlog › Architecture / Future Games** — only when explicitly asked
+1. **Backlog › High Priority** — top item first
+2. **Backlog › Medium Priority** — only after High Priority is clear
+3. **Backlog › Architecture / Future Games** — only when explicitly asked
 
 Before picking, check:
 - Does the task have a numbered dependency (e.g. "requires [2]")? If so, confirm the dependency is `[x]` first.
@@ -26,20 +25,20 @@ Before picking, check:
 
 **Steps — follow in order, do not skip:**
 
-1. Read WORKLOG.md — confirm the task is unchecked and its dependencies are met
+1. Read WORKLOG.md — confirm the task is unchecked in the Backlog and its dependencies are met
 2. Read every file relevant to the feature area before writing any code
 3. If anything is ambiguous, ask one question — do not guess and proceed
 4. Implement the feature across the minimum necessary files
 5. Add or update a spec plan in `e2e/specs/` describing the new behaviour in plain English
 6. Generate or update the corresponding `e2e/*.spec.ts` file (use `agents/playwright-generator.md`)
 7. Run `npm test` — fix any failures before proceeding; do not commit with broken tests
-8. Mark the todo `[x]` in WORKLOG.md
+8. Move the task from the Backlog into the current session heading under **Progress** (mark it `[x]`); if no session heading exists for this session, create one: `### Session N — <title>`
 9. Commit all changed files in one commit: `feat: <description>` (single line, no body)
 10. Push to the remote branch
 
 **Exit criteria:**
 - `npm test` passes, no skipped tests
-- Todo is `[x]` in WORKLOG.md
+- Task is `[x]` under a session heading in **Progress**; removed from Backlog
 - One commit, conventional message, single line
 - Changes pushed to remote
 
@@ -52,7 +51,6 @@ When asked to add, remove, or change tasks, follow these rules exactly.
 ### Adding a task
 
 1. Decide the correct section:
-   - Needs doing soon, concrete and actionable → **Active Todos**
    - Important but not immediate → **Backlog › High Priority**
    - Nice to have → **Backlog › Medium Priority**
    - Big architectural or multi-session decision → **Backlog › Architecture**
@@ -65,7 +63,7 @@ When asked to add, remove, or change tasks, follow these rules exactly.
 ### Removing a task
 
 - If the task was never started: delete the line entirely
-- If the task was completed: mark `[x]` and leave it in place under its session heading — completed work is a record, not clutter
+- If the task was completed: remove from Backlog and add `[x]` under the current session heading in Progress — completed work is a record, not clutter
 - If the task is being replaced by a better-scoped task: delete the old line and add the new one; add a note in **Ideas / Notes** if the context is worth preserving
 
 ### Updating a task
@@ -76,7 +74,7 @@ When asked to add, remove, or change tasks, follow these rules exactly.
 
 ### Proposing an order
 
-When asked to sequence tasks, explain the rationale briefly (dependencies, risk, value), then insert them into WORKLOG in that order with `[N]` labels. Do not just list them — place them.
+When asked to sequence tasks, explain the rationale briefly (dependencies, risk, value), then insert them into the Backlog in that order with `[N]` labels. Do not just list them — place them.
 
 ---
 
@@ -92,9 +90,6 @@ Always maintain this exact section order. Never add new top-level sections witho
 
 ## Next Session — Pick Up Here   ← brief orientation note; update each session
 
-## Active Todos
-  - [ ] ...   ← ordered: do top item first
-
 ## Backlog
   ### Testing
   ### High Priority
@@ -109,7 +104,7 @@ Always maintain this exact section order. Never add new top-level sections witho
 - Every entry is a single line: `- [ ]` or `- [x]`
 - Rationale goes inline after an em dash: `— reason`
 - Do not nest bullets under todo items — if a task needs sub-steps, write a spec or a separate agent prompt instead
-- Completed tasks stay under the session heading where they were done — do not move them
+- When a task is completed, remove it from the Backlog and add it `[x]` under the session heading in Progress — never leave completed work in the Backlog
 - Keep **Ideas / Notes** as a freeform scratchpad; anything that doesn't fit elsewhere goes there
 
 ---

@@ -46,37 +46,26 @@ Evolving into a multi-game companion app with playthrough support.
 - [x] Phase 6 — Tappable coverage dots → `setTypeAndSearch(type)`
 - [x] Phase 7 — Playthrough switcher in masthead (`openPtMenu`, `createPlaythrough`, `switchPt`, `deletePt`)
 
-**Current state**
-- `index.html` — complete HTML shell ✅
-- `style.css` — all styles ✅
-- `js/data.js` — all Gen III FRLG data ✅
-- `js/app.js` — all app logic ✅
-- App is fully functional. Open `index.html` in a browser to test.
+### Session 4 — Polish & Bug Fixes
 
----
-
-## Next Session — Pick Up Here
-
-### Phase 8 — Deploy
-
-Push to `main`, configure GitHub Pages (Settings → Pages → branch `main`, folder `/`).
-
-### Generate tests from specs (do next)
-
-Playwright agent infrastructure is in place (`npm ci && npx playwright install chromium` to set up).
-Test plans are in `e2e/e2e/specs/critical-journeys.md`. Next step: invoke the **Generator** agent to produce
-test files. Then add GitHub Actions CI — see Backlog → Testing.
-
----
-
-## Active Todos
-
+**Completed**
 - [x] Push to main + configure GitHub Pages
 - [x] Playthrough rename UI — inline input in PT menu, saves on blur/Enter
 - [x] "✓ IN PARTY" button → tapping navigates to Party tab (blue, reads "VIEW PARTY ›")
 - [x] Remove `legacy-frlg-battle-aide.html` — functionality fully superseded by the current app; file is dead weight in the repo
 - [x] renderModal() partial rebuild on move add/remove (currently full rebuild)
 - [x] Bug: type filter browse cards render off-screen/blank — visible in Playwright screenshot; cards animate in below the fold when Electric pill is tapped
+
+### Session 5 — API Research & WORKLOG Housekeeping
+
+**Completed**
+- [x] **[1] Investigate API alternatives** — researched PokéAPI REST + GraphQL; recommendation: use PokéAPI only for learnsets (task [3]); all other data stays static; findings in Ideas / Notes
+
+---
+
+## Next Session — Pick Up Here
+
+App is live on GitHub Pages. E2E tests passing. Next task: **[2] Audit and correct data accuracy**.
 
 ---
 
@@ -99,7 +88,6 @@ CI runs on push to main and PRs via `.github/workflows/test.yml`.
 5. Where Am I tab → Viridian Forest, Safari Zone present
 
 ### High Priority
-- [ ] **[1] Investigate API alternatives** — research whether a maintained Pokémon API (e.g. PokéAPI, GraphQL variants) can replace or supplement hard-coded data for types, movesets, and Pokémon lists; document findings and recommendation in WORKLOG
 - [ ] **[2] Audit and correct data accuracy** — verify Gen III type chart, full Pokémon list (151), and move learnsets against authoritative sources (Bulbapedia, Serebii); fix any discrepancies in `js/data.js`
 - [ ] **[3] Filter move picker to learnable moves only** — when a Pokémon is selected in party, restrict the move picker to only moves that Pokémon can actually learn (level-up, TM/HM, tutor); requires accurate learnset data from [2]
 - [ ] Rival (Gary) battle encounters — similar to Gyms, location-triggered
@@ -126,6 +114,24 @@ CI runs on push to main and PRs via `.github/workflows/test.yml`.
 ---
 
 ## Ideas / Notes
+
+### API Alternatives Research (task [1] findings)
+
+**PokéAPI REST** (pokeapi.co) — actively maintained, no API key, rate-limited at ~100 req/min.
+**GraphQL PokéAPI** (beta.graphql.pokeapi.co) — same data, more flexible queries, still beta.
+
+| Data | PokéAPI available? | Use it? | Reason |
+|---|---|---|---|
+| Type chart (CHART) | Yes — but Gen IX | **No** | Gen III differs: no Fairy, Steel doesn't resist Dark/Ghost. Correction overhead > benefit. |
+| Pokémon list + types | Yes (151+) | **No** | Static data is correct; no runtime benefit for fixed 151. |
+| Base stats | Yes | Maybe (future) | Not currently displayed; low priority. |
+| Move learnsets | Yes — filterable by `version_group "firered-leafgreen"` | **Yes, for task [3]** | Best candidate: enables filtering move picker to learnable moves. Cache under `se_learnsets_v1` in localStorage. |
+| FRLG obtain methods (HOW) | Not in useful form | **No** | Hand-curated; PokéAPI encounter data doesn't map cleanly to FRLG obtain strings. |
+| Boss teams (BOSSES) | No | **No** | Not in PokéAPI. |
+| Location encounters (LOCATIONS) | Partial | **No** | Format mismatch; hand-curation is authoritative. |
+| Sprites | Yes (CDN URLs) | **Already done** | Static CDN URLs, no API call needed. |
+
+**Recommendation:** Use PokéAPI exclusively for learnsets (needed by task [3]), with `localStorage` caching for offline resilience. Fetch once per Pokémon on first party add, store in `se_learnsets_v1 = { [dexNum]: [moveName, ...] }`. All other data stays static.
 
 - Coverage gap dots → type browse is the fastest path to fixing a gap mid-game
 - Sprites from PokeAPI CDN load fast on WiFi, gracefully hidden offline
