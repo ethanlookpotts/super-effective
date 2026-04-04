@@ -92,7 +92,7 @@ Use conventional commits:
 - `data: description` — game data additions or corrections
 - `style: description` — CSS-only changes
 
-Keep commits small and focused — one logical change per commit.
+Keep commits small and focused — one logical change per commit. Commit messages must be a single line only — no body, no Co-Authored-By trailer.
 
 ## Sub-Agent Prompts
 
