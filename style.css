@@ -388,6 +388,19 @@ border-radius:8px;cursor:pointer;transition:background .1s;}
 .gym-tip{font-family:var(--fp);font-size:5.5px;color:var(--text3);line-height:1.8;
 margin-top:8px;padding:7px 9px;background:var(--card2);border-radius:7px;border-left:2px solid var(--gold);}
 
+/* ── RIVAL SECTION ── */
+.rival-hd{margin-bottom:10px;padding:11px 13px;background:var(--card);border:1px solid rgba(255,201,60,.22);border-radius:var(--r2);}
+.rival-hd-title{font-family:var(--fp);font-size:7px;color:var(--gold);margin-bottom:8px;
+text-shadow:0 0 14px rgba(255,201,60,.3);}
+.rival-starter-bar{display:flex;gap:6px;}
+.starter-btn{flex:1;padding:8px 4px;border:1.5px solid var(--border2);border-radius:8px;
+background:var(--card2);color:var(--text2);font-family:var(--fp);font-size:5.5px;cursor:pointer;
+line-height:1.6;transition:all .15s;text-align:center;}
+.starter-btn:active{opacity:.75;}
+.starter-btn.s-bulbasaur.active{background:rgba(58,136,32,.18);border-color:rgba(58,136,32,.5);color:#3ddc84;}
+.starter-btn.s-charmander.active{background:rgba(184,64,24,.18);border-color:rgba(184,64,24,.5);color:#ff9060;}
+.starter-btn.s-squirtle.active{background:rgba(40,80,192,.18);border-color:rgba(40,80,192,.5);color:var(--blue);}
+
 /* ══════════════════════════════════
 WHERE AM I PAGE
 ══════════════════════════════════ */

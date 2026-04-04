@@ -345,5 +345,55 @@ const BOSSES=[
    team:[{name:'Pidgeot',lv:61,types:['Normal','Flying']},{name:'Alakazam',lv:59,types:['Psychic']},{name:'Rhydon',lv:61,types:['Ground','Rock']},{name:'Gyarados',lv:61,types:['Water','Flying']},{name:'Arcanine',lv:61,types:['Fire']},{name:'Dragonite',lv:65,types:['Dragon','Flying']}]},
 ];
 
+// ═══════════════════════════════
+// RIVALS — Gary/Blue encounter teams
+// Teams keyed by PLAYER'S starter choice (Gary always picks the counter-starter)
+// DO NOT alter team compositions or levels — verified against FRLG via Bulbapedia + Serebii
+// ═══════════════════════════════
+const RIVALS=[
+  {location:'Route 22',sub:'Encounter 1 · Optional',icon:'🏁',
+   tip:'Only 2 Pokémon — quick fight. Good early XP if you want it.',
+   teams:{
+     bulbasaur:[{name:'Pidgey',lv:9,types:['Normal','Flying']},{name:'Charmander',lv:9,types:['Fire']}],
+     charmander:[{name:'Pidgey',lv:9,types:['Normal','Flying']},{name:'Squirtle',lv:9,types:['Water']}],
+     squirtle:[{name:'Pidgey',lv:9,types:['Normal','Flying']},{name:'Bulbasaur',lv:9,types:['Grass','Poison']}],
+   }},
+  {location:'Cerulean City',sub:'Encounter 2 · Nugget Bridge',icon:'🌉',
+   tip:'Abra will Teleport if low HP — hit hard fast. Rattata hits surprisingly hard.',
+   teams:{
+     bulbasaur:[{name:'Pidgeotto',lv:17,types:['Normal','Flying']},{name:'Abra',lv:16,types:['Psychic']},{name:'Rattata',lv:15,types:['Normal']},{name:'Charmander',lv:18,types:['Fire']}],
+     charmander:[{name:'Pidgeotto',lv:17,types:['Normal','Flying']},{name:'Abra',lv:16,types:['Psychic']},{name:'Rattata',lv:15,types:['Normal']},{name:'Squirtle',lv:18,types:['Water']}],
+     squirtle:[{name:'Pidgeotto',lv:17,types:['Normal','Flying']},{name:'Abra',lv:16,types:['Psychic']},{name:'Rattata',lv:15,types:['Normal']},{name:'Bulbasaur',lv:18,types:['Grass','Poison']}],
+   }},
+  {location:'S.S. Anne',sub:'Encounter 3 · Upper Deck',icon:'🚢',
+   tip:'Raticate hits fast with Hyper Fang. Kadabra uses Disable — lead with a heavy hitter.',
+   teams:{
+     bulbasaur:[{name:'Pidgeotto',lv:19,types:['Normal','Flying']},{name:'Raticate',lv:16,types:['Normal']},{name:'Kadabra',lv:18,types:['Psychic']},{name:'Charmeleon',lv:20,types:['Fire']}],
+     charmander:[{name:'Pidgeotto',lv:19,types:['Normal','Flying']},{name:'Raticate',lv:16,types:['Normal']},{name:'Kadabra',lv:18,types:['Psychic']},{name:'Wartortle',lv:20,types:['Water']}],
+     squirtle:[{name:'Pidgeotto',lv:19,types:['Normal','Flying']},{name:'Raticate',lv:16,types:['Normal']},{name:'Kadabra',lv:18,types:['Psychic']},{name:'Ivysaur',lv:20,types:['Grass','Poison']}],
+   }},
+  {location:'Pokémon Tower',sub:'Encounter 4 · Lavender Town',icon:'👻',
+   tip:'Exeggcute uses Hypnosis — bring Awakening. Gyarados/Growlithe add coverage. Watch your types.',
+   teams:{
+     bulbasaur:[{name:'Pidgeotto',lv:25,types:['Normal','Flying']},{name:'Exeggcute',lv:23,types:['Grass','Psychic']},{name:'Gyarados',lv:22,types:['Water','Flying']},{name:'Kadabra',lv:20,types:['Psychic']},{name:'Charmeleon',lv:25,types:['Fire']}],
+     charmander:[{name:'Pidgeotto',lv:25,types:['Normal','Flying']},{name:'Growlithe',lv:23,types:['Fire']},{name:'Exeggcute',lv:22,types:['Grass','Psychic']},{name:'Kadabra',lv:20,types:['Psychic']},{name:'Wartortle',lv:25,types:['Water']}],
+     squirtle:[{name:'Pidgeotto',lv:25,types:['Normal','Flying']},{name:'Gyarados',lv:23,types:['Water','Flying']},{name:'Growlithe',lv:22,types:['Fire']},{name:'Kadabra',lv:20,types:['Psychic']},{name:'Ivysaur',lv:25,types:['Grass','Poison']}],
+   }},
+  {location:'Silph Co.',sub:'Encounter 5 · Saffron City',icon:'🏢',
+   tip:'Starter fully evolved at Lv.40. Alakazam has Recover — hit it hard. Pidgeot is fast.',
+   teams:{
+     bulbasaur:[{name:'Pidgeot',lv:37,types:['Normal','Flying']},{name:'Exeggcute',lv:38,types:['Grass','Psychic']},{name:'Gyarados',lv:35,types:['Water','Flying']},{name:'Alakazam',lv:35,types:['Psychic']},{name:'Charizard',lv:40,types:['Fire','Flying']}],
+     charmander:[{name:'Pidgeot',lv:37,types:['Normal','Flying']},{name:'Growlithe',lv:38,types:['Fire']},{name:'Exeggcute',lv:35,types:['Grass','Psychic']},{name:'Alakazam',lv:35,types:['Psychic']},{name:'Blastoise',lv:40,types:['Water']}],
+     squirtle:[{name:'Pidgeot',lv:37,types:['Normal','Flying']},{name:'Gyarados',lv:38,types:['Water','Flying']},{name:'Growlithe',lv:35,types:['Fire']},{name:'Alakazam',lv:35,types:['Psychic']},{name:'Venusaur',lv:40,types:['Grass','Poison']}],
+   }},
+  {location:'Route 22',sub:'Encounter 6 · Pre-League',icon:'🚪',
+   tip:'Full 6-mon team. Rhyhorn is Ground/Rock — Water or Grass covers most threats here.',
+   teams:{
+     bulbasaur:[{name:'Pidgeot',lv:47,types:['Normal','Flying']},{name:'Rhyhorn',lv:45,types:['Ground','Rock']},{name:'Exeggcute',lv:45,types:['Grass','Psychic']},{name:'Gyarados',lv:45,types:['Water','Flying']},{name:'Alakazam',lv:47,types:['Psychic']},{name:'Charizard',lv:53,types:['Fire','Flying']}],
+     charmander:[{name:'Pidgeot',lv:47,types:['Normal','Flying']},{name:'Rhyhorn',lv:45,types:['Ground','Rock']},{name:'Growlithe',lv:45,types:['Fire']},{name:'Exeggcute',lv:45,types:['Grass','Psychic']},{name:'Alakazam',lv:47,types:['Psychic']},{name:'Blastoise',lv:53,types:['Water']}],
+     squirtle:[{name:'Pidgeot',lv:47,types:['Normal','Flying']},{name:'Rhyhorn',lv:45,types:['Ground','Rock']},{name:'Gyarados',lv:45,types:['Water','Flying']},{name:'Growlithe',lv:45,types:['Fire']},{name:'Alakazam',lv:47,types:['Psychic']},{name:'Venusaur',lv:53,types:['Grass','Poison']}],
+   }},
+];
+
 // Type → hex color (used for dynamic styling)
 function tc(t){return{Normal:'#6a6a5a',Fire:'#b84018',Water:'#2850c0',Grass:'#3a8820',Electric:'#b89800',Ice:'#488888',Fighting:'#801818',Poison:'#621880',Ground:'#907030',Flying:'#5848c0',Psychic:'#b02050',Bug:'#607210',Rock:'#786820',Ghost:'#402860',Dragon:'#3808d8',Dark:'#382818',Steel:'#686880',Fairy:'#a03860'}[t]||'#888';}
