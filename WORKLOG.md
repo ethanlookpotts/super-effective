@@ -71,10 +71,11 @@ test files. Then add GitHub Actions CI — see Backlog → Testing.
 
 ## Active Todos
 
-- [ ] Push to main + configure GitHub Pages
+- [x] Push to main + configure GitHub Pages
 - [ ] Playthrough rename UI (currently auto-named RUN 1, RUN 2 — no rename yet)
 - [ ] "✓ IN PARTY" button state → tap to jump to Party tab
 - [ ] renderModal() partial rebuild on move add/remove (currently full rebuild)
+- [ ] Bug: type filter browse cards render off-screen/blank — visible in Playwright screenshot; cards animate in below the fold when Electric pill is tapped
 
 ---
 
