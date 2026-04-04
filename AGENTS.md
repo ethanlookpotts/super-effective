@@ -4,7 +4,7 @@
 
 - **Ask questions** — if anything is ambiguous, ask before implementing
 - **Small, focused commits** — one logical change per commit using conventional commit messages. Commit messages are single-line only — no body, no Co-Authored-By trailer.
-- **WORKLOG flow** — for every Active Todo: implement → add/update E2E tests → `npm test` passes → mark todo `[x]` in WORKLOG → commit all in one go. Never commit a feature without its test and WORKLOG update.
+- **WORKLOG flow** — use `agents/worklog-implementer.md` to execute any Active Todo or manage the backlog; it owns the implement → test → mark → commit sequence and all WORKLOG structure rules.
 - **Keep docs current** — update README, WORKLOG, and CLAUDE.md alongside code changes
 - **WORKLOG.md** tracks progress, active todos, backlog, and session notes — update it every session so the next agent can pick up instantly
 - **README.md** — brief repo overview: what it is, file map, how to run/deploy locally
@@ -101,6 +101,7 @@ All agent prompts live in `agents/` and are written for any AI (Claude, Codex, G
 
 | Prompt | When to use |
 |---|---|
+| `agents/worklog-implementer.md` | Executing Active Todos, managing backlog, maintaining WORKLOG structure |
 | `agents/pokemon.md` | Researching accurate game data (obtain methods, boss teams, move learnsets) |
 | `agents/playwright-planner.md` | Writing new E2E test plans in `e2e/specs/` |
 | `agents/playwright-generator.md` | Converting spec plans into runnable `e2e/*.spec.ts` files |
