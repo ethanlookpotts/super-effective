@@ -31,3 +31,4 @@ that fixes each failure.
 - Do not weaken assertions (e.g. removing `expect()` calls) just to make tests pass
 - If a journey no longer exists in the app, update the spec plan in `e2e/specs/` as well
 - Keep fixes surgical — one change per failure where possible
+- **Prefer accessible selectors when healing** — if a broken locator used a CSS class, replace it with `getByRole`, `getByLabel`, or `getByText` rather than patching to a different class. If no accessible name exists on the element, add `aria-label="..."` to the HTML first. This makes tests resilient to future style changes.

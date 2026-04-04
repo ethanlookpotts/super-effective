@@ -27,7 +27,17 @@ For each journey in the spec file:
 
 ## Rules
 
-- Use `page.locator()` with stable selectors (IDs > classes > text); avoid XPath
+### Selector priority — use accessible locators, not implementation details
+Prefer in this order:
+1. `page.getByRole('button', { name: 'Open menu' })` — ARIA role + accessible name
+2. `page.getByLabel('Pokémon name…')` — label text or `aria-label`
+3. `page.getByText('Brock')` — visible text content
+4. `page.locator('#id')` — stable HTML IDs only as a last resort
+5. **Never** use CSS class selectors (`.nb`, `.gym-name`, etc.) — classes are implementation details and break silently when styles change
+
+When an interactive element has no accessible name, add `aria-label="..."` to the HTML before writing the test. Do not work around missing labels with class selectors.
+
+### Other rules
 - For locators matching multiple elements, use `.first()` or `.filter({ hasText: /exact/ })`
 - Each test must be independent — clear localStorage in `beforeEach`
 - Run `npm test` after generating; fix any failures before reporting done
@@ -45,7 +55,8 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('journey name', async ({ page }) => {
-  // steps...
-  await expect(page.locator('.selector')).toBeVisible();
+  await page.getByRole('button', { name: 'Open menu' }).click();
+  await page.getByRole('button', { name: 'GYMS & ELITE FOUR' }).click();
+  await expect(page.getByText('Brock')).toBeVisible();
 });
 ```

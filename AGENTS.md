@@ -125,6 +125,20 @@ e2e/
 3. If tests break after a change, use `agents/playwright-healer.md` to repair them
 4. Run `npm test` before every commit — all tests must pass
 
+**Selector convention — accessible locators only:**
+Tests must behave like a real user, not a machine inspecting the DOM.
+
+| Preferred | Avoid |
+|---|---|
+| `getByRole('button', { name: 'Open menu' })` | `.locator('.hamburger-btn')` |
+| `getByLabel('Pokémon name…')` | `.locator('#s-in')` |
+| `getByText('Brock')` | `.locator('.gym-name')` |
+
+- Use `getByRole` / `getByLabel` / `getByText` as the default
+- Use `locator('#id')` only for stable semantic IDs (form fields, page containers)
+- Never use CSS class selectors — they are implementation details and break silently
+- If an element has no accessible name, add `aria-label="..."` to the HTML before writing the test
+
 **Local setup:**
 ```bash
 npm ci
