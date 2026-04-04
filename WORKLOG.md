@@ -74,6 +74,7 @@ test files. Then add GitHub Actions CI — see Backlog → Testing.
 - [x] Push to main + configure GitHub Pages
 - [x] Playthrough rename UI — inline input in PT menu, saves on blur/Enter
 - [x] "✓ IN PARTY" button → tapping navigates to Party tab (blue, reads "VIEW PARTY ›")
+- [ ] Remove `legacy-frlg-battle-aide.html` — functionality fully superseded by the current app; file is dead weight in the repo
 - [ ] renderModal() partial rebuild on move add/remove (currently full rebuild)
 - [ ] Bug: type filter browse cards render off-screen/blank — visible in Playwright screenshot; cards animate in below the fold when Electric pill is tapped
 
