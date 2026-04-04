@@ -73,7 +73,7 @@ test files. Then add GitHub Actions CI — see Backlog → Testing.
 
 - [x] Push to main + configure GitHub Pages
 - [x] Playthrough rename UI — inline input in PT menu, saves on blur/Enter
-- [ ] "✓ IN PARTY" button state → tap to jump to Party tab
+- [x] "✓ IN PARTY" button → tapping navigates to Party tab (blue, reads "VIEW PARTY ›")
 - [ ] renderModal() partial rebuild on move add/remove (currently full rebuild)
 - [ ] Bug: type filter browse cards render off-screen/blank — visible in Playwright screenshot; cards animate in below the fold when Electric pill is tapped
 

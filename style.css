@@ -138,7 +138,8 @@ border:1.5px solid rgba(61,220,132,.28);border-radius:9px;
 color:var(--green);font-family:var(--fp);font-size:6.5px;cursor:pointer;
 margin-bottom:13px;transition:background .15s,border-color .15s;}
 .add-party-btn:active{background:rgba(61,220,132,.22);border-color:rgba(61,220,132,.5);}
-.add-party-btn:disabled{opacity:.4;cursor:default;}
+.add-party-btn.in-party{background:rgba(77,171,247,.12);border-color:rgba(77,171,247,.28);color:var(--blue);}
+.add-party-btn.in-party:active{background:rgba(77,171,247,.22);}
 
 /* Obtain section */
 .obtain-section{background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:9px 11px;}

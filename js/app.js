@@ -219,7 +219,7 @@ function renderPokeDetail(){
 
   // Add to party button (Phase 4)
   if(inParty){
-    html += `<button class="add-party-btn" disabled>✓ IN PARTY</button>`;
+    html += `<button class="add-party-btn in-party" onclick="showPage('party')">✓ IN PARTY — VIEW PARTY ›</button>`;
   } else {
     html += `<button class="add-party-btn" onclick="addToParty(${p.n})">➕ ADD TO PARTY</button>`;
   }
