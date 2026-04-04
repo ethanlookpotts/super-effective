@@ -107,8 +107,10 @@ CI runs on push to main and PRs via `.github/workflows/test.yml`.
 5. Where Am I tab → Viridian Forest, Safari Zone present
 
 ### High Priority
+- [ ] Refactor E2E tests to use accessible selectors — replace class/id-based locators with `getByRole`, `getByLabel`, `getByText`; add `aria-label` attributes to key interactive elements; update playwright-generator, playwright-planner, playwright-healer agent prompts and AGENTS.md E2E section to enforce this convention going forward
 
 ### Medium Priority
+- [ ] Run /simplify on the codebase — reduce duplication and clean up JS/CSS without changing behaviour
 - [ ] **[4] Desktop responsive layout** — extend mobile-first layout to work well on wider screens (sidebar nav, wider cards, responsive breakpoints); keep mobile experience unchanged
 - [ ] Evolution tracker (level/stone/trade conditions)
 - [ ] Pokémon base stats display (Attack vs Sp.Atk to guide move choice)
