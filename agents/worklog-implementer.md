@@ -90,8 +90,6 @@ Always maintain this exact section order. Never add new top-level sections witho
     **Completed**
     - [x] ...
 
-## Next Session — Pick Up Here   ← brief orientation note; update each session
-
 ## Backlog
   ### Testing
   ### High Priority
