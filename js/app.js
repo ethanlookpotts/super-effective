@@ -614,13 +614,25 @@ function renderPtMenu(){
   const active = activePt();
   body.innerHTML = store.playthroughs.map(pt=>`
     <div class="pt-list-row${pt.id===active.id?' active-pt':''}">
-      <span class="pt-list-name${pt.id===active.id?' active-pt':''}">${pt.name}</span>
+      <input class="pt-name-input${pt.id===active.id?' active-pt':''}" value="${pt.name}"
+        onblur="renamePt('${pt.id}',this.value)"
+        onkeydown="if(event.key==='Enter')this.blur()">
       ${pt.id===active.id
         ? '<span style="font-family:var(--fp);font-size:5px;color:var(--gold);">ACTIVE</span>'
         : `<button class="pt-switch-btn" onclick="switchPt('${pt.id}')">SWITCH</button>`}
       <button class="pt-del-btn" onclick="deletePt('${pt.id}')">🗑</button>
     </div>`).join('') +
     `<button class="pt-new-btn" onclick="createPlaythrough()">＋ NEW RUN</button>`;
+}
+
+function renamePt(id, name){
+  const trimmed = name.trim();
+  if(!trimmed) return;
+  const pt = store.playthroughs.find(p=>p.id===id);
+  if(!pt || pt.name===trimmed) return;
+  pt.name = trimmed;
+  saveStore();
+  updateMasthead();
 }
 
 function createPlaythrough(){

@@ -4,8 +4,7 @@
 
 - **Ask questions** — if anything is ambiguous, ask before implementing
 - **Small, focused commits** — one logical change per commit using conventional commit messages. Commit messages are single-line only — no body, no Co-Authored-By trailer.
-- **Run tests before committing** — `npm test` must pass. First-time setup: `npm ci && npx playwright install chromium`. Test plans live in `e2e/specs/`, generated tests in `e2e/`.
-- **Playwright agents** — use the three sub-agents in `.claude/agents/` to maintain tests: Planner writes specs, Generator produces test files from specs, Healer repairs failing tests. Re-run `npx playwright init-agents --loop=claude` when Playwright updates.
+- **WORKLOG flow** — for every Active Todo: implement → add/update E2E tests → `npm test` passes → mark todo `[x]` in WORKLOG → commit all in one go. Never commit a feature without its test and WORKLOG update.
 - **Keep docs current** — update README, WORKLOG, and CLAUDE.md alongside code changes
 - **WORKLOG.md** tracks progress, active todos, backlog, and session notes — update it every session so the next agent can pick up instantly
 - **README.md** — brief repo overview: what it is, file map, how to run/deploy locally
