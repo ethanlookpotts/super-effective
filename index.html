@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Super Effective — Pokémon Battle Aide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- MASTHEAD -->
+  <div class="masthead">
+    <div class="mast-inner">
+      <div class="mast-text">
+        <div class="mast-title" id="mast-game">🔴 FIRERED / LEAFGREEN</div>
+        <div class="mast-sub" id="mast-pt">BATTLE AIDE · GEN III · KANTO</div>
+      </div>
+      <button class="mast-pt-btn" id="mast-pt-btn" onclick="openPtMenu()" aria-label="Switch playthrough">
+        <span id="mast-pt-label">RUN 1</span> ▾
+      </button>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <button class="nb active" onclick="showPage('search')"><span class="ni">🔍</span>SEARCH</button>
+    <button class="nb" onclick="showPage('party')"><span class="ni">🎒</span>PARTY</button>
+    <button class="nb" onclick="showPage('gyms')"><span class="ni">🏆</span>GYMS</button>
+    <button class="nb" onclick="showPage('location')"><span class="ni">🗺️</span>WHERE AM I</button>
+  </nav>
+
+  <!-- ══ SEARCH PAGE ══ -->
+  <div id="page-search" class="page active">
+    <div class="search-ph">
+      <div class="search-ph-top">
+        <div class="ph-title">🔍 SEARCH</div>
+        <div class="sbox">
+          <input class="si" id="s-in" placeholder="Pokémon name…"
+            oninput="onSearch(this.value)"
+            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+          <button class="xcl" id="s-cl" onclick="clearSearch()">✕</button>
+        </div>
+      </div>
+      <div class="type-filter-row" id="type-filter-row"></div>
+    </div>
+    <div class="pdrop" id="s-drop" style="display:none"></div>
+    <div class="scroll" id="s-scroll"></div>
+  </div>
+
+  <!-- ══ PARTY PAGE ══ -->
+  <div id="page-party" class="page">
+    <div class="party-ph">
+      <div class="party-ph-title">🎒 MY PARTY</div>
+      <div class="party-ph-sub">TAP SLOT TO ADD OR EDIT · UP TO 6</div>
+    </div>
+    <div id="cov-wrap" class="coverage-wrap" style="display:none">
+      <div class="cov-label">TYPE COVERAGE — TAP A DOT TO BROWSE THAT TYPE</div>
+      <div class="cov-bar" id="cov-bar"></div>
+    </div>
+    <div class="party-grid" id="party-grid"></div>
+    <div class="party-ct-wrap">
+      <div id="party-ct" class="party-ct"></div>
+    </div>
+  </div>
+
+  <!-- ══ GYMS PAGE ══ -->
+  <div id="page-gyms" class="page">
+    <div class="gyms-ph">
+      <div class="gyms-ph-title">🏆 GYMS, RIVAL &amp; ELITE FOUR</div>
+      <div class="gyms-ph-sub">TAP ANY POKÉMON TO SEARCH IT · SELECT YOUR STARTER ABOVE</div>
+    </div>
+    <div class="scroll" id="gyms-scroll"></div>
+  </div>
+
+  <!-- ══ WHERE AM I PAGE ══ -->
+  <div id="page-location" class="page">
+    <div class="loc-ph">
+      <div class="loc-ph-title">🗺 WHERE AM I?</div>
+      <input class="si gf" id="loc-in" placeholder="Location or Pokémon name…"
+        oninput="filterLocs(this.value)"
+        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    </div>
+    <div class="scroll" id="loc-scroll"></div>
+  </div>
+
+  <!-- ══ PARTY EDIT MODAL ══ -->
+  <div class="overlay" id="overlay" onclick="oClick(event)">
+    <div class="modal">
+      <div class="modal-hd">
+        <div class="modal-ttl" id="modal-ttl">ADD POKÉMON</div>
+        <button class="modal-x" onclick="closeModal()">✕ CLOSE</button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- ══ PC SWAP MODAL ══ -->
+  <div class="overlay" id="swap-overlay" onclick="swapOvClick(event)">
+    <div class="modal">
+      <div class="modal-hd">
+        <div class="modal-ttl">📦 PC DEPOSIT</div>
+        <button class="modal-x" onclick="closeSwapModal()">✕ CLOSE</button>
+      </div>
+      <div class="modal-body" id="swap-body"></div>
+    </div>
+  </div>
+
+  <!-- ══ PLAYTHROUGH MENU ══ -->
+  <div class="overlay" id="pt-overlay" onclick="ptOvClick(event)">
+    <div class="modal">
+      <div class="modal-hd">
+        <div class="modal-ttl">⚡ PLAYTHROUGHS</div>
+        <button class="modal-x" onclick="closePtMenu()">✕ CLOSE</button>
+      </div>
+      <div class="modal-body" id="pt-body"></div>
+    </div>
+  </div>
+
+  <!-- ══ TYPE/MOVE BREAKDOWN SHEET ══ -->
+  <div class="overlay" id="bd-overlay" onclick="bdOvClick(event)">
+    <div class="modal">
+      <div class="modal-hd">
+        <div class="modal-ttl" id="bd-ttl">WHY?</div>
+        <button class="modal-x" onclick="closeBreakdown()">✕ CLOSE</button>
+      </div>
+      <div class="modal-body" id="bd-body"></div>
+    </div>
+  </div>
+
+  <!-- ══ TOAST ══ -->
+  <div id="toast" class="toast"></div>
+
+</div><!-- .app -->
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

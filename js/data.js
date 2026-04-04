@@ -1,0 +1,399 @@
+// ═══════════════════════════════
+// GEN III TYPE CHART
+// Physical: Normal Fighting Flying Poison Ground Rock Bug Ghost Steel
+// Special:  Fire Water Grass Electric Ice Psychic Dragon Dark
+// ═══════════════════════════════
+const PHYS=new Set(['Normal','Fighting','Flying','Poison','Ground','Rock','Bug','Ghost','Steel']);
+const TYPES=['Normal','Fire','Water','Grass','Electric','Ice','Fighting','Poison','Ground','Flying','Psychic','Bug','Rock','Ghost','Dragon','Dark','Steel','Fairy'];
+const CHART={
+  Normal:{Rock:.5,Ghost:0,Steel:.5},Fire:{Fire:.5,Water:.5,Grass:2,Ice:2,Bug:2,Rock:.5,Dragon:.5,Steel:2},
+  Water:{Fire:2,Water:.5,Grass:.5,Ground:2,Rock:2,Dragon:.5},
+  Grass:{Fire:.5,Water:2,Grass:.5,Poison:.5,Ground:2,Flying:.5,Bug:.5,Rock:2,Dragon:.5,Steel:.5},
+  Electric:{Water:2,Grass:.5,Electric:.5,Ground:0,Flying:2,Dragon:.5},
+  Ice:{Fire:.5,Water:.5,Grass:2,Ice:.5,Ground:2,Flying:2,Dragon:2,Steel:.5},
+  Fighting:{Normal:2,Ice:2,Poison:.5,Flying:.5,Psychic:.5,Bug:.5,Rock:2,Ghost:0,Dark:2,Steel:2,Fairy:.5},
+  Poison:{Grass:2,Poison:.5,Ground:.5,Rock:.5,Ghost:.5,Steel:0,Fairy:2},
+  Ground:{Fire:2,Electric:2,Grass:.5,Poison:2,Flying:0,Bug:.5,Rock:2,Steel:2},
+  Flying:{Electric:.5,Grass:2,Fighting:2,Bug:2,Rock:.5,Steel:.5},
+  Psychic:{Fighting:2,Poison:2,Psychic:.5,Dark:0,Steel:.5},
+  Bug:{Fire:.5,Grass:2,Fighting:.5,Poison:.5,Flying:.5,Psychic:2,Ghost:.5,Dark:2,Steel:.5,Fairy:.5},
+  Rock:{Fire:2,Ice:2,Fighting:.5,Ground:.5,Flying:2,Bug:2,Steel:.5},
+  Ghost:{Normal:0,Psychic:2,Ghost:2,Dark:.5,Steel:.5},Dragon:{Dragon:2,Steel:.5,Fairy:0},
+  Dark:{Fighting:.5,Psychic:2,Ghost:2,Dark:.5,Steel:.5,Fairy:.5},
+  Steel:{Fire:.5,Water:.5,Electric:.5,Ice:2,Rock:2,Steel:.5,Fairy:2},
+  Fairy:{Fire:.5,Fighting:2,Dragon:2,Dark:2,Steel:.5}
+};
+function gm(a,d){return(CHART[a]&&CHART[a][d]!==undefined)?CHART[a][d]:1;}
+function dmult(at,dts){return dts.reduce((acc,d)=>acc*gm(at,d),1);}
+
+// ═══════════════════════════════
+// ABILITY MODS — Gen III FRLG
+// Abilities that alter type effectiveness for specific Pokémon
+// immune: types this ability grants immunity to
+// resist: { type: multiplier } — e.g. Thick Fat halves Fire/Ice
+// multi: true = Pokémon has multiple ability slots; effect not guaranteed
+// DO NOT regenerate from PokeAPI — curated for Gen III FRLG accuracy
+// ═══════════════════════════════
+const ABILITY_MODS={
+  // Levitate — immune to Ground
+  92:{name:'Levitate',immune:['Ground']},93:{name:'Levitate',immune:['Ground']},94:{name:'Levitate',immune:['Ground']},
+  109:{name:'Levitate',immune:['Ground']},110:{name:'Levitate',immune:['Ground']},
+  // Flash Fire — immune to Fire (some have dual ability slots)
+  37:{name:'Flash Fire',immune:['Fire']},38:{name:'Flash Fire',immune:['Fire']},
+  77:{name:'Flash Fire',immune:['Fire'],multi:true},78:{name:'Flash Fire',immune:['Fire'],multi:true},
+  58:{name:'Flash Fire',immune:['Fire'],multi:true},59:{name:'Flash Fire',immune:['Fire'],multi:true},
+  136:{name:'Flash Fire',immune:['Fire']},
+  // Water Absorb — immune to Water
+  131:{name:'Water Absorb',immune:['Water'],multi:true},134:{name:'Water Absorb',immune:['Water']},
+  // Volt Absorb — immune to Electric
+  135:{name:'Volt Absorb',immune:['Electric']},
+  // Thick Fat — ½× Fire and Ice
+  143:{name:'Thick Fat',resist:{Fire:.5,Ice:.5},multi:true},
+  115:{name:'Thick Fat',resist:{Fire:.5,Ice:.5},multi:true},
+};
+function getAbilityMod(n){return ABILITY_MODS[n]||null;}
+
+// ═══════════════════════════════
+// POKEMON DATA
+// ═══════════════════════════════
+const POKEMON=[
+  {n:1,name:'Bulbasaur',types:['Grass','Poison']},{n:2,name:'Ivysaur',types:['Grass','Poison']},{n:3,name:'Venusaur',types:['Grass','Poison']},
+  {n:4,name:'Charmander',types:['Fire']},{n:5,name:'Charmeleon',types:['Fire']},{n:6,name:'Charizard',types:['Fire','Flying']},
+  {n:7,name:'Squirtle',types:['Water']},{n:8,name:'Wartortle',types:['Water']},{n:9,name:'Blastoise',types:['Water']},
+  {n:10,name:'Caterpie',types:['Bug']},{n:11,name:'Metapod',types:['Bug']},{n:12,name:'Butterfree',types:['Bug','Flying']},
+  {n:13,name:'Weedle',types:['Bug','Poison']},{n:14,name:'Kakuna',types:['Bug','Poison']},{n:15,name:'Beedrill',types:['Bug','Poison']},
+  {n:16,name:'Pidgey',types:['Normal','Flying']},{n:17,name:'Pidgeotto',types:['Normal','Flying']},{n:18,name:'Pidgeot',types:['Normal','Flying']},
+  {n:19,name:'Rattata',types:['Normal']},{n:20,name:'Raticate',types:['Normal']},{n:21,name:'Spearow',types:['Normal','Flying']},{n:22,name:'Fearow',types:['Normal','Flying']},
+  {n:23,name:'Ekans',types:['Poison']},{n:24,name:'Arbok',types:['Poison']},{n:25,name:'Pikachu',types:['Electric']},{n:26,name:'Raichu',types:['Electric']},
+  {n:27,name:'Sandshrew',types:['Ground']},{n:28,name:'Sandslash',types:['Ground']},
+  {n:29,name:'Nidoran♀',types:['Poison']},{n:30,name:'Nidorina',types:['Poison']},{n:31,name:'Nidoqueen',types:['Poison','Ground']},
+  {n:32,name:'Nidoran♂',types:['Poison']},{n:33,name:'Nidorino',types:['Poison']},{n:34,name:'Nidoking',types:['Poison','Ground']},
+  {n:35,name:'Clefairy',types:['Normal']},{n:36,name:'Clefable',types:['Normal']},{n:37,name:'Vulpix',types:['Fire']},{n:38,name:'Ninetales',types:['Fire']},
+  {n:39,name:'Jigglypuff',types:['Normal']},{n:40,name:'Wigglytuff',types:['Normal']},
+  {n:41,name:'Zubat',types:['Poison','Flying']},{n:42,name:'Golbat',types:['Poison','Flying']},
+  {n:43,name:'Oddish',types:['Grass','Poison']},{n:44,name:'Gloom',types:['Grass','Poison']},{n:45,name:'Vileplume',types:['Grass','Poison']},
+  {n:46,name:'Paras',types:['Bug','Grass']},{n:47,name:'Parasect',types:['Bug','Grass']},{n:48,name:'Venonat',types:['Bug','Poison']},{n:49,name:'Venomoth',types:['Bug','Poison']},
+  {n:50,name:'Diglett',types:['Ground']},{n:51,name:'Dugtrio',types:['Ground']},{n:52,name:'Meowth',types:['Normal']},{n:53,name:'Persian',types:['Normal']},
+  {n:54,name:'Psyduck',types:['Water']},{n:55,name:'Golduck',types:['Water']},{n:56,name:'Mankey',types:['Fighting']},{n:57,name:'Primeape',types:['Fighting']},
+  {n:58,name:'Growlithe',types:['Fire']},{n:59,name:'Arcanine',types:['Fire']},
+  {n:60,name:'Poliwag',types:['Water']},{n:61,name:'Poliwhirl',types:['Water']},{n:62,name:'Poliwrath',types:['Water','Fighting']},
+  {n:63,name:'Abra',types:['Psychic']},{n:64,name:'Kadabra',types:['Psychic']},{n:65,name:'Alakazam',types:['Psychic']},
+  {n:66,name:'Machop',types:['Fighting']},{n:67,name:'Machoke',types:['Fighting']},{n:68,name:'Machamp',types:['Fighting']},
+  {n:69,name:'Bellsprout',types:['Grass','Poison']},{n:70,name:'Weepinbell',types:['Grass','Poison']},{n:71,name:'Victreebel',types:['Grass','Poison']},
+  {n:72,name:'Tentacool',types:['Water','Poison']},{n:73,name:'Tentacruel',types:['Water','Poison']},
+  {n:74,name:'Geodude',types:['Rock','Ground']},{n:75,name:'Graveler',types:['Rock','Ground']},{n:76,name:'Golem',types:['Rock','Ground']},
+  {n:77,name:'Ponyta',types:['Fire']},{n:78,name:'Rapidash',types:['Fire']},
+  {n:79,name:'Slowpoke',types:['Water','Psychic']},{n:80,name:'Slowbro',types:['Water','Psychic']},
+  {n:81,name:'Magnemite',types:['Electric','Steel']},{n:82,name:'Magneton',types:['Electric','Steel']},
+  {n:83,name:"Farfetch'd",types:['Normal','Flying']},{n:84,name:'Doduo',types:['Normal','Flying']},{n:85,name:'Dodrio',types:['Normal','Flying']},
+  {n:86,name:'Seel',types:['Water']},{n:87,name:'Dewgong',types:['Water','Ice']},{n:88,name:'Grimer',types:['Poison']},{n:89,name:'Muk',types:['Poison']},
+  {n:90,name:'Shellder',types:['Water']},{n:91,name:'Cloyster',types:['Water','Ice']},
+  {n:92,name:'Gastly',types:['Ghost','Poison']},{n:93,name:'Haunter',types:['Ghost','Poison']},{n:94,name:'Gengar',types:['Ghost','Poison']},
+  {n:95,name:'Onix',types:['Rock','Ground']},{n:96,name:'Drowzee',types:['Psychic']},{n:97,name:'Hypno',types:['Psychic']},
+  {n:98,name:'Krabby',types:['Water']},{n:99,name:'Kingler',types:['Water']},{n:100,name:'Voltorb',types:['Electric']},{n:101,name:'Electrode',types:['Electric']},
+  {n:102,name:'Exeggcute',types:['Grass','Psychic']},{n:103,name:'Exeggutor',types:['Grass','Psychic']},
+  {n:104,name:'Cubone',types:['Ground']},{n:105,name:'Marowak',types:['Ground']},
+  {n:106,name:'Hitmonlee',types:['Fighting']},{n:107,name:'Hitmonchan',types:['Fighting']},{n:108,name:'Lickitung',types:['Normal']},
+  {n:109,name:'Koffing',types:['Poison']},{n:110,name:'Weezing',types:['Poison']},
+  {n:111,name:'Rhyhorn',types:['Ground','Rock']},{n:112,name:'Rhydon',types:['Ground','Rock']},
+  {n:113,name:'Chansey',types:['Normal']},{n:114,name:'Tangela',types:['Grass']},{n:115,name:'Kangaskhan',types:['Normal']},
+  {n:116,name:'Horsea',types:['Water']},{n:117,name:'Seadra',types:['Water']},{n:118,name:'Goldeen',types:['Water']},{n:119,name:'Seaking',types:['Water']},
+  {n:120,name:'Staryu',types:['Water']},{n:121,name:'Starmie',types:['Water','Psychic']},{n:122,name:'Mr. Mime',types:['Psychic']},
+  {n:123,name:'Scyther',types:['Bug','Flying']},{n:124,name:'Jynx',types:['Ice','Psychic']},
+  {n:125,name:'Electabuzz',types:['Electric']},{n:126,name:'Magmar',types:['Fire']},{n:127,name:'Pinsir',types:['Bug']},{n:128,name:'Tauros',types:['Normal']},
+  {n:129,name:'Magikarp',types:['Water']},{n:130,name:'Gyarados',types:['Water','Flying']},{n:131,name:'Lapras',types:['Water','Ice']},
+  {n:132,name:'Ditto',types:['Normal']},{n:133,name:'Eevee',types:['Normal']},{n:134,name:'Vaporeon',types:['Water']},
+  {n:135,name:'Jolteon',types:['Electric']},{n:136,name:'Flareon',types:['Fire']},{n:137,name:'Porygon',types:['Normal']},
+  {n:138,name:'Omanyte',types:['Rock','Water']},{n:139,name:'Omastar',types:['Rock','Water']},
+  {n:140,name:'Kabuto',types:['Rock','Water']},{n:141,name:'Kabutops',types:['Rock','Water']},
+  {n:142,name:'Aerodactyl',types:['Rock','Flying']},{n:143,name:'Snorlax',types:['Normal']},
+  {n:144,name:'Articuno',types:['Ice','Flying']},{n:145,name:'Zapdos',types:['Electric','Flying']},{n:146,name:'Moltres',types:['Fire','Flying']},
+  {n:147,name:'Dratini',types:['Dragon']},{n:148,name:'Dragonair',types:['Dragon']},{n:149,name:'Dragonite',types:['Dragon','Flying']},
+  {n:150,name:'Mewtwo',types:['Psychic']},{n:151,name:'Mew',types:['Psychic']}
+];
+
+// ═══════════════════════════════
+// OBTAIN DATA
+// HOW[n] = array of strings describing how to get it in FRLG
+// DO NOT regenerate from PokeAPI — hand-curated for FRLG accuracy
+// ═══════════════════════════════
+const HOW={
+  1:['Starter from Prof. Oak (FireRed)'],2:['Evolve Bulbasaur Lv.16'],3:['Evolve Ivysaur Lv.32'],
+  4:['Starter from Prof. Oak'],5:['Evolve Charmander Lv.16'],6:['Evolve Charmeleon Lv.36'],
+  7:['Starter from Prof. Oak (LeafGreen)'],8:['Evolve Squirtle Lv.16'],9:['Evolve Wartortle Lv.36'],
+  10:['Grass: Route 2, Viridian Forest'],11:['Grass: Route 2, Viridian Forest'],12:['Evolve Caterpie Lv.10'],
+  13:['Grass: Route 2, Viridian Forest'],14:['Grass: Route 2, Viridian Forest'],15:['Evolve Kakuna Lv.10'],
+  16:['Grass: Route 1, 2, 3, 5, 6, 7, 8, 12, 13, 14, 15'],17:['Evolve Pidgey Lv.18'],18:['Evolve Pidgeotto Lv.36'],
+  19:['Grass: Route 1, 2, 9, 16, 17, 18, 22'],20:['Evolve Rattata Lv.20'],
+  21:['Grass: Route 3, 4, 9, 11, 16, 17, 18, 22, 23'],22:['Evolve Spearow Lv.20'],
+  23:['Grass: Route 4, 9, 11, 23 (FireRed)'],24:['Evolve Ekans Lv.22'],
+  25:['Grass: Viridian Forest (rare)'],26:['Evolve Pikachu (Thunder Stone)'],
+  27:['Grass: Route 4, 9, 11, 23 (LeafGreen)'],28:['Evolve Sandshrew Lv.22'],
+  29:['Grass: Route 22'],30:['Evolve Nidoran♀ Lv.16'],31:['Evolve Nidorina (Moon Stone)'],
+  32:['Grass: Route 22'],33:['Evolve Nidoran♂ Lv.16'],34:['Evolve Nidorino (Moon Stone)'],
+  35:['Grass: Mt. Moon'],36:['Evolve Clefairy (Moon Stone)'],
+  37:['Grass: Route 7, 8 (LeafGreen)'],38:['Evolve Vulpix (Fire Stone)'],
+  39:['Grass: Route 3'],40:['Evolve Jigglypuff (Moon Stone)'],
+  41:['Grass: Mt. Moon, Rock Tunnel, Seafoam Islands, Victory Road'],42:['Evolve Zubat Lv.22'],
+  43:['Grass: Route 5, 6, 7, 8 (FireRed)'],44:['Evolve Oddish Lv.21'],45:['Evolve Gloom (Leaf Stone)'],
+  46:['Grass: Mt. Moon, Safari Zone Zone 1'],47:['Evolve Paras Lv.24'],
+  48:['Grass: Route 12, 13, 14, 15 (FR), Safari Zone'],49:['Evolve Venonat Lv.31'],
+  50:["Grass: Diglett's Cave"],51:["Evolve Diglett Lv.26"],
+  52:['Grass: Route 5, 6, 7, 8 (LG)'],53:['Evolve Meowth Lv.28'],
+  54:['Grass: Route 25 (rod), Cerulean Cave (surf)'],55:['Evolve Psyduck Lv.33'],
+  56:['Grass: Route 3, 4 (FireRed)'],57:['Evolve Mankey Lv.28'],
+  58:['Grass: Route 7, 8 (FireRed)'],59:['Evolve Growlithe (Fire Stone)'],
+  60:['Grass: Route 10 (rod)'],61:['Evolve Poliwag Lv.25'],62:['Evolve Poliwhirl (Water Stone)'],
+  63:['Grass: Route 24, 25'],64:['Evolve Abra Lv.16'],65:['Trade Kadabra'],
+  66:['Grass: Rock Tunnel, Victory Road'],67:['Evolve Machop Lv.28'],68:['Trade Machoke'],
+  69:['Grass: Route 5, 6, 7, 8 (LeafGreen)'],70:['Evolve Bellsprout Lv.21'],71:['Evolve Weepinbell (Leaf Stone)'],
+  72:['Surf: most water routes'],73:['Evolve Tentacool Lv.30'],
+  74:['Grass/Cave: Mt. Moon, Rock Tunnel, Victory Road'],75:['Evolve Geodude Lv.25'],76:['Trade Graveler'],
+  77:['Grass: Route 17 (FireRed)'],78:['Evolve Ponyta Lv.40'],
+  79:['Grass: Safari Zone (rod)'],80:['Evolve Slowpoke Lv.37'],
+  81:['Grass: Route 10, Power Plant'],82:['Evolve Magnemite Lv.30'],
+  83:['Gift in Vermilion City'],84:['Grass: Route 16, 17, 18'],85:['Evolve Doduo Lv.31'],
+  86:['Grass: Seafoam Islands'],87:['Evolve Seel Lv.34'],
+  88:['Grass: Pokémon Mansion'],89:['Evolve Grimer Lv.38'],
+  90:['Grass: Water routes (rod)'],91:['Evolve Shellder (Water Stone)'],
+  92:['Grass: Pokémon Tower, Lavender Town'],93:['Evolve Gastly Lv.25'],94:['Trade Haunter'],
+  95:['Grass: Rock Tunnel, Victory Road'],96:['Grass: Route 11'],97:['Evolve Drowzee Lv.26'],
+  98:['Grass: Seafoam Islands (rod)'],99:['Evolve Krabby Lv.28'],
+  100:['Grass: Power Plant, Route 10'],101:['Evolve Voltorb Lv.30'],
+  102:['Grass: Safari Zone Zone 2'],103:['Evolve Exeggcute (Leaf Stone)'],
+  104:['Grass: Safari Zone Zone 1'],105:['Evolve Cubone Lv.28'],
+  106:['Gift from Karate King (Fuchsia Gym)'],107:['Gift from Karate King (Fuchsia Gym)'],
+  108:['Trade Slowbro (in-game trade)'],
+  109:['Grass: Pokémon Mansion'],110:['Evolve Koffing Lv.35'],
+  111:['Grass: Safari Zone Zone 1'],112:['Evolve Rhyhorn Lv.42'],
+  113:['Grass: Safari Zone Zone 3, Cerulean Cave'],114:['Grass: Safari Zone Zone 3, Route 21'],
+  115:['Grass: Safari Zone Zone 2'],
+  116:['Grass: Seafoam Islands (surf), Route 19/20/21 (rod)'],117:['Evolve Horsea Lv.32'],
+  118:['Grass: most water routes (rod)'],119:['Evolve Goldeen Lv.33'],
+  120:['Grass: Seafoam Islands, water routes (rod)'],121:['Evolve Staryu (Water Stone)'],
+  122:['Grass: Route 21 (LG)'],
+  123:['Grass: Safari Zone Zone 2 (FireRed)'],124:['Grass: Seafoam Islands (LG)'],
+  125:['Grass: Power Plant (FireRed)'],126:['Grass: Pokémon Mansion (FireRed)'],
+  127:['Grass: Safari Zone Zone 2 (LeafGreen)'],128:['Grass: Safari Zone Zone 2'],
+  129:['Fishing: most water routes (Old Rod)'],130:['Evolve Magikarp Lv.20'],
+  131:['Gift on Silph Co. (from Silph employee)'],
+  132:['Grass: Pokémon Mansion, Cerulean Cave, Routes 13-15'],
+  133:['Gift from Bill in Celadon City'],134:['Evolve Eevee (Water Stone)'],
+  135:['Evolve Eevee (Thunder Stone)'],136:['Evolve Eevee (Fire Stone)'],
+  137:['Game Corner (9999 coins)'],
+  138:['Fossil: Dome Fossil → revive in Cinnabar Lab'],139:['Evolve Omanyte Lv.40'],
+  140:['Fossil: Helix Fossil → revive in Cinnabar Lab'],141:['Evolve Kabuto Lv.40'],
+  142:['Fossil: Old Amber → revive in Cinnabar Lab'],
+  143:['Sleeping on Routes 12 & 16 (use Poké Flute)'],
+  144:['One-time: Seafoam Islands B4F'],145:['One-time: Power Plant'],146:['One-time: Mt. Ember (Sevii Islands)'],
+  147:['Grass: Safari Zone Zone 4 (rare)'],148:['Evolve Dratini Lv.30'],149:['Evolve Dragonair Lv.55'],
+  150:['One-time: Cerulean Cave B1F'],151:['Event only (Mew glitch or event)'],
+};
+function getObtain(n){return HOW[n]||['Method unknown'];}
+
+// ═══════════════════════════════
+// LOCATION DATA (for Where Am I)
+// DO NOT regenerate — hand-curated for FRLG accuracy
+// ═══════════════════════════════
+const LOCATIONS=[
+  {name:'Route 1',methods:[{label:'🌿 Grass',p:['Pidgey','Rattata']}]},
+  {name:'Route 2',methods:[{label:'🌿 Grass',p:['Pidgey','Rattata','Caterpie','Metapod','Weedle','Kakuna']}]},
+  {name:'Viridian Forest',methods:[{label:'🌿 Grass',p:['Caterpie','Metapod','Weedle','Kakuna','Pikachu']}]},
+  {name:'Route 3',methods:[{label:'🌿 Grass',p:['Pidgey','Jigglypuff','Mankey','Spearow']}]},
+  {name:'Route 4',methods:[{label:'🌿 Grass',p:['Spearow','Ekans','Sandshrew','Mankey']},{label:'🎣 Rod',p:['Magikarp','Tentacool']}]},
+  {name:'Mt. Moon',methods:[{label:'🌿 Cave',p:['Zubat','Geodude','Clefairy','Paras']}]},
+  {name:'Route 5',methods:[{label:'🌿 Grass',p:['Pidgey','Meowth','Mankey','Oddish','Bellsprout']}]},
+  {name:'Route 6',methods:[{label:'🌿 Grass',p:['Pidgey','Meowth','Mankey','Oddish','Bellsprout']}]},
+  {name:'Route 7',methods:[{label:'🌿 Grass',p:['Pidgey','Meowth','Oddish','Bellsprout','Growlithe','Vulpix']}]},
+  {name:'Route 8',methods:[{label:'🌿 Grass',p:['Pidgey','Meowth','Oddish','Bellsprout','Growlithe','Vulpix']}]},
+  {name:'Route 9',methods:[{label:'🌿 Grass',p:['Rattata','Spearow','Ekans','Sandshrew','Nidoran♀','Nidoran♂']}]},
+  {name:'Route 10',methods:[{label:'🌿 Grass',p:['Rattata','Spearow','Voltorb','Magnemite']},{label:'🎣 Rod',p:['Magikarp','Poliwag']}]},
+  {name:'Rock Tunnel',methods:[{label:'🌿 Cave',p:['Zubat','Geodude','Machop','Onix','Mankey']}]},
+  {name:'Route 11',methods:[{label:'🌿 Grass',p:['Ekans','Sandshrew','Spearow','Drowzee']}]},
+  {name:'Route 12',methods:[{label:'🌿 Grass',p:['Pidgey','Gloom','Weepinbell','Snorlax']},{label:'🎣 Rod',p:['Magikarp','Poliwag','Goldeen']}]},
+  {name:'Route 13',methods:[{label:'🌿 Grass',p:['Pidgey','Pidgeotto','Gloom','Weepinbell','Ditto']},{label:'🎣 Rod',p:['Magikarp','Poliwag','Goldeen']}]},
+  {name:'Route 14',methods:[{label:'🌿 Grass',p:['Pidgey','Pidgeotto','Gloom','Weepinbell','Ditto']}]},
+  {name:'Route 15',methods:[{label:'🌿 Grass',p:['Pidgey','Pidgeotto','Gloom','Weepinbell','Ditto']}]},
+  {name:'Route 16',methods:[{label:'🌿 Grass',p:['Spearow','Doduo','Rattata','Snorlax']}]},
+  {name:'Route 17 (Cycling Road)',methods:[{label:'🌿 Grass',p:['Spearow','Doduo','Rattata','Fearow','Dodrio']}]},
+  {name:'Route 18',methods:[{label:'🌿 Grass',p:['Spearow','Doduo','Fearow','Dodrio']}]},
+  {name:'Safari Zone',methods:[
+    {label:'🌿 Zone 1',p:['Nidoran♀','Nidoran♂','Nidorina','Nidorino','Paras','Parasect','Rhyhorn']},
+    {label:'🌿 Zone 2',p:['Exeggcute','Kangaskhan','Scyther','Pinsir','Tauros']},
+    {label:'🌿 Zone 3',p:['Venomoth','Chansey','Tangela','Dragonair']},
+    {label:'🌿 Zone 4',p:['Dratini','Dragonair']},
+    {label:'🎣 Rod',p:['Magikarp','Psyduck','Slowpoke','Goldeen','Seaking']}]},
+  {name:'Pokémon Mansion',methods:[{label:'🌿 Inside',p:['Grimer','Koffing','Weezing','Muk','Rattata','Ditto']}]},
+  {name:'Seafoam Islands',methods:[{label:'🌿 Cave',p:['Zubat','Golbat','Seel','Dewgong','Slowpoke']},{label:'🏊 Surf',p:['Tentacool','Seel','Slowpoke','Horsea']}]},
+  {name:'Victory Road',methods:[{label:'🌿 Cave',p:['Zubat','Golbat','Geodude','Graveler','Onix','Machop','Machoke','Marowak']}]},
+  {name:'Route 21',methods:[{label:'🌿 Grass',p:['Tangela','Pidgey','Pidgeotto']},{label:'🏊 Surf',p:['Tentacool','Tentacruel']}]},
+  {name:'Route 22',methods:[{label:'🌿 Grass',p:['Rattata','Spearow','Nidoran♀','Nidoran♂','Mankey']}]},
+  {name:'Route 23',methods:[{label:'🌿 Grass',p:['Ekans','Sandshrew','Spearow','Fearow']},{label:'🏊 Surf',p:['Poliwag','Poliwhirl']}]},
+  {name:'Route 24',methods:[{label:'🌿 Grass',p:['Caterpie','Weedle','Oddish','Bellsprout','Abra']},{label:'🎣 Rod',p:['Magikarp','Poliwag']}]},
+  {name:'Route 25',methods:[{label:'🌿 Grass',p:['Caterpie','Weedle','Oddish','Bellsprout','Abra']},{label:'🎣 Rod',p:['Magikarp','Psyduck','Staryu']}]},
+  {name:'Cerulean Cave',methods:[{label:'🌿 Cave',p:['Arbok','Rhydon','Chansey','Golbat','Parasect']},{label:'🏊 Surf',p:['Psyduck','Golduck','Ditto','Slowpoke']}]},
+  {name:'Power Plant',methods:[{label:'🌿 Inside',p:['Magnemite','Magneton','Voltorb','Electrode','Electabuzz','Zapdos']}]},
+  {name:"Diglett's Cave",methods:[{label:'🌿 Cave',p:['Diglett','Dugtrio']}]},
+  {name:'Water Routes (Surfing)',methods:[{label:'🏊 Surf',p:['Tentacool','Tentacruel']}]}
+];
+
+// ═══════════════════════════════
+// MOVES
+// ═══════════════════════════════
+const ALL_MOVES=[
+  {name:'Absorb',type:'Grass',cat:'spe'},{name:'Acid',type:'Poison',cat:'spe'},{name:'Aerial Ace',type:'Flying',cat:'phy'},
+  {name:'Agility',type:'Psychic',cat:'sta'},{name:'Ancient Power',type:'Rock',cat:'spe'},{name:'Aurora Beam',type:'Ice',cat:'spe'},
+  {name:'Barrier',type:'Psychic',cat:'sta'},{name:'Baton Pass',type:'Normal',cat:'sta'},{name:'Beat Up',type:'Dark',cat:'phy'},
+  {name:'Bite',type:'Dark',cat:'spe'},{name:'Blizzard',type:'Ice',cat:'spe'},{name:'Body Slam',type:'Normal',cat:'phy'},
+  {name:'Bone Club',type:'Ground',cat:'phy'},{name:'Bone Rush',type:'Ground',cat:'phy'},{name:'Bonemerang',type:'Ground',cat:'phy'},
+  {name:'Brick Break',type:'Fighting',cat:'phy'},{name:'Bug Bite',type:'Bug',cat:'phy'},{name:'Bullet Seed',type:'Grass',cat:'spe'},
+  {name:'Calm Mind',type:'Psychic',cat:'sta'},{name:'Charge',type:'Electric',cat:'sta'},{name:'Confuse Ray',type:'Ghost',cat:'sta'},
+  {name:'Confusion',type:'Psychic',cat:'spe'},{name:'Counter',type:'Fighting',cat:'phy'},{name:'Cross Chop',type:'Fighting',cat:'phy'},
+  {name:'Crunch',type:'Dark',cat:'spe'},{name:'Cut',type:'Normal',cat:'phy'},{name:'Defense Curl',type:'Normal',cat:'sta'},
+  {name:'Destiny Bond',type:'Ghost',cat:'sta'},{name:'Detect',type:'Fighting',cat:'sta'},{name:'Dig',type:'Ground',cat:'phy'},
+  {name:'Double-Edge',type:'Normal',cat:'phy'},{name:'Double Team',type:'Normal',cat:'sta'},{name:'Dragon Breath',type:'Dragon',cat:'spe'},
+  {name:'Dragon Claw',type:'Dragon',cat:'spe'},{name:'Dragon Dance',type:'Dragon',cat:'sta'},{name:'Dragon Rage',type:'Dragon',cat:'spe'},
+  {name:'Drill Peck',type:'Flying',cat:'phy'},{name:'Dynamic Punch',type:'Fighting',cat:'phy'},{name:'Earthquake',type:'Ground',cat:'phy'},
+  {name:'Ember',type:'Fire',cat:'spe'},{name:'Encore',type:'Normal',cat:'sta'},{name:'Extrasensory',type:'Psychic',cat:'spe'},
+  {name:'Extreme Speed',type:'Normal',cat:'phy'},{name:'Facade',type:'Normal',cat:'phy'},{name:'Faint Attack',type:'Dark',cat:'phy'},
+  {name:'Fire Blast',type:'Fire',cat:'spe'},{name:'Fire Spin',type:'Fire',cat:'spe'},{name:'Fissure',type:'Ground',cat:'phy'},
+  {name:'Flamethrower',type:'Fire',cat:'spe'},{name:'Fly',type:'Flying',cat:'phy'},{name:'Focus Punch',type:'Fighting',cat:'phy'},
+  {name:'Frustration',type:'Normal',cat:'phy'},{name:'Future Sight',type:'Psychic',cat:'spe'},{name:'Giga Drain',type:'Grass',cat:'spe'},
+  {name:'Growl',type:'Normal',cat:'sta'},{name:'Gust',type:'Flying',cat:'spe'},{name:'Hail',type:'Ice',cat:'sta'},
+  {name:'Headbutt',type:'Normal',cat:'phy'},{name:'Heat Wave',type:'Fire',cat:'spe'},{name:'Hyper Beam',type:'Normal',cat:'phy'},
+  {name:'Ice Beam',type:'Ice',cat:'spe'},{name:'Ice Punch',type:'Ice',cat:'spe'},{name:'Icy Wind',type:'Ice',cat:'spe'},
+  {name:'Iron Defense',type:'Steel',cat:'sta'},{name:'Iron Tail',type:'Steel',cat:'phy'},{name:'Karate Chop',type:'Fighting',cat:'phy'},
+  {name:'Knock Off',type:'Dark',cat:'phy'},{name:'Leech Life',type:'Bug',cat:'phy'},{name:'Leech Seed',type:'Grass',cat:'sta'},
+  {name:'Leer',type:'Normal',cat:'sta'},{name:'Lick',type:'Ghost',cat:'phy'},{name:'Light Screen',type:'Psychic',cat:'sta'},
+  {name:'Low Kick',type:'Fighting',cat:'phy'},{name:'Mach Punch',type:'Fighting',cat:'phy'},{name:'Magical Leaf',type:'Grass',cat:'spe'},
+  {name:'Magnitude',type:'Ground',cat:'phy'},{name:'Mega Drain',type:'Grass',cat:'spe'},{name:'Mega Kick',type:'Normal',cat:'phy'},
+  {name:'Mega Punch',type:'Normal',cat:'phy'},{name:'Megahorn',type:'Bug',cat:'phy'},{name:'Metal Claw',type:'Steel',cat:'phy'},
+  {name:'Metal Sound',type:'Steel',cat:'sta'},{name:'Meteor Mash',type:'Steel',cat:'phy'},{name:'Mirror Move',type:'Flying',cat:'sta'},
+  {name:'Mud Shot',type:'Ground',cat:'spe'},{name:'Mud Slap',type:'Ground',cat:'spe'},{name:'Night Shade',type:'Ghost',cat:'spe'},
+  {name:'Outrage',type:'Dragon',cat:'spe'},{name:'Overheat',type:'Fire',cat:'spe'},{name:'Peck',type:'Flying',cat:'phy'},
+  {name:'Petal Dance',type:'Grass',cat:'spe'},{name:'Pin Missile',type:'Bug',cat:'phy'},{name:'Poison Gas',type:'Poison',cat:'sta'},
+  {name:'Poison Powder',type:'Poison',cat:'sta'},{name:'Poison Sting',type:'Poison',cat:'phy'},{name:'Powder Snow',type:'Ice',cat:'spe'},
+  {name:'Protect',type:'Normal',cat:'sta'},{name:'Psybeam',type:'Psychic',cat:'spe'},{name:'Psychic',type:'Psychic',cat:'spe'},
+  {name:'Pursuit',type:'Dark',cat:'phy'},{name:'Quick Attack',type:'Normal',cat:'phy'},{name:'Rain Dance',type:'Water',cat:'sta'},
+  {name:'Razor Leaf',type:'Grass',cat:'spe'},{name:'Reflect',type:'Psychic',cat:'sta'},{name:'Rest',type:'Psychic',cat:'sta'},
+  {name:'Return',type:'Normal',cat:'phy'},{name:'Rock Blast',type:'Rock',cat:'phy'},{name:'Rock Slide',type:'Rock',cat:'phy'},
+  {name:'Rock Smash',type:'Fighting',cat:'phy'},{name:'Rock Throw',type:'Rock',cat:'phy'},{name:'Rock Tomb',type:'Rock',cat:'phy'},
+  {name:'Rollout',type:'Rock',cat:'phy'},{name:'Safeguard',type:'Normal',cat:'sta'},{name:'Sand Attack',type:'Ground',cat:'sta'},
+  {name:'Sandstorm',type:'Rock',cat:'sta'},{name:'Secret Power',type:'Normal',cat:'phy'},{name:'Seismic Toss',type:'Fighting',cat:'phy'},
+  {name:'Shadow Ball',type:'Ghost',cat:'phy'},{name:'Signal Beam',type:'Bug',cat:'spe'},{name:'Silver Wind',type:'Bug',cat:'spe'},
+  {name:'Sing',type:'Normal',cat:'sta'},{name:'Sky Attack',type:'Flying',cat:'phy'},{name:'Slash',type:'Normal',cat:'phy'},
+  {name:'Sleep Powder',type:'Grass',cat:'sta'},{name:'Sludge',type:'Poison',cat:'spe'},{name:'Sludge Bomb',type:'Poison',cat:'spe'},
+  {name:'Smog',type:'Poison',cat:'spe'},{name:'Smokescreen',type:'Normal',cat:'sta'},{name:'Solar Beam',type:'Grass',cat:'spe'},
+  {name:'Spark',type:'Electric',cat:'spe'},{name:'Spider Web',type:'Bug',cat:'sta'},{name:'Spite',type:'Ghost',cat:'sta'},
+  {name:'Steel Wing',type:'Steel',cat:'phy'},{name:'Stomp',type:'Normal',cat:'phy'},{name:'Strength',type:'Normal',cat:'phy'},
+  {name:'String Shot',type:'Bug',cat:'sta'},{name:'Stun Spore',type:'Grass',cat:'sta'},{name:'Submission',type:'Fighting',cat:'phy'},
+  {name:'Substitute',type:'Normal',cat:'sta'},{name:'Sunny Day',type:'Fire',cat:'sta'},{name:'Surf',type:'Water',cat:'spe'},
+  {name:'Sweet Scent',type:'Normal',cat:'sta'},{name:'Swords Dance',type:'Normal',cat:'sta'},{name:'Tackle',type:'Normal',cat:'phy'},
+  {name:'Tail Whip',type:'Normal',cat:'sta'},{name:'Taunt',type:'Dark',cat:'sta'},{name:'Thief',type:'Dark',cat:'phy'},
+  {name:'Thunder',type:'Electric',cat:'spe'},{name:'Thunder Wave',type:'Electric',cat:'sta'},{name:'Thunderbolt',type:'Electric',cat:'spe'},
+  {name:'Thunder Shock',type:'Electric',cat:'spe'},{name:'Torment',type:'Dark',cat:'sta'},{name:'Toxic',type:'Poison',cat:'sta'},
+  {name:'Twister',type:'Dragon',cat:'spe'},{name:'Twineedle',type:'Bug',cat:'phy'},{name:'Vine Whip',type:'Grass',cat:'spe'},
+  {name:'Vital Throw',type:'Fighting',cat:'phy'},{name:'Water Gun',type:'Water',cat:'spe'},{name:'Water Pulse',type:'Water',cat:'spe'},
+  {name:'Waterfall',type:'Water',cat:'spe'},{name:'Whirlpool',type:'Water',cat:'spe'},{name:'Will-O-Wisp',type:'Fire',cat:'sta'},
+  {name:'Wing Attack',type:'Flying',cat:'phy'},{name:'Withdraw',type:'Water',cat:'sta'},{name:'Wrap',type:'Normal',cat:'phy'},
+  {name:'Yawn',type:'Normal',cat:'sta'},
+];
+
+// ═══════════════════════════════
+// BOSSES (Gym Leaders, Elite Four, Champion)
+// DO NOT alter team compositions or levels — verified against FRLG
+// ═══════════════════════════════
+const BOSSES=[
+  {name:'Brock',sub:'Pewter City · Rock',icon:'🪨',color:'#786820',
+   tip:'Water or Grass moves — Vine Whip and Water Gun one-shot his team.',
+   team:[{name:'Geodude',lv:12,types:['Rock','Ground']},{name:'Onix',lv:14,types:['Rock','Ground']}]},
+  {name:'Misty',sub:'Cerulean City · Water',icon:'💧',color:'#2850c0',
+   tip:'Electric or Grass. Starmie has Recover — hit hard fast.',
+   team:[{name:'Staryu',lv:18,types:['Water']},{name:'Starmie',lv:21,types:['Water','Psychic']}]},
+  {name:'Lt. Surge',sub:'Vermilion City · Electric',icon:'⚡',color:'#b89800',
+   tip:'Ground types are immune to Electric. Raichu is fast — go first or use Ground.',
+   team:[{name:'Voltorb',lv:21,types:['Electric']},{name:'Pikachu',lv:18,types:['Electric']},{name:'Raichu',lv:24,types:['Electric']}]},
+  {name:'Erika',sub:'Celadon City · Grass',icon:'🌿',color:'#3a8820',
+   tip:'Fire, Ice, Flying, Bug all work. Watch for Sleep Powder.',
+   team:[{name:'Victreebel',lv:29,types:['Grass','Poison']},{name:'Tangela',lv:24,types:['Grass']},{name:'Vileplume',lv:29,types:['Grass','Poison']}]},
+  {name:'Koga',sub:'Fuchsia City · Poison',icon:'☠️',color:'#621880',
+   tip:'Ground and Psychic. Beware Minimize and Self-Destruct on Weezing.',
+   team:[{name:'Koffing',lv:37,types:['Poison']},{name:'Muk',lv:39,types:['Poison']},{name:'Koffing',lv:37,types:['Poison']},{name:'Weezing',lv:43,types:['Poison']}]},
+  {name:'Sabrina',sub:'Saffron City · Psychic',icon:'🔮',color:'#b02050',
+   tip:'Ghost, Bug, Dark. Alakazam is incredibly fast — have a counter ready.',
+   team:[{name:'Kadabra',lv:38,types:['Psychic']},{name:'Mr. Mime',lv:37,types:['Psychic']},{name:'Venomoth',lv:38,types:['Bug','Poison']},{name:'Alakazam',lv:43,types:['Psychic']}]},
+  {name:'Blaine',sub:'Cinnabar Island · Fire',icon:'🔥',color:'#b84018',
+   tip:'Water destroys everything. Rock and Ground also work.',
+   team:[{name:'Growlithe',lv:42,types:['Fire']},{name:'Ponyta',lv:40,types:['Fire']},{name:'Rapidash',lv:42,types:['Fire']},{name:'Arcanine',lv:47,types:['Fire']}]},
+  {name:'Giovanni',sub:'Viridian City · Ground',icon:'🌍',color:'#907030',
+   tip:'Water, Grass, Ice all work. Ground is immune to Electric — bring Fire or Water.',
+   team:[{name:'Rhyhorn',lv:45,types:['Ground','Rock']},{name:'Dugtrio',lv:42,types:['Ground']},{name:'Nidoqueen',lv:44,types:['Poison','Ground']},{name:'Nidoking',lv:45,types:['Poison','Ground']},{name:'Rhydon',lv:50,types:['Ground','Rock']}]},
+  {name:'Lorelei',sub:'Elite Four · Ice',icon:'🧊',color:'#488888',
+   tip:'Electric crushes Dewgong & Lapras. Fire/Fight for Jynx. Rock for Cloyster.',
+   team:[{name:'Dewgong',lv:54,types:['Water','Ice']},{name:'Cloyster',lv:53,types:['Water','Ice']},{name:'Slowbro',lv:54,types:['Water','Psychic']},{name:'Jynx',lv:56,types:['Ice','Psychic']},{name:'Lapras',lv:60,types:['Water','Ice']}]},
+  {name:'Bruno',sub:'Elite Four · Fighting',icon:'👊',color:'#801818',
+   tip:'Psychic and Flying dominate. Onix is Ground/Rock — use Water or Grass.',
+   team:[{name:'Onix',lv:53,types:['Rock','Ground']},{name:'Hitmonchan',lv:55,types:['Fighting']},{name:'Hitmonlee',lv:55,types:['Fighting']},{name:'Onix',lv:54,types:['Rock','Ground']},{name:'Machamp',lv:58,types:['Fighting']}]},
+  {name:'Agatha',sub:'Elite Four · Ghost',icon:'👻',color:'#402860',
+   tip:'Dark, Ghost, Psychic. Watch for Confuse Ray + Hypnosis chains.',
+   team:[{name:'Gengar',lv:54,types:['Ghost','Poison']},{name:'Haunter',lv:53,types:['Ghost','Poison']},{name:'Gengar',lv:58,types:['Ghost','Poison']},{name:'Arbok',lv:54,types:['Poison']},{name:'Haunter',lv:53,types:['Ghost','Poison']}]},
+  {name:'Lance',sub:'Elite Four · Dragon',icon:'🐉',color:'#3808d8',
+   tip:'Ice is the only reliable Dragon counter. Aerodactyl & Gyarados — use Electric or Rock.',
+   team:[{name:'Gyarados',lv:58,types:['Water','Flying']},{name:'Dragonair',lv:56,types:['Dragon']},{name:'Dragonair',lv:56,types:['Dragon']},{name:'Aerodactyl',lv:60,types:['Rock','Flying']},{name:'Dragonite',lv:62,types:['Dragon','Flying']}]},
+  {name:'Rival (Gary)',sub:'Champion · Mixed',icon:'⭐',color:'#ffc93c',
+   tip:'Bring Ice for Dragonite. A strong special attacker covers most of his team.',
+   team:[{name:'Pidgeot',lv:61,types:['Normal','Flying']},{name:'Alakazam',lv:59,types:['Psychic']},{name:'Rhydon',lv:61,types:['Ground','Rock']},{name:'Gyarados',lv:61,types:['Water','Flying']},{name:'Arcanine',lv:61,types:['Fire']},{name:'Dragonite',lv:65,types:['Dragon','Flying']}]},
+];
+
+// ═══════════════════════════════
+// RIVALS — Gary/Blue encounter teams
+// Teams keyed by PLAYER'S starter choice (Gary always picks the counter-starter)
+// DO NOT alter team compositions or levels — verified against FRLG via Bulbapedia + Serebii
+// ═══════════════════════════════
+const RIVALS=[
+  {location:'Route 22',sub:'Encounter 1 · Optional',icon:'🏁',
+   tip:'Only 2 Pokémon — quick fight. Good early XP if you want it.',
+   teams:{
+     bulbasaur:[{name:'Pidgey',lv:9,types:['Normal','Flying']},{name:'Charmander',lv:9,types:['Fire']}],
+     charmander:[{name:'Pidgey',lv:9,types:['Normal','Flying']},{name:'Squirtle',lv:9,types:['Water']}],
+     squirtle:[{name:'Pidgey',lv:9,types:['Normal','Flying']},{name:'Bulbasaur',lv:9,types:['Grass','Poison']}],
+   }},
+  {location:'Cerulean City',sub:'Encounter 2 · Nugget Bridge',icon:'🌉',
+   tip:'Abra will Teleport if low HP — hit hard fast. Rattata hits surprisingly hard.',
+   teams:{
+     bulbasaur:[{name:'Pidgeotto',lv:17,types:['Normal','Flying']},{name:'Abra',lv:16,types:['Psychic']},{name:'Rattata',lv:15,types:['Normal']},{name:'Charmander',lv:18,types:['Fire']}],
+     charmander:[{name:'Pidgeotto',lv:17,types:['Normal','Flying']},{name:'Abra',lv:16,types:['Psychic']},{name:'Rattata',lv:15,types:['Normal']},{name:'Squirtle',lv:18,types:['Water']}],
+     squirtle:[{name:'Pidgeotto',lv:17,types:['Normal','Flying']},{name:'Abra',lv:16,types:['Psychic']},{name:'Rattata',lv:15,types:['Normal']},{name:'Bulbasaur',lv:18,types:['Grass','Poison']}],
+   }},
+  {location:'S.S. Anne',sub:'Encounter 3 · Upper Deck',icon:'🚢',
+   tip:'Raticate hits fast with Hyper Fang. Kadabra uses Disable — lead with a heavy hitter.',
+   teams:{
+     bulbasaur:[{name:'Pidgeotto',lv:19,types:['Normal','Flying']},{name:'Raticate',lv:16,types:['Normal']},{name:'Kadabra',lv:18,types:['Psychic']},{name:'Charmeleon',lv:20,types:['Fire']}],
+     charmander:[{name:'Pidgeotto',lv:19,types:['Normal','Flying']},{name:'Raticate',lv:16,types:['Normal']},{name:'Kadabra',lv:18,types:['Psychic']},{name:'Wartortle',lv:20,types:['Water']}],
+     squirtle:[{name:'Pidgeotto',lv:19,types:['Normal','Flying']},{name:'Raticate',lv:16,types:['Normal']},{name:'Kadabra',lv:18,types:['Psychic']},{name:'Ivysaur',lv:20,types:['Grass','Poison']}],
+   }},
+  {location:'Pokémon Tower',sub:'Encounter 4 · Lavender Town',icon:'👻',
+   tip:'Exeggcute uses Hypnosis — bring Awakening. Gyarados/Growlithe add coverage. Watch your types.',
+   teams:{
+     bulbasaur:[{name:'Pidgeotto',lv:25,types:['Normal','Flying']},{name:'Exeggcute',lv:23,types:['Grass','Psychic']},{name:'Gyarados',lv:22,types:['Water','Flying']},{name:'Kadabra',lv:20,types:['Psychic']},{name:'Charmeleon',lv:25,types:['Fire']}],
+     charmander:[{name:'Pidgeotto',lv:25,types:['Normal','Flying']},{name:'Growlithe',lv:23,types:['Fire']},{name:'Exeggcute',lv:22,types:['Grass','Psychic']},{name:'Kadabra',lv:20,types:['Psychic']},{name:'Wartortle',lv:25,types:['Water']}],
+     squirtle:[{name:'Pidgeotto',lv:25,types:['Normal','Flying']},{name:'Gyarados',lv:23,types:['Water','Flying']},{name:'Growlithe',lv:22,types:['Fire']},{name:'Kadabra',lv:20,types:['Psychic']},{name:'Ivysaur',lv:25,types:['Grass','Poison']}],
+   }},
+  {location:'Silph Co.',sub:'Encounter 5 · Saffron City',icon:'🏢',
+   tip:'Starter fully evolved at Lv.40. Alakazam has Recover — hit it hard. Pidgeot is fast.',
+   teams:{
+     bulbasaur:[{name:'Pidgeot',lv:37,types:['Normal','Flying']},{name:'Exeggcute',lv:38,types:['Grass','Psychic']},{name:'Gyarados',lv:35,types:['Water','Flying']},{name:'Alakazam',lv:35,types:['Psychic']},{name:'Charizard',lv:40,types:['Fire','Flying']}],
+     charmander:[{name:'Pidgeot',lv:37,types:['Normal','Flying']},{name:'Growlithe',lv:38,types:['Fire']},{name:'Exeggcute',lv:35,types:['Grass','Psychic']},{name:'Alakazam',lv:35,types:['Psychic']},{name:'Blastoise',lv:40,types:['Water']}],
+     squirtle:[{name:'Pidgeot',lv:37,types:['Normal','Flying']},{name:'Gyarados',lv:38,types:['Water','Flying']},{name:'Growlithe',lv:35,types:['Fire']},{name:'Alakazam',lv:35,types:['Psychic']},{name:'Venusaur',lv:40,types:['Grass','Poison']}],
+   }},
+  {location:'Route 22',sub:'Encounter 6 · Pre-League',icon:'🚪',
+   tip:'Full 6-mon team. Rhyhorn is Ground/Rock — Water or Grass covers most threats here.',
+   teams:{
+     bulbasaur:[{name:'Pidgeot',lv:47,types:['Normal','Flying']},{name:'Rhyhorn',lv:45,types:['Ground','Rock']},{name:'Exeggcute',lv:45,types:['Grass','Psychic']},{name:'Gyarados',lv:45,types:['Water','Flying']},{name:'Alakazam',lv:47,types:['Psychic']},{name:'Charizard',lv:53,types:['Fire','Flying']}],
+     charmander:[{name:'Pidgeot',lv:47,types:['Normal','Flying']},{name:'Rhyhorn',lv:45,types:['Ground','Rock']},{name:'Growlithe',lv:45,types:['Fire']},{name:'Exeggcute',lv:45,types:['Grass','Psychic']},{name:'Alakazam',lv:47,types:['Psychic']},{name:'Blastoise',lv:53,types:['Water']}],
+     squirtle:[{name:'Pidgeot',lv:47,types:['Normal','Flying']},{name:'Rhyhorn',lv:45,types:['Ground','Rock']},{name:'Gyarados',lv:45,types:['Water','Flying']},{name:'Growlithe',lv:45,types:['Fire']},{name:'Alakazam',lv:47,types:['Psychic']},{name:'Venusaur',lv:53,types:['Grass','Poison']}],
+   }},
+];
+
+// Type → hex color (used for dynamic styling)
+function tc(t){return{Normal:'#6a6a5a',Fire:'#b84018',Water:'#2850c0',Grass:'#3a8820',Electric:'#b89800',Ice:'#488888',Fighting:'#801818',Poison:'#621880',Ground:'#907030',Flying:'#5848c0',Psychic:'#b02050',Bug:'#607210',Rock:'#786820',Ghost:'#402860',Dragon:'#3808d8',Dark:'#382818',Steel:'#686880',Fairy:'#a03860'}[t]||'#888';}
