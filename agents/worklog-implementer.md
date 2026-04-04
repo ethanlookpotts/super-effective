@@ -32,12 +32,14 @@ Before picking, check:
 5. Add or update a spec plan in `e2e/specs/` describing the new behaviour in plain English
 6. Generate or update the corresponding `e2e/*.spec.ts` file (use `agents/playwright-generator.md`)
 7. Run `npm test` — fix any failures before proceeding; do not commit with broken tests
-8. Move the task from the Backlog into the current session heading under **Progress** (mark it `[x]`); if no session heading exists for this session, create one: `### Session N — <title>`
-9. Commit all changed files in one commit: `feat: <description>` (single line, no body)
-10. Push to the remote branch
+8. Present a summary of changes to the user and **ask for confirmation** that the task is complete before proceeding
+9. After user confirms: move the task from the Backlog into the current session heading under **Progress** (mark it `[x]`); if no session heading exists for this session, create one: `### Session N — <title>`
+10. Commit all changed files in one commit: `feat: <description>` (single line, no body)
+11. Push to the remote branch
 
 **Exit criteria:**
 - `npm test` passes, no skipped tests
+- User has confirmed the task is complete
 - Task is `[x]` under a session heading in **Progress**; removed from Backlog
 - One commit, conventional message, single line
 - Changes pushed to remote

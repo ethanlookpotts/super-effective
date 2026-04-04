@@ -8,6 +8,169 @@ function artUrl(n){
   return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${n}.png`;
 }
 
+// Apply ability-based modifiers on top of the type chart result.
+// m = raw dmult value, atkType = the attacking move's type, defN = dex number of defender
+function applyAbilityMod(m, atkType, defN){
+  const mod = getAbilityMod(defN);
+  if(!mod) return m;
+  if(mod.immune && mod.immune.includes(atkType)) return 0;
+  if(mod.resist && mod.resist[atkType]) return m * mod.resist[atkType];
+  return m;
+}
+
+// ═══════════════════════════════
+// TYPE / MOVE BREAKDOWN SHEET
+// ═══════════════════════════════
+function bdOvClick(e){ if(e.target===document.getElementById('bd-overlay')) closeBreakdown(); }
+function closeBreakdown(){ document.getElementById('bd-overlay').classList.remove('open'); }
+
+function _multClass(m){
+  if(m===0) return 'zero'; if(m>=2) return 'good'; if(m<1) return 'bad'; return 'neutral';
+}
+function _multLabel(m){
+  if(m===0) return '0× — Immune';
+  if(m>=4) return m+'× — Super Effective';
+  if(m>=2) return m+'× — Super Effective';
+  if(m<=.25) return m+'× — Barely Resisted';
+  if(m<1) return m+'× — Resisted';
+  return m+'× — Neutral';
+}
+function _multResultClass(m){
+  if(m===0) return 'r0x'; if(m>=4) return 'r4x'; if(m>=2) return 'r2x'; if(m<1) return 'rhalf'; return '';
+}
+function _fmtM(m){ return (m===Math.round(m)?m:m)+'×'; }
+
+// Show why an attacking type hits the defending Pokémon as it does
+function showTypeBreakdown(atkType, defN){
+  const poke = POKEMON.find(p=>p.n===defN);
+  if(!poke) return;
+  const mod = getAbilityMod(defN);
+  const typeProduct = dmult(atkType, poke.types);
+  const final = applyAbilityMod(typeProduct, atkType, defN);
+
+  document.getElementById('bd-ttl').textContent = atkType.toUpperCase()+' → '+poke.name.toUpperCase();
+  let html = '';
+
+  // Per-type rows
+  html += `<div class="bd-section"><div class="bd-lbl">TYPE MATCHUP</div>`;
+  poke.types.forEach(defType=>{
+    const m = gm(atkType, defType);
+    html += `<div class="bd-row">
+      <span class="tb sm t-${atkType}">${atkType}</span>
+      <span class="bd-arrow">→</span>
+      <span class="tb sm t-${defType}">${defType}</span>
+      <span class="bd-eq">=</span>
+      <span class="bd-val ${_multClass(m)}">${_fmtM(m)}</span>
+    </div>`;
+  });
+  if(poke.types.length>1){
+    html += `<div class="bd-product">${poke.types.map(t=>_fmtM(gm(atkType,t))).join(' × ')} = ${_fmtM(typeProduct)}</div>`;
+  }
+  html += `</div>`;
+
+  // Ability section
+  if(mod && (mod.immune&&mod.immune.includes(atkType) || mod.resist&&mod.resist[atkType])){
+    const multi = mod.multi ? ' <span style="color:var(--text3);font-size:9px">(may vary)</span>' : '';
+    if(mod.immune && mod.immune.includes(atkType)){
+      html += `<div class="bd-ability">
+        <div class="bd-ability-name">Ability: ${mod.name}${multi}</div>
+        <div class="bd-ability-note">${mod.name} grants full immunity to ${atkType} moves.<br>${_fmtM(typeProduct)} × 0 = <strong>0×</strong></div>
+      </div>`;
+    } else if(mod.resist && mod.resist[atkType]){
+      html += `<div class="bd-ability">
+        <div class="bd-ability-name">Ability: ${mod.name}${multi}</div>
+        <div class="bd-ability-note">${mod.name} halves ${atkType} damage.<br>${_fmtM(typeProduct)} × ${mod.resist[atkType]} = <strong>${_fmtM(final)}</strong></div>
+      </div>`;
+    }
+  } else if(mod){
+    html += `<div style="font-size:11px;color:var(--text3);margin:6px 0 10px;">Ability <strong>${mod.name}</strong> doesn't affect ${atkType} type.</div>`;
+  }
+
+  // Result
+  html += `<div class="bd-result">
+    <div><div class="bd-result-lbl">RESULT</div><div class="bd-result-desc">${_multLabel(final)}</div></div>
+    <div class="bd-result-val ${_multResultClass(final)}">${_fmtM(final)}</div>
+  </div>`;
+
+  document.getElementById('bd-body').innerHTML = html;
+  document.getElementById('bd-overlay').classList.add('open');
+}
+
+// Show why a specific move from a party member hits the enemy as it does
+function showMoveBreakdown(moveName, moveType, defN, pmN){
+  const defPoke = POKEMON.find(p=>p.n===defN);
+  const pmPoke = POKEMON.find(p=>p.n===pmN);
+  if(!defPoke || !pmPoke) return;
+  const mod = getAbilityMod(defN);
+  const typeProduct = dmult(moveType, defPoke.types);
+  const afterAbility = applyAbilityMod(typeProduct, moveType, defN);
+  const stab = pmPoke.types.includes(moveType);
+  const final = afterAbility * (stab ? 1.5 : 1);
+  const phys = PHYS.has(moveType);
+
+  document.getElementById('bd-ttl').textContent = moveName.toUpperCase()+' → '+defPoke.name.toUpperCase();
+  let html = '';
+
+  // Move info line
+  html += `<div style="display:flex;align-items:center;gap:7px;margin-bottom:12px;">
+    <span class="tb t-${moveType}">${moveType}</span>
+    <span style="font-family:var(--fp);font-size:6.5px;color:var(--text2);">${moveName}</span>
+    <span style="font-family:var(--fp);font-size:5.5px;color:${phys?'#907030':'#5080b8'};margin-left:auto;">${phys?'PHY':'SPE'}</span>
+  </div>`;
+
+  // Type matchup rows
+  html += `<div class="bd-section"><div class="bd-lbl">TYPE MATCHUP</div>`;
+  defPoke.types.forEach(defType=>{
+    const m = gm(moveType, defType);
+    html += `<div class="bd-row">
+      <span class="tb sm t-${moveType}">${moveType}</span>
+      <span class="bd-arrow">→</span>
+      <span class="tb sm t-${defType}">${defType}</span>
+      <span class="bd-eq">=</span>
+      <span class="bd-val ${_multClass(m)}">${_fmtM(m)}</span>
+    </div>`;
+  });
+  if(defPoke.types.length>1){
+    html += `<div class="bd-product">${defPoke.types.map(t=>_fmtM(gm(moveType,t))).join(' × ')} = ${_fmtM(typeProduct)}</div>`;
+  }
+  html += `</div>`;
+
+  // Ability section
+  if(mod && (mod.immune&&mod.immune.includes(moveType) || mod.resist&&mod.resist[moveType])){
+    const multi = mod.multi ? ' <span style="color:var(--text3);font-size:9px">(may vary)</span>' : '';
+    if(mod.immune && mod.immune.includes(moveType)){
+      html += `<div class="bd-ability">
+        <div class="bd-ability-name">Ability: ${mod.name}${multi}</div>
+        <div class="bd-ability-note">${defPoke.name}'s ${mod.name} grants immunity to ${moveType}.<br>${_fmtM(typeProduct)} → <strong>0×</strong></div>
+      </div>`;
+    } else if(mod.resist && mod.resist[moveType]){
+      html += `<div class="bd-ability">
+        <div class="bd-ability-name">Ability: ${mod.name}${multi}</div>
+        <div class="bd-ability-note">${defPoke.name}'s ${mod.name} halves ${moveType} damage.<br>${_fmtM(typeProduct)} × ${mod.resist[moveType]} = <strong>${_fmtM(afterAbility)}</strong></div>
+      </div>`;
+    }
+  }
+
+  // STAB
+  if(stab){
+    html += `<div class="bd-section"><div class="bd-lbl">STAB (SAME-TYPE ATTACK BONUS)</div>
+      <div class="bd-row">
+        <span style="font-size:11px;color:var(--text2);flex:1">${pmPoke.name} is ${moveType} type — 1.5× bonus</span>
+        <span class="bd-val good">${_fmtM(afterAbility)} × 1.5 = ${_fmtM(final)}</span>
+      </div>
+    </div>`;
+  }
+
+  // Result
+  html += `<div class="bd-result">
+    <div><div class="bd-result-lbl">RESULT</div><div class="bd-result-desc">${_multLabel(final)}</div></div>
+    <div class="bd-result-val ${_multResultClass(final)}">${_fmtM(final)}</div>
+  </div>`;
+
+  document.getElementById('bd-body').innerHTML = html;
+  document.getElementById('bd-overlay').classList.add('open');
+}
+
 // ═══════════════════════════════
 // STATE — multi-playthrough
 // localStorage key: 'se_v1'
@@ -200,9 +363,18 @@ function renderPokeDetail(){
   const pt = activePt();
   const scroll = document.getElementById('s-scroll');
   const inParty = pt.party.some(pm=>pm.n===p.n);
+  const abilityMod = getAbilityMod(p.n);
 
   const obtain = getObtain(p.n);
   const obtainHtml = obtain.map(o=>`<div class="obtain-row">${o}</div>`).join('');
+
+  // Ability badge
+  let abilityHtml = '';
+  if(abilityMod){
+    const note = abilityMod.multi ? '<span style="color:var(--text3);font-size:9px"> (may vary)</span>' : '';
+    abilityHtml = `<div class="obtain-label" style="margin-top:8px;">ABILITY</div>
+      <div class="obtain-row" style="color:var(--gold);font-weight:600;">${abilityMod.name}${note}</div>`;
+  }
 
   let html = `<div class="poke-card">
     <div class="poke-card-row">
@@ -216,45 +388,76 @@ function renderPokeDetail(){
     <div class="obtain-section">
       <div class="obtain-label">HOW TO OBTAIN</div>
       ${obtainHtml}
+      ${abilityHtml}
     </div>
   </div>`;
 
-  // Add to party button (Phase 4)
+  // Type chart — shown ABOVE party suggestions
+  const dc = {}; TYPES.forEach(at=>{dc[at]=applyAbilityMod(dmult(at,et),at,p.n);});
+  const g = {4:[],2:[],0:[],.5:[],.25:[]};
+  Object.entries(dc).forEach(([t,m])=>{
+    if(m>=4) g[4].push(t); else if(m===2) g[2].push(t);
+    else if(m===0) g[0].push(t); else if(m<=.25) g[.25].push(t);
+    else if(m===.5) g[.5].push(t);
+  });
+  const sec=(cls,lbl,arr)=>arr.length?`<div class="rcrow"><div class="rch ${cls}">${lbl}</div><div class="rcbody">${arr.map(t=>`<span class="tb t-${t}">${t}</span>`).join('')}</div></div>`:'';
+  html += `<div class="sec-head">📊 TYPE CHART — DEFENDING</div>
+    ${sec('x4','💥 4× Weak',g[4])}
+    ${sec('x2','✅ 2× Weak',g[2])}
+    ${sec('x0','🚫 0× Immune',g[0])}
+    ${sec('xq','¼× Resists',g[.25])}
+    ${sec('xh','½× Resists',g[.5])}`;
+
+  // Add to party button
   if(inParty){
     html += `<button class="add-party-btn in-party" onclick="showPage('party')">✓ IN PARTY — VIEW PARTY ›</button>`;
   } else {
     html += `<button class="add-party-btn" onclick="addToParty(${p.n})">➕ ADD TO PARTY</button>`;
   }
 
-  // Party suggestions
+  // Party suggestions — with both attack and defense matchups
   html += `<div class="sec-head">MY PARTY — WHO TO USE</div>`;
   if(!pt.party.length){
     html += `<div class="no-party"><div class="np-txt">ADD POKEMON TO PARTY<br>FOR BATTLE SUGGESTIONS</div><button class="go-btn" onclick="showPage('party')">GO TO MY PARTY ›</button></div>`;
   } else {
     const scored = pt.party.map(pm=>{
+      // Offense: how well pm hits the enemy (with ability mods on enemy)
       let bestOff = 0, bestAtkType = null;
-      pm.types.forEach(at=>{const m=dmult(at,et)*1.5;if(m>bestOff){bestOff=m;bestAtkType=at;}});
+      pm.types.forEach(at=>{
+        const m = applyAbilityMod(dmult(at,et),at,p.n)*1.5;
+        if(m>bestOff){bestOff=m;bestAtkType=at;}
+      });
       let sm = [];
       if(pm.moves && pm.moves.length){
-        pm.moves.forEach(mv=>{const raw=dmult(mv.type,et);const stab=pm.types.includes(mv.type);sm.push({...mv,raw,stab,eff:raw*(stab?1.5:1)});});
+        pm.moves.forEach(mv=>{
+          const raw = applyAbilityMod(dmult(mv.type,et),mv.type,p.n);
+          const stab = pm.types.includes(mv.type);
+          sm.push({...mv,raw,stab,eff:raw*(stab?1.5:1)});
+        });
         sm.sort((a,b)=>b.eff-a.eff); bestOff = sm[0].eff;
       }
-      const defRisk = Math.max(...et.map(at=>dmult(at,pm.types)));
-      return{pm,bestOff,bestAtkType,sm,defRisk,score:bestOff*3-defRisk};
+      // Defense: how well the enemy hits pm (with ability mods on pm)
+      const defRisks = et.map(at=>({type:at,m:applyAbilityMod(dmult(at,pm.types),at,pm.n)}));
+      const defRisk = Math.max(...defRisks.map(r=>r.m));
+      const defBestType = defRisks.find(r=>r.m===defRisk);
+      const pmImm = et.filter(at=>applyAbilityMod(dmult(at,pm.types),at,pm.n)===0);
+      return{pm,bestOff,bestAtkType,sm,defRisk,defBestType,pmImm,score:bestOff*3-defRisk};
     }).sort((a,b)=>b.score-a.score);
 
     scored.forEach((s,i)=>{
       const pm = s.pm; const isTop = i===0;
       const tBadges = pm.types.map(t=>`<span class="tb sm t-${t}">${t}</span>`).join('');
+      // Offense badge
       let bc='bo', bt='~ OK';
       if(s.bestOff>=6){bc='bn';bt='💥 NUKE';}
       else if(s.bestOff>=3){bc='bg';bt='⭐ GREAT';}
       else if(s.bestOff>=2){bc='bgo';bt='✅ GOOD';}
       else if(s.bestOff<1){bc='bb';bt='✗ WEAK';}
 
-      let movesHtml = '';
+      // Offense section
+      let atkHtml = '';
       if(s.sm.length){
-        movesHtml = '<div class="sc-moves">';
+        atkHtml = '<div class="sc-moves">';
         s.sm.forEach(mv=>{
           const phys = PHYS.has(mv.type);
           let tags = '';
@@ -263,19 +466,26 @@ function renderPokeDetail(){
           else if(mv.raw===0) tags+=`<span class="mtag m0x">0×</span>`;
           if(mv.stab) tags+=`<span class="mtag mstab">STAB</span>`;
           tags+=`<span class="mtag ${phys?'mphy':'mspe'}">${phys?'PHY':'SPE'}</span>`;
-          movesHtml+=`<div class="sc-mr"><span class="tb sm t-${mv.type}">${mv.type}</span><span style="flex:1">${mv.name}</span><span class="sc-tags">${tags}</span></div>`;
+          atkHtml+=`<div class="sc-mr why" onclick="showMoveBreakdown('${mv.name}','${mv.type}',${p.n},${pm.n})"><span class="tb sm t-${mv.type}">${mv.type}</span><span style="flex:1">${mv.name}</span><span class="sc-tags">${tags}</span></div>`;
         });
-        movesHtml += '</div>';
+        atkHtml += '</div>';
       } else if(s.bestAtkType){
-        const raw = dmult(s.bestAtkType,et);
-        movesHtml = `<div class="sc-hint">Best type: <span class="tb sm t-${s.bestAtkType}">${s.bestAtkType}</span>${raw>=2?` <span class="mtag m2x" style="display:inline-block">${raw}×</span>`:''} · <span style="color:var(--text3);font-size:11px">add moves for full breakdown</span></div>`;
+        const raw = applyAbilityMod(dmult(s.bestAtkType,et),s.bestAtkType,p.n);
+        atkHtml = `<div class="sc-hint">Best type: <span class="tb sm t-${s.bestAtkType}">${s.bestAtkType}</span>${raw>=2?` <span class="mtag m2x" style="display:inline-block">${raw}×</span>`:''} · <span style="color:var(--text3);font-size:11px">add moves for full breakdown</span></div>`;
       }
 
-      let extra = '';
-      if(s.defRisk>=4) extra+=`<div class="sc-warn">⚠️ ENEMY HITS YOU 4× — HIGH RISK</div>`;
-      else if(s.defRisk>=2) extra+=`<div class="sc-warn">⚠️ Weak to this enemy (${s.defRisk}×)</div>`;
-      const imm = et.filter(at=>dmult(at,pm.types)===0);
-      if(imm.length) extra+=`<div class="sc-imm">🛡 IMMUNE to ${imm.map(t=>`<span class="tb sm t-${t}">${t}</span>`).join(' ')}</div>`;
+      // Defense section
+      let defHtml = '';
+      if(s.pmImm.length){
+        defHtml += `<div class="sc-imm">🛡 ${pm.name} immune to ${s.pmImm.map(t=>`<span class="tb sm t-${t}">${t}</span>`).join(' ')}</div>`;
+      }
+      if(s.defRisk>=4){
+        defHtml += `<div class="sc-warn">⚠️ Enemy hits ${pm.name} <strong>4×</strong> with <span class="tb sm t-${s.defBestType.type}">${s.defBestType.type}</span> — HIGH RISK</div>`;
+      } else if(s.defRisk>=2){
+        defHtml += `<div class="sc-warn">⚠️ Enemy hits ${pm.name} <strong>${s.defRisk}×</strong> with <span class="tb sm t-${s.defBestType.type}">${s.defBestType.type}</span></div>`;
+      } else if(s.defRisk<=.5){
+        defHtml += `<div class="sc-imm">🛡 ${pm.name} resists enemy (${s.defRisk}×)</div>`;
+      }
 
       const lvTxt = pm.level ? ` <span class="sc-lv">Lv.${pm.level}</span>` : '';
       html += `<div class="scard${isTop?' top':''}${s.defRisk>=4?' risky':''}">
@@ -284,26 +494,10 @@ function renderPokeDetail(){
           <div class="sc-types" style="margin-top:3px;">${tBadges}</div></div>
           <span class="sc-badge ${bc}">${bt}</span>
         </div>
-        ${movesHtml}${extra}
+        ${atkHtml}${defHtml}
       </div>`;
     });
   }
-
-  // Type chart
-  const dc = {}; TYPES.forEach(at=>{dc[at]=dmult(at,et);});
-  const g = {4:[],2:[],0:[],.5:[],.25:[]};
-  Object.entries(dc).forEach(([t,m])=>{
-    if(m>=4) g[4].push(t); else if(m===2) g[2].push(t);
-    else if(m===0) g[0].push(t); else if(m<=.25) g[.25].push(t);
-    else if(m===.5) g[.5].push(t);
-  });
-  const sec=(cls,lbl,arr)=>arr.length?`<div class="rcrow"><div class="rch ${cls}">${lbl}</div><div class="rcbody">${arr.map(t=>`<span class="tb t-${t}">${t}</span>`).join('')}</div></div>`:'';
-  html += `<div class="sec-head">📊 TYPE CHART</div>
-    ${sec('x4','💥 4× Super Effective',g[4])}
-    ${sec('x2','✅ 2× Super Effective',g[2])}
-    ${sec('x0','🚫 0× Immune — avoid',g[0])}
-    ${sec('xq','⚠️ ¼× Very Resisted',g[.25])}
-    ${sec('xh','⚠️ ½× Resisted',g[.5])}`;
 
   scroll.innerHTML = html;
   scroll.scrollTop = 0;

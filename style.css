@@ -199,6 +199,35 @@ border-radius:7px;color:var(--blue);font-family:var(--fp);font-size:6px;cursor:p
 .rch.xh{background:rgba(255,152,0,.06);color:#b07000;border-bottom:1px solid rgba(255,152,0,.09);}
 .rch.xq{background:rgba(180,80,20,.07);color:#a05020;border-bottom:1px solid rgba(180,80,20,.1);}
 .rcbody{display:flex;flex-wrap:wrap;gap:5px;padding:8px 11px;}
+/* Tappable type badges in type chart */
+.tb.why{cursor:pointer;}
+.tb.why:active{opacity:.6;}
+.sc-mr.why{cursor:pointer;}
+.sc-mr.why:active{opacity:.7;}
+/* Breakdown sheet content */
+.bd-section{margin-bottom:14px;}
+.bd-lbl{font-family:var(--fp);font-size:5.5px;color:var(--text3);letter-spacing:.04em;margin-bottom:6px;}
+.bd-row{display:flex;align-items:center;gap:7px;padding:5px 0;border-bottom:1px solid var(--border);}
+.bd-row:last-child{border-bottom:none;}
+.bd-arrow{color:var(--text3);font-size:10px;}
+.bd-eq{color:var(--text3);font-size:10px;margin-left:auto;}
+.bd-val{font-family:var(--fp);font-size:8px;}
+.bd-val.neutral{color:var(--text2);}
+.bd-val.good{color:var(--green);}
+.bd-val.bad{color:#ff7070;}
+.bd-val.zero{color:#ff7070;}
+.bd-product{font-family:var(--fp);font-size:7px;color:var(--text2);text-align:right;padding:5px 0 2px;border-top:1px solid var(--border2);margin-top:3px;}
+.bd-ability{background:rgba(255,200,0,.07);border:1px solid rgba(255,200,0,.18);border-radius:7px;padding:9px 11px;margin:8px 0;}
+.bd-ability-name{font-family:var(--fp);font-size:6.5px;color:var(--gold);margin-bottom:4px;}
+.bd-ability-note{font-size:11px;color:var(--text2);line-height:1.5;}
+.bd-result{background:var(--card2);border:1px solid var(--border2);border-radius:9px;padding:11px 13px;display:flex;align-items:center;justify-content:space-between;margin-top:4px;}
+.bd-result-lbl{font-family:var(--fp);font-size:5.5px;color:var(--text3);}
+.bd-result-val{font-family:var(--fp);font-size:12px;}
+.bd-result-val.r4x{color:#00dc64;}
+.bd-result-val.r2x{color:var(--green);}
+.bd-result-val.r0x{color:#ff7070;}
+.bd-result-val.rhalf{color:#b07000;}
+.bd-result-desc{font-family:var(--fp);font-size:6px;color:var(--text3);margin-top:2px;}
 
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;
 height:100%;color:var(--text3);gap:10px;padding-bottom:30px;}

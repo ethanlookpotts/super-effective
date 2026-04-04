@@ -18,13 +18,40 @@ const CHART={
   Psychic:{Fighting:2,Poison:2,Psychic:.5,Dark:0,Steel:.5},
   Bug:{Fire:.5,Grass:2,Fighting:.5,Poison:.5,Flying:.5,Psychic:2,Ghost:.5,Dark:2,Steel:.5,Fairy:.5},
   Rock:{Fire:2,Ice:2,Fighting:.5,Ground:.5,Flying:2,Bug:2,Steel:.5},
-  Ghost:{Normal:0,Psychic:2,Ghost:2,Dark:.5},Dragon:{Dragon:2,Steel:.5,Fairy:0},
-  Dark:{Fighting:.5,Psychic:2,Ghost:2,Dark:.5,Fairy:.5},
+  Ghost:{Normal:0,Psychic:2,Ghost:2,Dark:.5,Steel:.5},Dragon:{Dragon:2,Steel:.5,Fairy:0},
+  Dark:{Fighting:.5,Psychic:2,Ghost:2,Dark:.5,Steel:.5,Fairy:.5},
   Steel:{Fire:.5,Water:.5,Electric:.5,Ice:2,Rock:2,Steel:.5,Fairy:2},
   Fairy:{Fire:.5,Fighting:2,Dragon:2,Dark:2,Steel:.5}
 };
 function gm(a,d){return(CHART[a]&&CHART[a][d]!==undefined)?CHART[a][d]:1;}
 function dmult(at,dts){return dts.reduce((acc,d)=>acc*gm(at,d),1);}
+
+// ═══════════════════════════════
+// ABILITY MODS — Gen III FRLG
+// Abilities that alter type effectiveness for specific Pokémon
+// immune: types this ability grants immunity to
+// resist: { type: multiplier } — e.g. Thick Fat halves Fire/Ice
+// multi: true = Pokémon has multiple ability slots; effect not guaranteed
+// DO NOT regenerate from PokeAPI — curated for Gen III FRLG accuracy
+// ═══════════════════════════════
+const ABILITY_MODS={
+  // Levitate — immune to Ground
+  92:{name:'Levitate',immune:['Ground']},93:{name:'Levitate',immune:['Ground']},94:{name:'Levitate',immune:['Ground']},
+  109:{name:'Levitate',immune:['Ground']},110:{name:'Levitate',immune:['Ground']},
+  // Flash Fire — immune to Fire (some have dual ability slots)
+  37:{name:'Flash Fire',immune:['Fire']},38:{name:'Flash Fire',immune:['Fire']},
+  77:{name:'Flash Fire',immune:['Fire'],multi:true},78:{name:'Flash Fire',immune:['Fire'],multi:true},
+  58:{name:'Flash Fire',immune:['Fire'],multi:true},59:{name:'Flash Fire',immune:['Fire'],multi:true},
+  136:{name:'Flash Fire',immune:['Fire']},
+  // Water Absorb — immune to Water
+  131:{name:'Water Absorb',immune:['Water'],multi:true},134:{name:'Water Absorb',immune:['Water']},
+  // Volt Absorb — immune to Electric
+  135:{name:'Volt Absorb',immune:['Electric']},
+  // Thick Fat — ½× Fire and Ice
+  143:{name:'Thick Fat',resist:{Fire:.5,Ice:.5},multi:true},
+  115:{name:'Thick Fat',resist:{Fire:.5,Ice:.5},multi:true},
+};
+function getAbilityMod(n){return ABILITY_MODS[n]||null;}
 
 // ═══════════════════════════════
 // POKEMON DATA
@@ -253,7 +280,7 @@ const ALL_MOVES=[
   {name:'Rock Smash',type:'Fighting',cat:'phy'},{name:'Rock Throw',type:'Rock',cat:'phy'},{name:'Rock Tomb',type:'Rock',cat:'phy'},
   {name:'Rollout',type:'Rock',cat:'phy'},{name:'Safeguard',type:'Normal',cat:'sta'},{name:'Sand Attack',type:'Ground',cat:'sta'},
   {name:'Sandstorm',type:'Rock',cat:'sta'},{name:'Secret Power',type:'Normal',cat:'phy'},{name:'Seismic Toss',type:'Fighting',cat:'phy'},
-  {name:'Shadow Ball',type:'Ghost',cat:'spe'},{name:'Signal Beam',type:'Bug',cat:'spe'},{name:'Silver Wind',type:'Bug',cat:'spe'},
+  {name:'Shadow Ball',type:'Ghost',cat:'phy'},{name:'Signal Beam',type:'Bug',cat:'spe'},{name:'Silver Wind',type:'Bug',cat:'spe'},
   {name:'Sing',type:'Normal',cat:'sta'},{name:'Sky Attack',type:'Flying',cat:'phy'},{name:'Slash',type:'Normal',cat:'phy'},
   {name:'Sleep Powder',type:'Grass',cat:'sta'},{name:'Sludge',type:'Poison',cat:'spe'},{name:'Sludge Bomb',type:'Poison',cat:'spe'},
   {name:'Smog',type:'Poison',cat:'spe'},{name:'Smokescreen',type:'Normal',cat:'sta'},{name:'Solar Beam',type:'Grass',cat:'spe'},

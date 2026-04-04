@@ -61,11 +61,26 @@ Evolving into a multi-game companion app with playthrough support.
 **Completed**
 - [x] **[1] Investigate API alternatives** — researched PokéAPI REST + GraphQL; recommendation: use PokéAPI only for learnsets (task [3]); all other data stays static; findings in Ideas / Notes
 
+### Session 6 — Data Accuracy & Battle Matchup Overhaul
+
+**Completed**
+- [x] **[2] Audit and correct data accuracy** — fixed Ghost→Steel and Dark→Steel missing 0.5× resistances (correct Gen II–V, changed in Gen VI); fixed Shadow Ball cat spe→phy (Ghost is Physical in Gen III)
+- [x] Add ability mods (Levitate, Flash Fire, Water Absorb, Volt Absorb, Thick Fat) to data.js — applied in type chart and party matchup calculations
+- [x] Move type chart above party suggestions in Pokémon detail view
+- [x] Show ability name in Pokémon card (with "may vary" note for dual-ability slots)
+- [x] Apply ability mods to both viewed Pokémon type chart AND party defense calculations
+- [x] Party matchup cards now show explicit defense matchup (enemy's best attacking type, multiplier) alongside offense
+
+### Session 6 — Data Accuracy Audit
+
+**Completed**
+- [x] **[2] Audit and correct data accuracy** — verified Gen III type chart against Bulbapedia; fixed two missing resistances (Ghost→Steel 0.5×, Dark→Steel 0.5×, both correct for Gen II–V before Gen VI changed them); fixed Shadow Ball cat 'spe'→'phy' (Ghost is Physical in Gen III)
+
 ---
 
 ## Next Session — Pick Up Here
 
-App is live on GitHub Pages. E2E tests passing. Next task: **[2] Audit and correct data accuracy**.
+App is live on GitHub Pages. E2E tests passing. Next task: **[3] Filter move picker to learnable moves only** — fetch learnsets from PokéAPI (firered-leafgreen version group), cache in `se_learnsets_v1` localStorage key.
 
 ---
 
@@ -88,8 +103,7 @@ CI runs on push to main and PRs via `.github/workflows/test.yml`.
 5. Where Am I tab → Viridian Forest, Safari Zone present
 
 ### High Priority
-- [ ] **[2] Audit and correct data accuracy** — verify Gen III type chart, full Pokémon list (151), and move learnsets against authoritative sources (Bulbapedia, Serebii); fix any discrepancies in `js/data.js`
-- [ ] **[3] Filter move picker to learnable moves only** — when a Pokémon is selected in party, restrict the move picker to only moves that Pokémon can actually learn (level-up, TM/HM, tutor); requires accurate learnset data from [2]
+- [ ] **[3] Filter move picker to learnable moves only** — when a Pokémon is selected in party, restrict the move picker to only moves that Pokémon can actually learn (level-up, TM/HM, tutor); fetch from PokéAPI firered-leafgreen version group, cache in localStorage
 - [ ] Rival (Gary) battle encounters — similar to Gyms, location-triggered
 - [ ] TM/HM location reference ("where do I get Earthquake?")
 
