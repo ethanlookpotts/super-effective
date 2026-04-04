@@ -429,7 +429,21 @@ function renderModal(){
   }
 
   html += `<div class="mlbl" style="margin-top:12px;">STEP 2 — MOVES (OPTIONAL, MAX 4)</div>
-  <div class="sdots">`;
+  <div id="move-section"></div>`;
+
+  html += `<button class="save-btn" onclick="saveModal()" ${mPoke?'':'disabled'}>${mSlot>=0&&mSlot<pt.party.length?'💾 SAVE CHANGES':'➕ ADD TO PARTY'}</button>`;
+  if(mSlot>=0 && mSlot<pt.party.length) html+=`<button class="rm-btn" onclick="rmParty(${mSlot})">✕ REMOVE FROM PARTY</button>`;
+
+  const sp = body.scrollTop; body.innerHTML = html; body.scrollTop = sp;
+  renderMoveSection();
+}
+
+function renderMoveSection(){
+  const container = document.getElementById('move-section');
+  if(!container) return;
+  const body = document.getElementById('modal-body');
+  const sp = body.scrollTop;
+  let html = `<div class="sdots">`;
   for(let i=0;i<4;i++){
     if(i<mMoves.length) html+=`<div class="sdot on t-${mMoves[i].type}"></div>`;
     else html+=`<div class="sdot"></div>`;
@@ -468,10 +482,8 @@ function renderModal(){
     html += `</div>`;
   }
 
-  html += `<button class="save-btn" onclick="saveModal()" ${mPoke?'':'disabled'}>${mSlot>=0&&mSlot<pt.party.length?'💾 SAVE CHANGES':'➕ ADD TO PARTY'}</button>`;
-  if(mSlot>=0 && mSlot<pt.party.length) html+=`<button class="rm-btn" onclick="rmParty(${mSlot})">✕ REMOVE FROM PARTY</button>`;
-
-  const sp = body.scrollTop; body.innerHTML = html; body.scrollTop = sp;
+  container.innerHTML = html;
+  body.scrollTop = sp;
   if(mMoveQ){ const q=document.getElementById('mv-q'); if(q){q.focus();q.setSelectionRange(mMoveQ.length,mMoveQ.length);} }
 }
 
@@ -486,10 +498,10 @@ function onMS(v){
 }
 function pickMP(n){ mPoke=POKEMON.find(p=>p.n===n); mMoves=[]; document.getElementById('ms-drop').style.display='none'; renderModal(); document.getElementById('ms-in').value=mPoke.name; }
 function clearMP(){ mPoke=null; mMoves=[]; mLv=''; renderModal(); }
-function onMQ(v){ mMoveQ=v; const sp=document.getElementById('modal-body').scrollTop; renderModal(); document.getElementById('modal-body').scrollTop=sp; const q=document.getElementById('mv-q'); if(q){q.focus();q.setSelectionRange(v.length,v.length);} }
-function setMTF(t){ mTypeFilter=mTypeFilter===t?null:t; mMoveQ=''; const sp=document.getElementById('modal-body').scrollTop; renderModal(); document.getElementById('modal-body').scrollTop=sp; }
-function togMv(name,type){ const idx=mMoves.findIndex(m=>m.name===name); if(idx>=0) mMoves.splice(idx,1); else{if(mMoves.length>=4)return; mMoves.push({name,type});} const sp=document.getElementById('modal-body').scrollTop; renderModal(); document.getElementById('modal-body').scrollTop=sp; const q=document.getElementById('mv-q'); if(q&&mMoveQ){q.focus();q.value=mMoveQ;q.setSelectionRange(mMoveQ.length,mMoveQ.length);} }
-function rmMv(i){ mMoves.splice(i,1); const sp=document.getElementById('modal-body').scrollTop; renderModal(); document.getElementById('modal-body').scrollTop=sp; }
+function onMQ(v){ mMoveQ=v; renderMoveSection(); }
+function setMTF(t){ mTypeFilter=mTypeFilter===t?null:t; mMoveQ=''; renderMoveSection(); }
+function togMv(name,type){ const idx=mMoves.findIndex(m=>m.name===name); if(idx>=0) mMoves.splice(idx,1); else{if(mMoves.length>=4)return; mMoves.push({name,type});} renderMoveSection(); }
+function rmMv(i){ mMoves.splice(i,1); renderMoveSection(); }
 
 function saveModal(){
   if(!mPoke) return;
