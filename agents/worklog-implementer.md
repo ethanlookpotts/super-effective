@@ -34,7 +34,7 @@ Before picking, check:
 7. Run `npm test` — fix any failures before proceeding; do not commit with broken tests
 8. Present a summary of changes to the user and **ask for confirmation** that the task is complete before proceeding
 9. After user confirms: move the task from the Backlog into the current session heading under **Progress** (mark it `[x]`); if no session heading exists for this session, create one: `### Session N — <title>`
-10. Commit all changed files in one commit: `feat: <description>` (single line, no body)
+10. Commit all changed files — including the WORKLOG update — in one commit: `feat: <description>` (single line, no body)
 11. Push to the remote branch
 
 **Exit criteria:**
