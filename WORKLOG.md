@@ -61,6 +61,11 @@ Evolving into a multi-game companion app with playthrough support.
 **Completed**
 - [x] **[1] Investigate API alternatives** — researched PokéAPI REST + GraphQL; recommendation: use PokéAPI only for learnsets (task [3]); all other data stays static; findings in Ideas / Notes
 
+### Session 8 — Rival Encounters
+
+**Completed**
+- [x] Rival (Gary) battle encounters — 6 encounters interleaved chronologically with gym leaders; starter selector (Bulbasaur / Charmander / Squirtle) swaps Gary's team; persisted in localStorage (`se_starter`)
+
 ### Session 7 — Learnset Filtering
 
 **Completed**
@@ -96,7 +101,6 @@ CI runs on push to main and PRs via `.github/workflows/test.yml`.
 5. Where Am I tab → Viridian Forest, Safari Zone present
 
 ### High Priority
-- [ ] Rival (Gary) battle encounters — similar to Gyms, location-triggered
 - [ ] TM/HM location reference ("where do I get Earthquake?")
 
 ### Medium Priority
