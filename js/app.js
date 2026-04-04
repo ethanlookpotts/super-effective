@@ -297,13 +297,16 @@ function addRecent(p){
 // ═══════════════════════════════
 function showPage(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
-  ['search','party','gyms','location'].forEach((p,i)=>{
-    if(p===id) document.querySelectorAll('.nb')[i].classList.add('active');
-  });
+  document.querySelectorAll('.drawer-item').forEach(b=>b.classList.remove('active'));
+  const di = document.querySelector(`.drawer-item[data-page="${id}"]`);
+  if(di) di.classList.add('active');
   if(id==='party') renderParty();
+  closeDrawer();
 }
+function openDrawer(){ document.getElementById('drawer-overlay').classList.add('open'); }
+function closeDrawer(){ document.getElementById('drawer-overlay').classList.remove('open'); }
+function drawerOvClick(e){ if(e.target===document.getElementById('drawer-overlay')) closeDrawer(); }
 
 // ═══════════════════════════════
 // MASTHEAD
@@ -923,6 +926,33 @@ function renderLocs(list, autoOpen=false){
       </div>
     </div>`).join('');
 }
+function _tmCardHtml(t){
+  const mc=t.cat==='phy'?'mphy':t.cat==='spe'?'mspe':'mstab';
+  const cl=t.cat==='phy'?'PHY':t.cat==='spe'?'SPE':'STA';
+  return `<div class="tm-card">
+    <div class="tm-card-top">
+      <span class="tm-card-num">${t.num}</span>
+      <span class="tm-card-move">${t.move}</span>
+      <span class="tb sm t-${t.type}">${t.type}</span>
+      <span class="mtag ${mc}">${cl}</span>
+    </div>
+    <div class="tm-card-loc">${t.loc}</div>
+  </div>`;
+}
+
+// ═══════════════════════════════
+// TMs & HMs PAGE
+// ═══════════════════════════════
+function filterTMs(v){
+  const q = v.toLowerCase().trim();
+  const list = q ? TM_HM.filter(t=>t.move.toLowerCase().includes(q)||t.num.toLowerCase().replace(' ','').includes(q)||t.loc.toLowerCase().includes(q)) : TM_HM;
+  renderTMs(list);
+}
+function renderTMs(list){
+  const s = document.getElementById('tms-scroll');
+  if(!list.length){ s.innerHTML=`<div class="empty"><div class="ei">📀</div><p>NO RESULTS</p></div>`; return; }
+  s.innerHTML = list.map(_tmCardHtml).join('');
+}
 
 function goSearch(name){
   const p = POKEMON.find(x=>x.name===name);
@@ -1044,5 +1074,6 @@ updateMasthead();
 buildTypePills();
 renderSearch();
 renderLocs(LOCATIONS);
+renderTMs(TM_HM);
 renderGyms();
 renderParty();

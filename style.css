@@ -31,13 +31,35 @@ padding:5px 10px;cursor:pointer;flex-shrink:0;line-height:1.5;
 transition:background .15s,border-color .15s;}
 .mast-pt-btn:active{background:rgba(255,201,60,.22);border-color:rgba(255,201,60,.5);}
 
-/* ── NAV ── */
-.nav{display:flex;background:var(--card);border-bottom:1px solid var(--border);flex-shrink:0;gap:4px;padding:6px 8px 0;}
-.nb{flex:1;padding:8px 4px 7px;text-align:center;cursor:pointer;border:none;background:none;
-color:var(--text3);font-family:var(--fp);font-size:5px;line-height:1.9;
-border-radius:7px 7px 0 0;border-bottom:2px solid transparent;transition:all .18s;}
-.nb .ni{font-size:14px;display:block;margin-bottom:2px;}
-.nb.active{color:var(--gold);background:var(--gold-dim);border-bottom-color:var(--gold);}
+/* ── HAMBURGER ── */
+.hamburger-btn{background:none;border:none;color:var(--text);font-size:20px;padding:0 10px 0 0;
+cursor:pointer;line-height:1;flex-shrink:0;transition:color .15s;}
+.hamburger-btn:active{color:var(--gold);}
+
+/* ── DRAWER ── */
+.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;
+opacity:0;pointer-events:none;transition:opacity .22s;}
+.drawer-overlay.open{opacity:1;pointer-events:all;}
+.drawer{width:260px;max-width:82%;height:100%;background:var(--card);
+border-right:1px solid var(--border2);display:flex;flex-direction:column;
+transform:translateX(-100%);transition:transform .25s cubic-bezier(.4,0,.2,1);}
+.drawer-overlay.open .drawer{transform:translateX(0);}
+.drawer-hd{display:flex;align-items:center;justify-content:space-between;
+padding:13px 14px 12px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.drawer-brand{font-family:var(--fp);font-size:6px;color:var(--gold);
+letter-spacing:.5px;text-shadow:0 0 14px rgba(255,201,60,.35);}
+.drawer-x{background:none;border:1px solid var(--border2);color:var(--text3);
+padding:4px 9px;border-radius:6px;cursor:pointer;font-size:11px;transition:all .15s;}
+.drawer-x:active{background:var(--card2);}
+.drawer-nav{flex:1;overflow-y:auto;padding:10px 10px 24px;}
+.drawer-item{display:flex;align-items:center;gap:12px;width:100%;
+background:none;border:none;color:var(--text2);text-align:left;
+font-family:var(--fp);font-size:6px;padding:13px 12px;border-radius:10px;
+cursor:pointer;transition:all .15s;margin-bottom:3px;line-height:1.5;}
+.drawer-item:active{background:var(--card2);}
+.drawer-item.active{color:var(--gold);background:var(--gold-dim);}
+.di-icon{font-size:17px;flex-shrink:0;}
+.di-label{letter-spacing:.3px;}
 
 /* ── PAGES ── */
 .page{display:none;flex-direction:column;flex:1;overflow:hidden;}
@@ -420,6 +442,17 @@ text-shadow:0 0 18px rgba(61,220,132,.3);margin-bottom:9px;}
 .lpchip{background:var(--card2);border:1px solid var(--border2);border-radius:6px;
 padding:5px 9px;font-size:13px;font-weight:500;cursor:pointer;transition:all .1s;}
 .lpchip:active{background:var(--gold-dim);color:var(--gold);}
+.tms-ph{flex-shrink:0;background:linear-gradient(160deg,#0a0d1a,#0e1228);
+padding:11px 14px 10px;border-bottom:1px solid var(--border);}
+.tms-ph-title{font-family:var(--fp);font-size:8px;color:var(--blue);
+text-shadow:0 0 18px rgba(77,171,247,.3);margin-bottom:9px;}
+.tm-card{background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:9px 11px;margin-bottom:7px;}
+.tm-card:last-child{margin-bottom:0;}
+.tm-card-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:4px;}
+.tm-card-num{font-family:var(--fp);font-size:5px;color:var(--text3);min-width:30px;}
+.tm-card-move{font-family:var(--fp);font-size:6.5px;color:var(--text);flex:1;}
+.tm-card-loc{font-size:11px;color:var(--text2);line-height:1.5;}
+.tm-section-lbl{font-family:var(--fp);font-size:5.5px;color:var(--green);margin:10px 0 7px;letter-spacing:.3px;}
 
 /* ══════════════════════════════════
 TOAST

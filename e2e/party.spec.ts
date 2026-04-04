@@ -13,7 +13,8 @@ test('add to party fills a party slot', async ({ page }) => {
   await page.fill('#s-in', 'Pikachu');
   await page.locator('.prow').first().click();
   await page.locator('.add-party-btn').click();
-  await page.locator('.nb', { hasText: 'PARTY' }).click();
+  await page.locator('.hamburger-btn').click();
+  await page.locator('.drawer-item', { hasText: 'MY PARTY' }).click();
   await expect(page.locator('.pslot.filled')).toBeVisible();
   await expect(page.locator('.ps-name')).toHaveText('Pikachu');
 });

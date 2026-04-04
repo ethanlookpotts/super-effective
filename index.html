@@ -14,6 +14,7 @@
   <!-- MASTHEAD -->
   <div class="masthead">
     <div class="mast-inner">
+      <button class="hamburger-btn" onclick="openDrawer()" aria-label="Open menu">☰</button>
       <div class="mast-text">
         <div class="mast-title" id="mast-game">🔴 FIRERED / LEAFGREEN</div>
         <div class="mast-sub" id="mast-pt">BATTLE AIDE · GEN III · KANTO</div>
@@ -24,13 +25,32 @@
     </div>
   </div>
 
-  <!-- NAV -->
-  <nav class="nav">
-    <button class="nb active" onclick="showPage('search')"><span class="ni">🔍</span>SEARCH</button>
-    <button class="nb" onclick="showPage('party')"><span class="ni">🎒</span>PARTY</button>
-    <button class="nb" onclick="showPage('gyms')"><span class="ni">🏆</span>GYMS</button>
-    <button class="nb" onclick="showPage('location')"><span class="ni">🗺️</span>WHERE AM I</button>
-  </nav>
+  <!-- DRAWER NAV -->
+  <div class="drawer-overlay" id="drawer-overlay" onclick="drawerOvClick(event)">
+    <div class="drawer">
+      <div class="drawer-hd">
+        <div class="drawer-brand">SUPER EFFECTIVE</div>
+        <button class="drawer-x" onclick="closeDrawer()">✕</button>
+      </div>
+      <nav class="drawer-nav">
+        <button class="drawer-item active" data-page="search" onclick="showPage('search')">
+          <span class="di-icon">🔍</span><span class="di-label">SEARCH</span>
+        </button>
+        <button class="drawer-item" data-page="party" onclick="showPage('party')">
+          <span class="di-icon">🎒</span><span class="di-label">MY PARTY</span>
+        </button>
+        <button class="drawer-item" data-page="gyms" onclick="showPage('gyms')">
+          <span class="di-icon">🏆</span><span class="di-label">GYMS &amp; ELITE FOUR</span>
+        </button>
+        <button class="drawer-item" data-page="location" onclick="showPage('location')">
+          <span class="di-icon">🗺️</span><span class="di-label">WHERE AM I</span>
+        </button>
+        <button class="drawer-item" data-page="tms" onclick="showPage('tms')">
+          <span class="di-icon">📀</span><span class="di-label">TMs &amp; HMs</span>
+        </button>
+      </nav>
+    </div>
+  </div>
 
   <!-- ══ SEARCH PAGE ══ -->
   <div id="page-search" class="page active">
@@ -84,6 +104,17 @@
         autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
     </div>
     <div class="scroll" id="loc-scroll"></div>
+  </div>
+
+  <!-- ══ TMs & HMs PAGE ══ -->
+  <div id="page-tms" class="page">
+    <div class="tms-ph">
+      <div class="tms-ph-title">📀 TMs &amp; HMs</div>
+      <input class="si" id="tms-in" placeholder="Move name or TM number…"
+        oninput="filterTMs(this.value)"
+        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    </div>
+    <div class="scroll" id="tms-scroll"></div>
   </div>
 
   <!-- ══ PARTY EDIT MODAL ══ -->
