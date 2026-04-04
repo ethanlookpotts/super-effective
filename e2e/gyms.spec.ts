@@ -4,7 +4,8 @@ import { test, expect } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
-  await page.locator('.nb', { hasText: 'GYMS' }).click();
+  await page.locator('.hamburger-btn').click();
+  await page.locator('.drawer-item', { hasText: 'GYMS' }).click();
 });
 
 test('gyms tab renders all gym leaders', async ({ page }) => {
@@ -38,6 +39,7 @@ test('rival starter persists across reload', async ({ page }) => {
   await expect(page.locator('.starter-btn.s-squirtle')).toHaveClass(/active/);
 
   await page.reload();
-  await page.locator('.nb', { hasText: 'GYMS' }).click();
+  await page.locator('.hamburger-btn').click();
+  await page.locator('.drawer-item', { hasText: 'GYMS' }).click();
   await expect(page.locator('.starter-btn.s-squirtle')).toHaveClass(/active/);
 });

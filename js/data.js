@@ -300,6 +300,70 @@ const ALL_MOVES=[
 ];
 
 // ═══════════════════════════════
+// TMs & HMs — FRLG locations
+// DO NOT alter — verified against FRLG via Serebii + Bulbapedia
+// ═══════════════════════════════
+const TM_HM=[
+  {num:'TM01',move:'Focus Punch',type:'Fighting',cat:'phy',loc:'Silph Co. (Floor 5)'},
+  {num:'TM02',move:'Dragon Claw',type:'Dragon',cat:'spe',loc:'Victory Road'},
+  {num:'TM03',move:'Water Pulse',type:'Water',cat:'spe',loc:'Cerulean Gym — Misty reward'},
+  {num:'TM04',move:'Calm Mind',type:'Psychic',cat:'sta',loc:'Saffron Gym — Sabrina reward'},
+  {num:'TM05',move:'Roar',type:'Normal',cat:'sta',loc:'Route 4 / Celadon Dept. Store (₽1000)'},
+  {num:'TM06',move:'Toxic',type:'Poison',cat:'sta',loc:'Fuchsia Gym — Koga reward'},
+  {num:'TM07',move:'Hail',type:'Ice',cat:'sta',loc:'Victory Road'},
+  {num:'TM08',move:'Bulk Up',type:'Fighting',cat:'sta',loc:'Silph Co. (Floor 7)'},
+  {num:'TM09',move:'Bullet Seed',type:'Grass',cat:'spe',loc:'Mt. Moon (entrance)'},
+  {num:'TM10',move:'Hidden Power',type:'Normal',cat:'spe',loc:'Pickup ability (5% chance)'},
+  {num:'TM11',move:'Sunny Day',type:'Fire',cat:'sta',loc:'Safari Zone'},
+  {num:'TM12',move:'Taunt',type:'Dark',cat:'sta',loc:'Team Rocket Hideout (B2)'},
+  {num:'TM13',move:'Ice Beam',type:'Ice',cat:'spe',loc:'Celadon Game Corner (4000 coins)'},
+  {num:'TM14',move:'Blizzard',type:'Ice',cat:'spe',loc:'Pokémon Mansion'},
+  {num:'TM15',move:'Hyper Beam',type:'Normal',cat:'phy',loc:'Celadon Dept. Store (₽7500)'},
+  {num:'TM16',move:'Light Screen',type:'Psychic',cat:'sta',loc:'Celadon Dept. Store (roof, ₽3000)'},
+  {num:'TM17',move:'Protect',type:'Normal',cat:'sta',loc:'Kanto Power Plant'},
+  {num:'TM18',move:'Rain Dance',type:'Water',cat:'sta',loc:'Route 15'},
+  {num:'TM19',move:'Giga Drain',type:'Grass',cat:'spe',loc:'Celadon Gym — Erika reward'},
+  {num:'TM20',move:'Safeguard',type:'Normal',cat:'sta',loc:'Celadon Dept. Store (roof, ₽3000)'},
+  {num:'TM21',move:'Frustration',type:'Normal',cat:'phy',loc:'Team Rocket Hideout (B3)'},
+  {num:'TM22',move:'Solar Beam',type:'Grass',cat:'spe',loc:'Pokémon Mansion'},
+  {num:'TM23',move:'Iron Tail',type:'Steel',cat:'phy',loc:'Celadon Game Corner (3500 coins)'},
+  {num:'TM24',move:'Thunderbolt',type:'Electric',cat:'spe',loc:'Celadon Game Corner (4000 coins)'},
+  {num:'TM25',move:'Thunder',type:'Electric',cat:'spe',loc:'Kanto Power Plant'},
+  {num:'TM26',move:'Earthquake',type:'Ground',cat:'phy',loc:'Viridian Gym — Giovanni reward'},
+  {num:'TM27',move:'Return',type:'Normal',cat:'phy',loc:'Route 12'},
+  {num:'TM28',move:'Dig',type:'Ground',cat:'phy',loc:'Cerulean City NPC / Celadon Dept. Store'},
+  {num:'TM29',move:'Psychic',type:'Psychic',cat:'spe',loc:'Saffron City (Mr. Psychic\'s house) / Game Corner (3500 coins)'},
+  {num:'TM30',move:'Shadow Ball',type:'Ghost',cat:'phy',loc:'Celadon Game Corner (4500 coins)'},
+  {num:'TM31',move:'Brick Break',type:'Fighting',cat:'phy',loc:'S.S. Anne / Celadon Dept. Store'},
+  {num:'TM32',move:'Double Team',type:'Normal',cat:'sta',loc:'Safari Zone'},
+  {num:'TM33',move:'Reflect',type:'Psychic',cat:'sta',loc:'S.S. Anne (B1) / Celadon Dept. Store'},
+  {num:'TM34',move:'Shock Wave',type:'Electric',cat:'spe',loc:'Vermilion Gym — Lt. Surge reward'},
+  {num:'TM35',move:'Flamethrower',type:'Fire',cat:'spe',loc:'Celadon Game Corner (4000 coins)'},
+  {num:'TM36',move:'Sludge Bomb',type:'Poison',cat:'spe',loc:'Team Rocket HQ (Island 5)'},
+  {num:'TM37',move:'Sandstorm',type:'Rock',cat:'sta',loc:'Victory Road'},
+  {num:'TM38',move:'Fire Blast',type:'Fire',cat:'spe',loc:'Cinnabar Gym — Blaine reward / Silph Co. (Floor 7)'},
+  {num:'TM39',move:'Rock Tomb',type:'Rock',cat:'phy',loc:'Pewter Gym — Brock reward / Silph Co. (Floor 4)'},
+  {num:'TM40',move:'Aerial Ace',type:'Flying',cat:'phy',loc:'Route 9'},
+  {num:'TM41',move:'Torment',type:'Dark',cat:'sta',loc:'Silph Co. (Floor 4)'},
+  {num:'TM42',move:'Facade',type:'Normal',cat:'phy',loc:'Rock Altar (Island 6)'},
+  {num:'TM43',move:'Secret Power',type:'Normal',cat:'phy',loc:'Route 24 / Celadon Dept. Store'},
+  {num:'TM44',move:'Rest',type:'Psychic',cat:'sta',loc:'Route 9'},
+  {num:'TM45',move:'Attract',type:'Normal',cat:'sta',loc:'Route 24 / Celadon Dept. Store'},
+  {num:'TM46',move:'Thief',type:'Dark',cat:'phy',loc:'Mt. Moon (B2)'},
+  {num:'TM47',move:'Steel Wing',type:'Steel',cat:'phy',loc:'Safari Zone'},
+  {num:'TM48',move:'Skill Swap',type:'Psychic',cat:'sta',loc:'Route 12'},
+  {num:'TM49',move:'Snatch',type:'Dark',cat:'sta',loc:'Team Rocket Hideout (B4)'},
+  {num:'TM50',move:'Overheat',type:'Fire',cat:'spe',loc:'Victory Road'},
+  {num:'HM01',move:'Cut',type:'Normal',cat:'phy',loc:'S.S. Anne — Captain gift'},
+  {num:'HM02',move:'Fly',type:'Flying',cat:'phy',loc:'Route 16'},
+  {num:'HM03',move:'Surf',type:'Water',cat:'spe',loc:'Safari Zone (Secret House)'},
+  {num:'HM04',move:'Strength',type:'Normal',cat:'phy',loc:'Safari Zone Warden (return Gold Teeth)'},
+  {num:'HM05',move:'Flash',type:'Normal',cat:'sta',loc:'Route 2 (Oak\'s Aide, after 10 Pokémon caught)'},
+  {num:'HM06',move:'Rock Smash',type:'Fighting',cat:'phy',loc:'Island 1 (Ember Spa)'},
+  {num:'HM07',move:'Waterfall',type:'Water',cat:'spe',loc:'Island 4 (Icefall Cave)'},
+];
+
+// ═══════════════════════════════
 // BOSSES (Gym Leaders, Elite Four, Champion)
 // DO NOT alter team compositions or levels — verified against FRLG
 // ═══════════════════════════════
