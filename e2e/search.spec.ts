@@ -21,3 +21,13 @@ test('type filter pill browses Pokémon of that type', async ({ page }) => {
   await expect(page.locator('.browse-card').first()).toBeVisible();
   await expect(page.locator('.bc-name', { hasText: 'Pikachu' })).toBeVisible();
 });
+
+test('switching type filter resets scroll to top', async ({ page }) => {
+  await page.locator('.tpill.t-Electric').click();
+  await expect(page.locator('.browse-card').first()).toBeVisible();
+  await page.evaluate(() => { document.getElementById('s-scroll').scrollTop = 9999; });
+  await page.locator('.tpill.t-Fire').click();
+  await expect(page.locator('.browse-card').first()).toBeVisible();
+  const scrollTop = await page.evaluate(() => document.getElementById('s-scroll').scrollTop);
+  expect(scrollTop).toBe(0);
+});

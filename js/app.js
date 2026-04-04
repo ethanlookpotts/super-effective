@@ -105,6 +105,7 @@ function setTypeFilter(t){
     document.getElementById('s-in').value = '';
     document.getElementById('s-cl').style.display = 'none';
     document.getElementById('s-drop').style.display = 'none';
+    document.getElementById('s-scroll').scrollTop = 0;
   }
   buildTypePills();
   renderSearch();
@@ -118,6 +119,7 @@ function setTypeAndSearch(type){
   document.getElementById('s-in').value = '';
   document.getElementById('s-cl').style.display = 'none';
   document.getElementById('s-drop').style.display = 'none';
+  document.getElementById('s-scroll').scrollTop = 0;
   buildTypePills();
   renderSearch();
 }

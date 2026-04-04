@@ -76,7 +76,7 @@ test files. Then add GitHub Actions CI — see Backlog → Testing.
 - [x] "✓ IN PARTY" button → tapping navigates to Party tab (blue, reads "VIEW PARTY ›")
 - [x] Remove `legacy-frlg-battle-aide.html` — functionality fully superseded by the current app; file is dead weight in the repo
 - [x] renderModal() partial rebuild on move add/remove (currently full rebuild)
-- [ ] Bug: type filter browse cards render off-screen/blank — visible in Playwright screenshot; cards animate in below the fold when Electric pill is tapped
+- [x] Bug: type filter browse cards render off-screen/blank — visible in Playwright screenshot; cards animate in below the fold when Electric pill is tapped
 
 ---
 
