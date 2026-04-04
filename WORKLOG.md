@@ -35,172 +35,48 @@ Evolving into a multi-game companion app with playthrough support.
 - [x] index.html shell — full UI structure, links to style.css + js files; all tab/modal/masthead scaffolding in place
 - [x] Implementation plan documented (phases 1–8, each = one commit)
 
-**Current state after Session 2**
-- `index.html` — complete HTML shell with all tab panes, modals (party-edit, pc-swap, playthrough-menu), nav, masthead, toast element, and `<script>` tags referencing `style.css`, `js/data.js`, `js/app.js`
-- `style.css` — **does not exist yet**
-- `js/data.js` — **does not exist yet**
-- `js/app.js` — **does not exist yet**
-- `legacy-frlg-battle-aide.html` — reference implementation (~81 KB); contains all CSS, data, and logic to port
+### Session 3 — CSS + Data + JS Implementation
+
+**Completed**
+- [x] Phase 1 — `style.css`: all legacy CSS extracted + en-dash var() bug fixed + new classes for index.html elements + `.toast`, `.toast.red`, `.add-party-btn`, `.swap-row`, `.cdot[data-type]`, `.mast-pt-btn`, playthrough menu styles
+- [x] Phase 2 — `js/data.js`: TYPES, PHYS, CHART, POKEMON (151), HOW, ALL_MOVES, BOSSES, LOCATIONS verbatim from legacy + `gm()`, `dmult()`, `getObtain()`, `tc()` helpers
+- [x] Phase 3 — `js/app.js`: full logic port with multi-playthrough `se_v1` store shape + sprite helpers
+- [x] Phase 4 — Add-to-party button in search detail (`addToParty(n)`)
+- [x] Phase 5 — PC Swap modal when party is full (`openSwapModal(n)`, `swapIn(slot)`)
+- [x] Phase 6 — Tappable coverage dots → `setTypeAndSearch(type)`
+- [x] Phase 7 — Playthrough switcher in masthead (`openPtMenu`, `createPlaythrough`, `switchPt`, `deletePt`)
+
+**Current state**
+- `index.html` — complete HTML shell ✅
+- `style.css` — all styles ✅
+- `js/data.js` — all Gen III FRLG data ✅
+- `js/app.js` — all app logic ✅
+- App is fully functional. Open `index.html` in a browser to test.
 
 ---
 
 ## Next Session — Pick Up Here
 
-All HTML scaffolding is done. The entire remaining work is CSS + data + JS. Do each phase as one focused commit. Reference `legacy-frlg-battle-aide.html` for the source of truth on all styling, data, and logic.
+### Phase 8 — Deploy
 
-### Phase 1 — `style: extract CSS into style.css`
+Push to `main`, configure GitHub Pages (Settings → Pages → branch `main`, folder `/`).
 
-Copy every rule from `<style>` in the legacy file verbatim into `style.css`. Then **add** the following rules that are new (not in legacy):
+### Testing Infrastructure (HIGH PRIORITY — do next)
 
-| Selector | Purpose |
-|---|---|
-| `.toast` | Fixed bottom-center notification; gold bg; fade+slide-up animation; `z-index: 9999` |
-| `.toast.red` | Error variant; red bg |
-| `.add-party-btn` | Full-width green button below the Pokémon header card in search detail |
-| `.swap-row` | Row in PC-swap modal: sprite + name + types; tap to swap out |
-| `.pt-btn` | Playthrough switcher button in masthead (top-right pill) |
-| `.cdot[data-type]` | Make coverage dots have `cursor: pointer` + subtle hover scale when tappable |
+We need lightweight automated tests to guard critical user journeys. See **Backlog → Testing** below for the full plan. In short:
 
-**Design reference from legacy:**
-- Dark theme: `#1a1a2e` page bg, `#16213e` card bg, `#0f3460` accent
-- Gold: `#ffc93c`, green: `#3ddc84`, red: `#ff3d5a`, blue: `#4dabf7`
-- Noise grain overlay via SVG filter on `body::before`
-- Type badge colors — 18 type-specific CSS custom properties already in legacy
-- Font: system-ui / -apple-system stack
-- `max-width: 480px` centered, `100vw` on mobile
-- Animations: `fadeUp` (cards stagger in), `slideUp` (modals), `rotateIcon` (expandable chevron)
-
----
-
-### Phase 2 — `data: add js/data.js with Gen III FRLG data`
-
-Create `js/data.js`. Copy the following verbatim from the legacy file (do NOT alter values — all data is production-accurate):
-
-| Constant | Description |
-|---|---|
-| `TYPES` | Array of 18 type name strings |
-| `PHYS` | Set of type names that are Physical in Gen III (Normal Fighting Flying Poison Ground Rock Bug Ghost Steel) |
-| `CHART` | Type effectiveness map: `CHART[attacker][defender]` → multiplier (0, 0.5, 1, 2) |
-| `POKEMON` | Array of 151 objects `{n, name, types[]}` |
-| `HOW` | Object keyed by dex number → array of obtain-method strings (FRLG-specific; includes version exclusives) |
-| `ALL_MOVES` | Array of objects `{name, type, cat}` where cat is `'phy'|'spe'|'sta'` |
-| `BOSSES` | Array of boss objects `{name, sub, icon, color, tip, team[{name,lv,types[]}]}` — 8 gym leaders, 4 E4, Champion |
-| `LOCATIONS` | Array of location objects `{name, methods[{label, pokemon[]}]}` — ~31 FRLG locations |
-
-Also add helper functions (copy verbatim):
-```js
-function gm(attType, defTypes) { /* returns effectiveness multiplier */ }
-function dmult(attType, defTypes) { /* returns display string '4×','2×','½×','¼×','0×' or '' */ }
-```
-
----
-
-### Phase 3 — `feat: js/app.js core port with multi-playthrough state`
-
-Port ALL logic from the legacy file's `<script>` tag into `js/app.js`, with these **changes**:
-
-**State model** (new — not in legacy):
-```js
-// Old (legacy):
-let party = [];           // stored under 'frlg_party'
-let recents = [];         // stored under 'frlg_recents'
-
-// New (app.js):
-let store = {
-  playthroughs: [],       // array of playthrough objects
-  activePtId: null        // id of active playthrough
-};
-// localStorage key: 'se_v1'
-
-// Playthrough object:
-{ id: crypto.randomUUID(), name: 'RUN 1', gameId: 'frlg', party: [], recents: [] }
-```
-
-**Sprite helpers** (new — not in legacy):
-```js
-function spriteUrl(n) {
-  return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${n}.png`;
-}
-function artUrl(n) {
-  return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${n}.png`;
-}
-```
-
-Everything else — search, party render, gym render, location render, modal open/close, type pills, dropdown — ports verbatim from legacy. Wire all localStorage reads/writes to the new `se_v1` / `store` shape.
-
-**Key functions to port (names can match legacy exactly):**
-
-| Function | Tab/Feature |
-|---|---|
-| `showPage(id)` | Tab switching |
-| `renderSearch()` | SEARCH default state (recents + type hint) |
-| `doSearch(q)` | Query-mode search |
-| `showPokemon(n)` | Pokémon detail card |
-| `setTypeAndSearch(type)` | Jump to SEARCH with type pill active |
-| `renderParty()` | PARTY tab render |
-| `renderGyms()` | GYMS tab render |
-| `renderLocations()` | WHERE AM I tab render |
-| `openModal(pokemonN)` | Open party-edit modal for a slot |
-| `saveModal()` | Save party member edits |
-| `showToast(msg, color)` | Toast notification |
-| `loadStore()` / `saveStore()` | localStorage r/w |
-
----
-
-### Phase 4 — `feat: add-to-party button in search detail`
-
-In `showPokemon(n)`, after rendering the header card, inject:
-
-```html
-<button class="add-party-btn" onclick="addToParty(${n})">➕ ADD TO PARTY</button>
-```
-
-`addToParty(n)`:
-- If party has < 6 members → push `{n, name, types, moves:[], level:''}` → `saveStore()` → `showToast('Added to party')` → update button to "✓ IN PARTY"
-- If party has 6 members → open PC-swap modal
-
----
-
-### Phase 5 — `feat: PC Swap modal when party is full`
-
-`openSwapModal(n)`:
-- Renders `.swap-row` for each of the 6 party members (sprite, name, types)
-- Tap a row → replace that slot with the new Pokémon → close modal → toast "Swapped in"
-
----
-
-### Phase 6 — `feat: tappable coverage dots jump to Search type filter`
-
-In `renderParty()`, for each `.cdot`:
-```html
-<span class="cdot ${isGap ? 'gap' : ''}" data-type="${t}" onclick="setTypeAndSearch('${t}')">${symbol}</span>
-```
-
----
-
-### Phase 7 — `feat: playthrough switcher in masthead`
-
-Add `openPtMenu()`:
-- Renders list of all playthroughs; active one highlighted
-- "＋ NEW RUN" button → `createPlaythrough()` → auto-switch → close menu
-- Each row has a tap-to-switch and a delete (🗑) button
-- `switchPt(id)` → sets `store.activePtId` → `saveStore()` → re-render all tabs → close menu
-- `deletePt(id)` → confirm → remove → if active was deleted, switch to first remaining or create new
-
----
-
-### Phase 8 — Push
-
-```bash
-git push -u origin claude/update-worklog-legacy-ref-DFcMK
-```
-
-Verify GitHub Pages is deployed (Settings → Pages → branch `claude/update-worklog-legacy-ref-DFcMK`, folder `/`).
+- Use **Playwright** for end-to-end tests (headless browser)
+- Tests live in `tests/` and cover the 5 critical journeys
+- Run locally via `npx playwright test`
+- Run on PR via GitHub Actions (`.github/workflows/test.yml`)
+- Update AGENTS.md with: "Run `npx playwright test` to validate before committing"
 
 ---
 
 ## Active Todos
 
+- [ ] Set up Playwright E2E tests + GitHub Actions CI (see Backlog → Testing)
+- [ ] Push to main + configure GitHub Pages
 - [ ] Playthrough rename UI (currently auto-named RUN 1, RUN 2 — no rename yet)
 - [ ] "✓ IN PARTY" button state → tap to jump to Party tab
 - [ ] renderModal() partial rebuild on move add/remove (currently full rebuild)
@@ -208,6 +84,53 @@ Verify GitHub Pages is deployed (Settings → Pages → branch `claude/update-wo
 ---
 
 ## Backlog
+
+### Testing
+
+Set up **Playwright** E2E tests to guard critical user journeys. No build step — Playwright runs against a local `file://` URL or a simple static server.
+
+**File structure:**
+```
+tests/
+  journeys.spec.js   # all E2E tests
+playwright.config.js  # config pointing at index.html
+.github/
+  workflows/
+    test.yml         # run Playwright on every PR
+```
+
+**Critical journeys to cover (minimum viable suite):**
+1. **Search by name** — type "Pikachu", expect detail card appears with type badge "Electric"
+2. **Type filter** — tap Electric pill, expect browse list shows Pikachu
+3. **Add to party** — search Pikachu, tap "ADD TO PARTY", expect party slot filled
+4. **Gym render** — open Gyms tab, expect "Brock" card is present
+5. **Where Am I** — open Where Am I tab, expect "Viridian Forest" card is present
+
+**GitHub Actions config** (`.github/workflows/test.yml`):
+```yaml
+name: E2E Tests
+on: [pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test
+```
+
+**package.json** needed (minimal):
+```json
+{
+  "devDependencies": { "@playwright/test": "^1.44.0" },
+  "scripts": { "test": "playwright test" }
+}
+```
+
+**AGENTS.md addition**: Add "Run `npm test` before committing. All tests must pass." to the Working Principles section.
 
 ### High Priority
 - [ ] Rival (Gary) battle encounters — similar to Gyms, location-triggered
@@ -241,3 +164,4 @@ Verify GitHub Pages is deployed (Settings → Pages → branch `claude/update-wo
   labels all Fire moves as SPE.
 - Type chart includes Fairy for completeness but it does not exist in FRLG
 - The legacy file's `HOW`, `CHART`, `BOSSES`, `LOCATIONS` are carefully hand-curated — never regenerate from PokeAPI or any other source; copy verbatim only.
+- CSS en-dash bug: legacy file used `–` (U+2013) in `var()` calls instead of `--`. Fixed in style.css by using proper double-hyphen throughout.
