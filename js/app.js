@@ -218,6 +218,51 @@ let activeTypeFilter = null;
 
 // Modal state
 let mSlot = -1, mPoke = null, mMoves = [], mTypeFilter = null, mMoveQ = '', mLv = '';
+let mLearnset = null; // null=loading, false=failed/unknown, Set=ready
+
+// ═══════════════════════════════
+// LEARNSET CACHE
+// localStorage key: 'se_learnsets_v1'  { [dexNum]: string[] }
+// ═══════════════════════════════
+let learnsetCache = {};
+function loadLearnsetCache(){
+  try { const r = localStorage.getItem('se_learnsets_v1'); if(r) learnsetCache = JSON.parse(r); } catch(e){}
+}
+function saveLearnsetCache(){
+  try { localStorage.setItem('se_learnsets_v1', JSON.stringify(learnsetCache)); } catch(e){}
+}
+
+// Normalize move names for comparison: lowercase, strip all non-alphanumeric
+// Handles mismatches like "Double-Edge" vs "double-edge", "Thunder Shock" vs "thunder-shock"
+function normMoveName(s){ return s.toLowerCase().replace(/[^a-z0-9]/g,''); }
+
+function fetchLearnset(dexNum){
+  if(learnsetCache[dexNum]){
+    mLearnset = new Set(learnsetCache[dexNum].map(normMoveName));
+    renderMoveSection();
+    return;
+  }
+  mLearnset = null;
+  renderMoveSection();
+  fetch('https://pokeapi.co/api/v2/pokemon/'+dexNum+'/')
+    .then(r=>r.json())
+    .then(data=>{
+      const slugs = [];
+      (data.moves||[]).forEach(m=>{
+        const inFRLG = m.version_group_details.some(v=>v.version_group.name==='firered-leafgreen');
+        if(inFRLG) slugs.push(m.move.name);
+      });
+      learnsetCache[dexNum] = slugs;
+      saveLearnsetCache();
+      if(mPoke && mPoke.n===dexNum){
+        mLearnset = new Set(slugs.map(normMoveName));
+        renderMoveSection();
+      }
+    })
+    .catch(()=>{
+      if(mPoke && mPoke.n===dexNum){ mLearnset = false; renderMoveSection(); }
+    });
+}
 
 // ═══════════════════════════════
 // RECENT HELPERS
@@ -581,11 +626,13 @@ function renderCoverage(){
 function openModal(idx){
   const pt = activePt();
   mSlot = idx;
+  mLearnset = null;
   if(idx>=0 && idx<pt.party.length){
     const pm = pt.party[idx];
     mPoke = {n:pm.n, name:pm.name, types:pm.types};
     mMoves = [...(pm.moves||[])];
     mLv = pm.level||'';
+    fetchLearnset(pm.n);
   } else {
     mPoke = null; mMoves = []; mLv = '';
   }
@@ -652,6 +699,12 @@ function renderMoveSection(){
   });
 
   if(mMoves.length < 4){
+    if(mPoke && mLearnset === null){
+      html += `<div style="font-family:var(--fp);font-size:5px;color:var(--text3);text-align:center;padding:12px 0;">LOADING MOVES…</div>`;
+      container.innerHTML = html;
+      body.scrollTop = sp;
+      return;
+    }
     html += `<div class="sbox" style="margin-top:10px;margin-bottom:7px;">
       <input class="move-si" id="mv-q" placeholder="Search moves..." oninput="onMQ(this.value)" value="${mMoveQ}"
         autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
@@ -660,8 +713,12 @@ function renderMoveSection(){
     TYPES.forEach(t=>{html+=`<div class="tf t-${t}${mTypeFilter===t?' active':''}" onclick="setMTF('${t}')">${t}</div>`;});
     html += `</div>`;
     const q = mMoveQ.toLowerCase();
-    const picked = ALL_MOVES.filter(mv=>mMoves.some(m=>m.name===mv.name)&&(!mTypeFilter||mv.type===mTypeFilter)&&(!q||mv.name.toLowerCase().includes(q)));
-    const rest = ALL_MOVES.filter(mv=>!mMoves.some(m=>m.name===mv.name)&&(!mTypeFilter||mv.type===mTypeFilter)&&(!q||mv.name.toLowerCase().includes(q)));
+    // Filter to learnable moves when learnset is ready; show all on failure or when no Pokémon selected
+    const pool = (mPoke && mLearnset instanceof Set)
+      ? ALL_MOVES.filter(mv=>mLearnset.has(normMoveName(mv.name)))
+      : ALL_MOVES;
+    const picked = pool.filter(mv=>mMoves.some(m=>m.name===mv.name)&&(!mTypeFilter||mv.type===mTypeFilter)&&(!q||mv.name.toLowerCase().includes(q)));
+    const rest = pool.filter(mv=>!mMoves.some(m=>m.name===mv.name)&&(!mTypeFilter||mv.type===mTypeFilter)&&(!q||mv.name.toLowerCase().includes(q)));
     const display = [...picked,...rest].slice(0,50);
     html += `<div class="move-results">`;
     if(!display.length) html+=`<div class="no-moves">No moves found</div>`;
@@ -692,8 +749,8 @@ function onMS(v){
   dd.style.display='block';
   dd.innerHTML=list.map(p=>`<div class="prow" onclick="pickMP(${p.n})"><span class="pnum">#${String(p.n).padStart(3,'0')}</span><span class="pname">${p.name}</span><span class="pbadges">${p.types.map(t=>`<span class="tb sm t-${t}">${t}</span>`).join('')}</span></div>`).join('');
 }
-function pickMP(n){ mPoke=POKEMON.find(p=>p.n===n); mMoves=[]; document.getElementById('ms-drop').style.display='none'; renderModal(); document.getElementById('ms-in').value=mPoke.name; }
-function clearMP(){ mPoke=null; mMoves=[]; mLv=''; renderModal(); }
+function pickMP(n){ mPoke=POKEMON.find(p=>p.n===n); mMoves=[]; mLearnset=null; document.getElementById('ms-drop').style.display='none'; renderModal(); document.getElementById('ms-in').value=mPoke.name; fetchLearnset(n); }
+function clearMP(){ mPoke=null; mMoves=[]; mLv=''; mLearnset=null; renderModal(); }
 function onMQ(v){ mMoveQ=v; renderMoveSection(); }
 function setMTF(t){ mTypeFilter=mTypeFilter===t?null:t; mMoveQ=''; renderMoveSection(); }
 function togMv(name,type){ const idx=mMoves.findIndex(m=>m.name===name); if(idx>=0) mMoves.splice(idx,1); else{if(mMoves.length>=4)return; mMoves.push({name,type});} renderMoveSection(); }
@@ -909,6 +966,7 @@ function showToast(msg, color){
 // INIT
 // ═══════════════════════════════
 loadStore();
+loadLearnsetCache();
 updateMasthead();
 buildTypePills();
 renderSearch();

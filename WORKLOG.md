@@ -61,6 +61,11 @@ Evolving into a multi-game companion app with playthrough support.
 **Completed**
 - [x] **[1] Investigate API alternatives** — researched PokéAPI REST + GraphQL; recommendation: use PokéAPI only for learnsets (task [3]); all other data stays static; findings in Ideas / Notes
 
+### Session 7 — Learnset Filtering
+
+**Completed**
+- [x] **[3] Filter move picker to learnable moves only** — fetches FRLG learnset from PokéAPI, caches in se_learnsets_v1; always-on filter with loading state and offline fallback
+
 ### Session 6 — Data Accuracy & Battle Matchup Overhaul
 
 **Completed**
@@ -91,7 +96,6 @@ CI runs on push to main and PRs via `.github/workflows/test.yml`.
 5. Where Am I tab → Viridian Forest, Safari Zone present
 
 ### High Priority
-- [ ] **[3] Filter move picker to learnable moves only** — when a Pokémon is selected in party, restrict the move picker to only moves that Pokémon can actually learn (level-up, TM/HM, tutor); fetch from PokéAPI firered-leafgreen version group, cache in localStorage
 - [ ] Rival (Gary) battle encounters — similar to Gyms, location-triggered
 - [ ] TM/HM location reference ("where do I get Earthquake?")
 
