@@ -86,13 +86,12 @@ function renderCoverage(){
 function openModal(idx){
   const pt = activePt();
   mSlot = idx;
-  mLearnset = null;
+  mHPPicking = false;
   if(idx>=0 && idx<pt.party.length){
     const pm = pt.party[idx];
     mPoke = {n:pm.n, name:pm.name, types:pm.types};
     mMoves = [...(pm.moves||[])];
     mLv = pm.level||'';
-    fetchLearnset(pm.n);
   } else {
     mPoke = null; mMoves = []; mLv = '';
   }
@@ -155,16 +154,10 @@ function renderMoveSection(){
 
   mMoves.forEach((mv,i)=>{
     const phys = PHYS.has(mv.type);
-    html += `<div class="pmrow"><span class="tb sm t-${mv.type}">${mv.type}</span><span class="pm-name">${mv.name}</span><span class="pm-stat" style="color:${phys?'#907030':'#5080b8'}">${phys?'PHY':'SPE'}</span><button class="pm-rm" onclick="rmMv(${i})">✕</button></div>`;
+    html += `<div class="pmrow"><span class="tb sm t-${mv.type}">${mv.type}</span><span class="pm-name">${mv.name}</span><span class="pm-stat" style="color:${phys?'#907030':'#5080b8'}">${phys?'PHY':'SPE'}</span><button class="pm-rm" aria-label="Remove ${mv.name}" onclick="rmMv(${i})">✕</button></div>`;
   });
 
   if(mMoves.length < 4){
-    if(mPoke && mLearnset === null){
-      html += `<div style="font-family:var(--fp);font-size:5px;color:var(--text3);text-align:center;padding:12px 0;">LOADING MOVES…</div>`;
-      container.innerHTML = html;
-      body.scrollTop = sp;
-      return;
-    }
     html += `<div class="sbox" style="margin-top:10px;margin-bottom:7px;">
       <input class="move-si" id="mv-q" placeholder="Search moves..." oninput="onMQ(this.value)" value="${mMoveQ}"
         autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
@@ -173,24 +166,41 @@ function renderMoveSection(){
     TYPES.forEach(t=>{html+=`<div class="tf t-${t}${mTypeFilter===t?' active':''}" onclick="setMTF('${t}')">${t}</div>`;});
     html += `</div>`;
     const q = mMoveQ.toLowerCase();
-    // Filter to learnable moves when learnset is ready; show all on failure or when no Pokémon selected
-    const pool = (mPoke && mLearnset instanceof Set)
-      ? ALL_MOVES.filter(mv=>mLearnset.has(normMoveName(mv.name)))
-      : ALL_MOVES;
+    const learnset = mPoke ? getLearnset(mPoke.n) : null;
+    const pool = learnset ? ALL_MOVES.filter(mv=>learnset.has(mv.name)) : ALL_MOVES;
     const picked = pool.filter(mv=>mMoves.some(m=>m.name===mv.name)&&(!mTypeFilter||mv.type===mTypeFilter)&&(!q||mv.name.toLowerCase().includes(q)));
     const rest = pool.filter(mv=>!mMoves.some(m=>m.name===mv.name)&&(!mTypeFilter||mv.type===mTypeFilter)&&(!q||mv.name.toLowerCase().includes(q)));
     const display = [...picked,...rest].slice(0,50);
     html += `<div class="move-results">`;
     if(!display.length) html+=`<div class="no-moves">No moves found</div>`;
     else display.forEach(mv=>{
-      const ip = mMoves.some(m=>m.name===mv.name);
-      const cc = mv.cat==='phy'?'mres-phy':mv.cat==='spe'?'mres-spe':'mres-sta';
-      const cl = mv.cat==='phy'?'PHY':mv.cat==='spe'?'SPE':'STA';
-      html+=`<div class="mres-row${ip?' picked':''}" onclick="togMv('${mv.name}','${mv.type}')">
-        <span class="tb sm t-${mv.type}">${mv.type}</span>
-        <span class="mres-name">${mv.name}</span>
-        <span class="mres-tags"><span class="mres-cat ${cc}">${cl}</span>${ip?'<span class="mres-chk">✓</span>':''}</span>
-      </div>`;
+      if(mv.name==='Hidden Power'){
+        const ip = mMoves.some(m=>m.name==='Hidden Power');
+        if(ip){
+          const chosenType = mMoves.find(m=>m.name==='Hidden Power').type;
+          html+=`<div class="mres-row picked" onclick="togMv('Hidden Power','${chosenType}')">
+            <span class="tb sm t-${chosenType}">${chosenType}</span>
+            <span class="mres-name">Hidden Power</span>
+            <span class="mres-tags"><span class="mres-cat mres-spe">SPE</span><span class="mres-chk">✓</span></span>
+          </div>`;
+        } else {
+          html+=`<div class="mres-row${mHPPicking?' picked':''}" onclick="pickHPType()" aria-label="Hidden Power — select type">
+            <span class="tb sm t-hidden-power">HP</span>
+            <span class="mres-name">Hidden Power</span>
+            <span class="mres-tags"><span class="mres-cat mres-spe">SPE</span>${mHPPicking?'<span class="mres-chk">▾</span>':''}</span>
+          </div>`;
+          if(mHPPicking) html+=`<div class="tf-row hp-type-picker" aria-label="Select Hidden Power type">${TYPES.filter(t=>t!=='Fairy').map(t=>`<div class="tf t-${t}" onclick="selectHPType('${t}')">${t}</div>`).join('')}</div>`;
+        }
+      } else {
+        const ip = mMoves.some(m=>m.name===mv.name);
+        const cc = mv.cat==='phy'?'mres-phy':mv.cat==='spe'?'mres-spe':'mres-sta';
+        const cl = mv.cat==='phy'?'PHY':mv.cat==='spe'?'SPE':'STA';
+        html+=`<div class="mres-row${ip?' picked':''}" onclick="togMv('${mv.name}','${mv.type}')">
+          <span class="tb sm t-${mv.type}">${mv.type}</span>
+          <span class="mres-name">${mv.name}</span>
+          <span class="mres-tags"><span class="mres-cat ${cc}">${cl}</span>${ip?'<span class="mres-chk">✓</span>':''}</span>
+        </div>`;
+      }
     });
     html += `</div>`;
   }
@@ -206,8 +216,10 @@ function onMS(v){
   const list = POKEMON.filter(p=>p.name.toLowerCase().includes(v.toLowerCase())).slice(0,8);
   renderPDrop('ms-drop', list, 'pickMP');
 }
-function pickMP(n){ mPoke=POKEMON.find(p=>p.n===n); mMoves=[]; mLearnset=null; document.getElementById('ms-drop').style.display='none'; renderModal(); document.getElementById('ms-in').value=mPoke.name; fetchLearnset(n); }
-function clearMP(){ mPoke=null; mMoves=[]; mLv=''; mLearnset=null; renderModal(); }
+function pickMP(n){ mPoke=POKEMON.find(p=>p.n===n); mMoves=[]; mHPPicking=false; document.getElementById('ms-drop').style.display='none'; renderModal(); document.getElementById('ms-in').value=mPoke.name; }
+function clearMP(){ mPoke=null; mMoves=[]; mLv=''; mHPPicking=false; renderModal(); }
+function pickHPType(){ mHPPicking=!mHPPicking; renderMoveSection(); }
+function selectHPType(t){ mMoves.push({name:'Hidden Power',type:t}); mHPPicking=false; renderMoveSection(); }
 function onMQ(v){ mMoveQ=v; renderMoveSection(); }
 function setMTF(t){ mTypeFilter=mTypeFilter===t?null:t; mMoveQ=''; renderMoveSection(); }
 function togMv(name,type){ const idx=mMoves.findIndex(m=>m.name===name); if(idx>=0) mMoves.splice(idx,1); else{if(mMoves.length>=4)return; mMoves.push({name,type});} renderMoveSection(); }

@@ -10,7 +10,6 @@ Evolving into a multi-game companion app with playthrough support.
 ## Backlog
 
 ### High Priority
-<!-- All high priority items completed ✓ -->
 
 ### Medium Priority
 - [ ] Pokémon base stats display (Attack vs Sp.Atk to guide move choice)
@@ -30,6 +29,12 @@ Evolving into a multi-game companion app with playthrough support.
 ---
 
 ## Progress
+
+### Session 16 — Static Learnsets + Hidden Power UI
+
+**Completed**
+- [x] Replace PokéAPI runtime dependency with static FRLG learnsets — compiled learnsets for all 151 Pokémon into `js/data-learnsets.js`; removed `fetchLearnset()`, learnset cache (`se_learnsets_v1`), and all PokéAPI calls; move picker now instant (no loading state); added missing `Psybeam` and `Hidden Power` to ALL_MOVES; fixed slug aliases (`feint-attack`→Faint Attack, `smelling-salts`→Smelling Salt); removed PokéAPI from skills/pokemon.md
+- [x] Hidden Power type-picker UI — Hidden Power shown as special "HP" rainbow badge in move list; clicking opens inline type selector (all types except Fairy); after type chosen, shown as a normal picked move with chosen type badge; `aria-label` on picker and type selector rows for testability; 2 new E2E tests; 36 tests passing
 
 ### Session 15 — Playthrough Model Overhaul
 
