@@ -20,7 +20,7 @@ that fixes each failure.
 
 1. Run `npm test` and identify which tests are failing
 2. For each failure, read the error message carefully
-3. Open the app at `http://localhost:3000` and inspect the relevant UI element
+3. Use `browser_navigate` to reach the UI state where the failure occurs, then call `browser_snapshot` to read the current accessibility tree. Use `browser_console_messages` to surface any JS runtime errors that may be the real cause. The snapshot shows you the actual roles, names, and structure — compare against what the test expects to find the mismatch
 4. Find a stable locator that targets the same element correctly
 5. Edit the failing test with the corrected locator or assertion
 6. Re-run `npm test` to confirm the fix; repeat if more failures remain
