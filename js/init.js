@@ -14,7 +14,6 @@ function showToast(msg, color){
 // INIT
 // ═══════════════════════════════
 loadStore();
-loadLearnsetCache();
 loadRivalStarter();
 if(!store.playthroughs.length){
   showGameGate();

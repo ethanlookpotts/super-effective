@@ -56,7 +56,7 @@ let activeTypeFilter = null;
 
 // Modal state
 let mSlot = -1, mPoke = null, mMoves = [], mTypeFilter = null, mMoveQ = '', mLv = '';
-let mLearnset = null; // null=loading, false=failed/unknown, Set=ready
+let mHPPicking = false; // true while the Hidden Power type selector is open
 
 // ═══════════════════════════════
 // RIVAL STARTER
@@ -75,48 +75,9 @@ function setRivalStarter(s){
   renderGyms();
 }
 
-// ═══════════════════════════════
-// LEARNSET CACHE
-// localStorage key: 'se_learnsets_v1'  { [dexNum]: string[] }
-// ═══════════════════════════════
-let learnsetCache = {};
-function loadLearnsetCache(){
-  try { const r = localStorage.getItem('se_learnsets_v1'); if(r) learnsetCache = JSON.parse(r); } catch(e){}
-}
-function saveLearnsetCache(){
-  try { localStorage.setItem('se_learnsets_v1', JSON.stringify(learnsetCache)); } catch(e){}
-}
-
-// Normalize move names for comparison: lowercase, strip all non-alphanumeric
-// Handles mismatches like "Double-Edge" vs "double-edge", "Thunder Shock" vs "thunder-shock"
-function normMoveName(s){ return s.toLowerCase().replace(/[^a-z0-9]/g,''); }
-
-function fetchLearnset(dexNum){
-  if(learnsetCache[dexNum]){
-    mLearnset = new Set(learnsetCache[dexNum].map(normMoveName));
-    renderMoveSection();
-    return;
-  }
-  mLearnset = null;
-  renderMoveSection();
-  fetch('https://pokeapi.co/api/v2/pokemon/'+dexNum+'/')
-    .then(r=>r.json())
-    .then(data=>{
-      const slugs = [];
-      (data.moves||[]).forEach(m=>{
-        const inFRLG = m.version_group_details.some(v=>v.version_group.name==='firered-leafgreen');
-        if(inFRLG) slugs.push(m.move.name);
-      });
-      learnsetCache[dexNum] = slugs;
-      saveLearnsetCache();
-      if(mPoke && mPoke.n===dexNum){
-        mLearnset = new Set(slugs.map(normMoveName));
-        renderMoveSection();
-      }
-    })
-    .catch(()=>{
-      if(mPoke && mPoke.n===dexNum){ mLearnset = false; renderMoveSection(); }
-    });
+function getLearnset(dexNum){
+  const moves = LEARNSETS[dexNum] || [];
+  return new Set(moves);
 }
 
 // ═══════════════════════════════

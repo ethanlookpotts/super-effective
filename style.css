@@ -92,6 +92,7 @@ color:var(--text3);font-size:16px;cursor:pointer;display:none;line-height:1;padd
 .t-Rock{background:#786820;color:#fff;} .t-Ghost{background:#402860;color:#fff;}
 .t-Dragon{background:#3808d8;color:#fff;} .t-Dark{background:#382818;color:#fff;}
 .t-Steel{background:#686880;color:#fff;} .t-Fairy{background:#a03860;color:#fff;}
+.t-hidden-power{background:linear-gradient(135deg,#b84018,#3808d8,#3a8820);color:#fff;}
 
 /* ══════════════════════════════════
 SEARCH PAGE
