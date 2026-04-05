@@ -158,8 +158,8 @@ padding:13px 14px;margin-bottom:13px;}
 .pc-dim{font-size:32px;opacity:.09;}
 
 /* Add to party button */
-.add-party-btn{width:100%;padding:11px;background:rgba(61,220,132,.12);
-border:1.5px solid rgba(61,220,132,.28);border-radius:9px;
+.add-party-btn{width:100%;padding:11px;min-height:44px;display:flex;align-items:center;justify-content:center;
+background:rgba(61,220,132,.12);border:1.5px solid rgba(61,220,132,.28);border-radius:9px;
 color:var(--green);font-family:var(--fp);font-size:6.5px;cursor:pointer;
 margin-bottom:13px;transition:background .15s,border-color .15s;}
 .add-party-btn:active{background:rgba(61,220,132,.22);border-color:rgba(61,220,132,.5);}
@@ -171,6 +171,21 @@ margin-bottom:13px;transition:background .15s,border-color .15s;}
 .obtain-label{font-family:var(--fp);font-size:5.5px;color:var(--green);margin-bottom:6px;letter-spacing:.3px;}
 .obtain-row{font-size:12px;color:var(--text2);line-height:1.7;}
 .obtain-row.unavail{color:var(--text3);font-style:italic;}
+/* Evolution chain */
+.evo-chain{display:flex;align-items:flex-start;flex-wrap:wrap;gap:2px;margin-top:4px;}
+.evo-stage{display:flex;flex-direction:column;align-items:center;cursor:pointer;padding:4px 5px;border-radius:6px;min-width:50px;text-align:center;}
+.evo-stage.current{background:rgba(255,200,0,.15);outline:1px solid rgba(255,200,0,.4);}
+.evo-stage:active{opacity:.7;}
+.es-name{font-size:10px;font-weight:600;color:var(--text1);line-height:1.3;}
+.es-num{font-size:8px;color:var(--text3);}
+.evo-step{display:flex;flex-direction:column;align-items:center;padding-top:6px;color:var(--text3);font-size:12px;min-width:14px;}
+.es-cond{font-size:8px;color:var(--gold);white-space:nowrap;}
+.evo-branches{display:flex;flex-direction:column;gap:3px;}
+.evo-branch-item{display:flex;align-items:center;gap:4px;}
+.evo-evolve-btns{display:flex;flex-direction:column;gap:4px;margin-top:6px;}
+.evo-btn{background:var(--blue-dim);border:1px solid rgba(77,171,247,.3);border-radius:6px;color:var(--blue);font-family:var(--fp);font-size:5.5px;letter-spacing:.2px;padding:5px 8px;cursor:pointer;text-align:left;width:100%;}
+.evo-btn:active{background:rgba(77,171,247,.22);}
+.evo-btn-cond{color:var(--text3);}
 .obtain-method{display:inline-block;background:rgba(61,220,132,.1);color:var(--green);
 border-radius:3px;padding:1px 5px;margin-right:4px;font-family:var(--fp);font-size:5px;}
 
@@ -260,12 +275,12 @@ height:100%;color:var(--text3);gap:10px;padding-bottom:30px;}
 .empty p{font-family:var(--fp);font-size:6.5px;line-height:2.2;text-align:center;}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
-.scard,.browse-card{animation:fadeUp .13s ease both;}
-.scard:nth-child(2),.browse-card:nth-child(2){animation-delay:.03s;}
-.scard:nth-child(3),.browse-card:nth-child(3){animation-delay:.06s;}
-.scard:nth-child(4),.browse-card:nth-child(4){animation-delay:.09s;}
-.scard:nth-child(5),.browse-card:nth-child(5){animation-delay:.12s;}
-.scard:nth-child(6),.browse-card:nth-child(6){animation-delay:.15s;}
+.browse-card{animation:fadeUp .13s ease both;}
+.browse-card:nth-child(2){animation-delay:.03s;}
+.browse-card:nth-child(3){animation-delay:.06s;}
+.browse-card:nth-child(4){animation-delay:.09s;}
+.browse-card:nth-child(5){animation-delay:.12s;}
+.browse-card:nth-child(6){animation-delay:.15s;}
 
 /* ══════════════════════════════════
 PARTY PAGE
