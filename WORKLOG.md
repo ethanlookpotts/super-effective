@@ -61,6 +61,11 @@ Evolving into a multi-game companion app with playthrough support.
 **Completed**
 - [x] **[1] Investigate API alternatives** — researched PokéAPI REST + GraphQL; recommendation: use PokéAPI only for learnsets (task [3]); all other data stays static; findings in Ideas / Notes
 
+### Session 10 — Code Simplification
+
+**Completed**
+- [x] Run /simplify on the codebase — extracted `_resetSearchInput`, `_refreshUI`, fixed `_fmtM` no-op, simplified `goSearch`, deduplicated `onMS`; 30 lines removed, no behaviour change
+
 ### Session 9 — TMs & HMs + Hamburger Nav
 
 **Completed**
@@ -110,7 +115,6 @@ CI runs on push to main and PRs via `.github/workflows/test.yml`.
 - [x] Refactor E2E tests to use accessible selectors — replace class/id-based locators with `getByRole`, `getByLabel`, `getByText`; add `aria-label` attributes to key interactive elements; update playwright-generator, playwright-planner, playwright-healer agent prompts and AGENTS.md E2E section to enforce this convention going forward
 
 ### Medium Priority
-- [ ] Run /simplify on the codebase — reduce duplication and clean up JS/CSS without changing behaviour
 - [ ] **[4] Desktop responsive layout** — extend mobile-first layout to work well on wider screens (sidebar nav, wider cards, responsive breakpoints); keep mobile experience unchanged
 - [ ] Evolution tracker (level/stone/trade conditions)
 - [ ] Pokémon base stats display (Attack vs Sp.Atk to guide move choice)
