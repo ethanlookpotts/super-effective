@@ -22,16 +22,30 @@ Build the best, most useful mobile Pokémon game companion app. Prioritise:
 
 ### File Structure
 ```
-index.html           HTML shell — imports CSS + JS, no inline logic
-style.css            All styles — CSS variables, components, animations
-js/data.js           Static game data (type chart, Pokémon, moves, bosses, locations)
-js/app.js            All app logic — state, rendering, event handlers
-agents/              Sub-agent prompt specs (see agents/pokemon.md)
-AGENTS.md            Canonical build guide (this file)
-CLAUDE.md            Thin wrapper — @AGENTS.md include
-README.md            Brief overview, file map, deploy instructions
-WORKLOG.md           Session log, todos, backlog, notes
+index.html              HTML shell — imports CSS + JS, no inline logic
+style.css               All styles — CSS variables, components, animations
+js/data-types.js        Gen III type chart, PHYS set, gm()/dmult() helpers
+js/data-abilities.js    ABILITY_MODS, getAbilityMod()
+js/data-pokemon.js      POKEMON (151), HOW obtain data, getObtain()
+js/data-locations.js    LOCATIONS encounter data (Where Am I)
+js/data-moves.js        ALL_MOVES, TM_HM
+js/data-bosses.js       BOSSES, RIVALS, tc() color helper
+js/breakdown.js         Sprite helpers, applyAbilityMod, breakdown overlay
+js/state.js             Store (localStorage), playthrough state, learnset cache, addRecent
+js/search.js            Search page, type filter pills, renderPokeDetail, renderPDrop
+js/party.js             Party page, edit modal, PC swap modal
+js/gyms.js              Gyms & Elite Four page rendering
+js/pages.js             Nav/drawer, masthead, Where Am I page, TMs page, goSearch
+js/playthroughs.js      Playthrough menu (create/switch/delete/rename)
+js/init.js              showToast, app initialisation
+agents/                 Sub-agent prompt specs (see agents/pokemon.md)
+AGENTS.md               Canonical build guide (this file)
+CLAUDE.md               Thin wrapper — @AGENTS.md include
+README.md               Brief overview, file map, deploy instructions
+WORKLOG.md              Session log, todos, backlog, notes
 ```
+
+**Keep files small and focused** — each file should cover one feature area. Small files reduce agent context overhead: when fixing a bug in party logic, an agent reads only `js/party.js` (~220 lines) instead of the entire codebase. When adding a new feature, identify the 1–2 relevant files before opening anything else.
 
 Split content into multiple files wherever it aids maintainability — e.g. separate data files per game, separate CSS files per feature area. The app is served directly from GitHub Pages so any file structure that is flat or uses relative paths works.
 
