@@ -30,12 +30,13 @@ Before picking, check:
 3. If anything is ambiguous, ask one question — do not guess and proceed
 4. Implement the feature across the minimum necessary files
 5. Add or update a spec plan in `e2e/specs/` describing the new behaviour in plain English
-6. Generate or update the corresponding `e2e/*.spec.ts` file (use `agents/playwright-generator.md`)
-7. Run `npm test` — fix any failures before proceeding; do not commit with broken tests
-8. Present a summary of changes to the user and **ask for confirmation** that the task is complete before proceeding
-9. After user confirms: move the task from the Backlog into the current session heading under **Progress** (mark it `[x]`); if no session heading exists for this session, create one: `### Session N — <title>`
-10. Commit all changed files — including the WORKLOG update — in one commit: `feat: <description>` (single line, no body)
-11. Push to the remote branch
+6. Generate or update the corresponding `e2e/*.spec.ts` file — follow the instructions in `agents/playwright-generator.md` (use `browser_navigate` + `browser_snapshot` to verify selectors against the live app before writing test code)
+7. Smoke-test the feature visually: use `browser_navigate` to `http://localhost:3000`, exercise the new flow with MCP browser tools, and confirm it renders correctly before running the full suite
+8. Run `npm test` — fix any failures before proceeding; do not commit with broken tests
+9. Present a summary of changes to the user and **ask for confirmation** that the task is complete before proceeding
+10. After user confirms: move the task from the Backlog into the current session heading under **Progress** (mark it `[x]`); if no session heading exists for this session, create one: `### Session N — <title>`
+11. Commit all changed files — including the WORKLOG update — in one commit: `feat: <description>` (single line, no body)
+12. Push to the remote branch
 
 **Exit criteria:**
 - `npm test` passes, no skipped tests

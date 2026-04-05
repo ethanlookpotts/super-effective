@@ -52,6 +52,8 @@ Rules:
 - Serebii (serebii.net) — good for encounter tables
 - PokeAPI (pokeapi.co) — programmatic access to official data
 
+When researching from these sites, prefer using `browser_navigate` to open the page and `browser_snapshot` to read the content as structured text. This is more reliable than text search for dense tables (encounter rates, learnsets, boss movesets). Use `browser_take_screenshot` to capture a complex table for reference if needed.
+
 ## Expected output formats
 
 ```js
