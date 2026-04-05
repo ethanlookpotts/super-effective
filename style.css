@@ -502,6 +502,44 @@ border-radius:6px;color:var(--blue);font-family:var(--fp);font-size:5px;cursor:p
 border-radius:9px;color:var(--green);font-family:var(--fp);font-size:6.5px;cursor:pointer;margin-top:10px;}
 .pt-new-btn:active{background:rgba(61,220,132,.18);}
 
+/* ── PT RENAME UI ── */
+.pt-name-wrap{flex:1;display:flex;align-items:center;gap:6px;min-width:0;}
+.pt-name{font-family:var(--fp);font-size:6.5px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.6;}
+.pt-name.active-pt{color:var(--gold);}
+.pt-edit-btn{background:none;border:1px solid var(--border2);border-radius:6px;
+padding:3px 7px;cursor:pointer;color:var(--text2);font-size:12px;flex-shrink:0;transition:all .15s;}
+.pt-edit-btn:active{background:var(--card2);color:var(--gold);}
+.pt-rename-input{flex:1;background:var(--card2);border:1.5px solid var(--gold);border-radius:6px;
+padding:5px 8px;color:var(--text);font-family:var(--fp);font-size:6px;outline:none;width:100%;}
+
+/* ── PT GAME PICKER (new run flow) ── */
+.pt-picker-back{display:flex;align-items:center;gap:10px;margin-bottom:16px;
+padding-bottom:12px;border-bottom:1px solid var(--border);}
+.pt-back-btn{background:none;border:1px solid var(--border2);border-radius:6px;
+padding:5px 10px;cursor:pointer;color:var(--text2);font-family:var(--fp);font-size:5px;transition:all .15s;}
+.pt-back-btn:active{background:var(--card2);}
+.pt-picker-title{font-family:var(--fp);font-size:6px;color:var(--gold);}
+
+/* ── GAME GATE (first-run) ── */
+.game-gate{position:fixed;inset:0;background:var(--bg);z-index:500;
+align-items:center;justify-content:center;
+background-image:radial-gradient(circle,rgba(255,255,255,.016) 1px,transparent 1px);
+background-size:24px 24px;}
+.gg-inner{width:100%;max-width:360px;padding:32px 20px;text-align:center;}
+.gg-title{font-family:var(--fp);font-size:10px;color:var(--gold);line-height:1.6;margin-bottom:10px;
+text-shadow:0 0 30px rgba(255,201,60,.4);}
+.gg-sub{font-family:var(--fp);font-size:6px;color:var(--text2);margin-bottom:32px;letter-spacing:.4px;}
+.gg-gen-label{font-family:var(--fp);font-size:5.5px;color:var(--text3);margin-bottom:12px;letter-spacing:.5px;}
+.gg-game-row{display:flex;gap:12px;justify-content:center;margin-bottom:24px;}
+.gg-game-btn{flex:1;max-width:140px;background:var(--card);border:1.5px solid var(--border2);
+border-radius:var(--r2);padding:20px 12px;cursor:pointer;
+display:flex;flex-direction:column;align-items:center;gap:10px;
+color:var(--text);transition:all .18s;}
+.gg-game-btn:hover,.gg-game-btn:active{background:var(--card2);border-color:var(--gold);
+box-shadow:0 0 20px rgba(255,201,60,.15);}
+.gg-game-icon{font-size:36px;}
+.gg-game-name{font-family:var(--fp);font-size:6px;color:var(--gold);letter-spacing:.4px;}
+
 ::-webkit-scrollbar{width:3px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}

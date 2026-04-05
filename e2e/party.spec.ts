@@ -1,13 +1,6 @@
 // spec: e2e/specs/party.md
 // seed: e2e/seed.spec.ts
-import { test, expect } from '@playwright/test';
-
-test.beforeEach(async ({ page }) => {
-  await page.goto('/');
-  await page.evaluate(() => localStorage.clear());
-  await page.reload();
-  await expect(page.getByLabel('Search Pokémon')).toBeVisible();
-});
+import { test, expect } from './fixtures';
 
 test('add to party fills a party slot', async ({ page }) => {
   await page.getByLabel('Search Pokémon').fill('Pikachu');

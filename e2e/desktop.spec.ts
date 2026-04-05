@@ -6,7 +6,13 @@ test.use({ viewport: { width: 1280, height: 800 } });
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
-  await page.evaluate(() => localStorage.clear());
+  await page.evaluate(() => {
+    localStorage.clear();
+    localStorage.setItem('se_v1', JSON.stringify({
+      playthroughs: [{ id: 'seed-001', name: 'RUN 1', gameId: 'frlg-fr', party: [], recents: [] }],
+      activePtId: 'seed-001'
+    }));
+  });
   await page.reload();
   await expect(page.getByLabel('Search Pokémon')).toBeVisible();
 });
@@ -24,7 +30,7 @@ test('sidebar nav is always visible without opening a drawer', async ({ page }) 
 });
 
 test('game title and run switcher appear in the sidebar', async ({ page }) => {
-  await expect(page.getByText('FIRERED / LEAFGREEN').first()).toBeVisible();
+  await expect(page.locator('#mast-game')).toBeVisible();
   await expect(page.locator('#sidebar-pt-label')).toBeVisible();
 });
 

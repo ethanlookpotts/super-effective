@@ -83,7 +83,7 @@ function renderSearch(){
     const filtered = POKEMON.filter(p=>p.types.includes(activeTypeFilter));
     html += `<div class="section-label">${activeTypeFilter.toUpperCase()} TYPE (${filtered.length})</div>`;
     filtered.forEach(p=>{
-      const obtain = getObtain(p.n);
+      const obtain = getObtain(p.n, activePt().gameId);
       const shortObtain = obtain[0].length>42 ? obtain[0].slice(0,42)+'…' : obtain[0];
       html += `<div class="browse-card" onclick="pickPoke(${p.n})">
         <div class="bc-left">
@@ -112,7 +112,7 @@ function renderPokeDetail(){
   const inParty = pt.party.some(pm=>pm.n===p.n);
   const abilityMod = getAbilityMod(p.n);
 
-  const obtain = getObtain(p.n);
+  const obtain = getObtain(p.n, activePt().gameId);
   const obtainHtml = obtain.map(o=>`<div class="obtain-row">${o}</div>`).join('');
 
   // Ability badge

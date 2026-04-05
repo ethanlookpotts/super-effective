@@ -8,29 +8,40 @@
 // move = { name, type }
 let store = { playthroughs: [], activePtId: null };
 
+// ═══════════════════════════════
+// GAME REGISTRY
+// ═══════════════════════════════
+const GAMES = [
+  { gen: 'III', region: 'Kanto', games: [
+    { id: 'frlg-fr', name: 'FireRed', icon: '🔴' },
+    { id: 'frlg-lg', name: 'LeafGreen', icon: '🟢' },
+  ]},
+];
+
 function loadStore(){
   try {
     const raw = localStorage.getItem('se_v1');
     if(raw) store = JSON.parse(raw);
   } catch(e){}
-  if(!store.playthroughs || !store.playthroughs.length){
-    const pt = makePt('RUN 1');
-    store.playthroughs = [pt];
-    store.activePtId = pt.id;
+  // Migrate playthroughs with legacy gameId 'frlg' → 'frlg-fr'
+  if(store.playthroughs) store.playthroughs.forEach(pt=>{
+    if(!pt.gameId || pt.gameId==='frlg') pt.gameId='frlg-fr';
+  });
+  if(store.playthroughs && store.playthroughs.length){
+    if(!store.activePtId || !store.playthroughs.find(p=>p.id===store.activePtId)){
+      store.activePtId = store.playthroughs[0].id;
+    }
     saveStore();
   }
-  if(!store.activePtId || !store.playthroughs.find(p=>p.id===store.activePtId)){
-    store.activePtId = store.playthroughs[0].id;
-    saveStore();
-  }
+  // If no playthroughs: leave empty — init.js will show the game gate
 }
 
 function saveStore(){
   localStorage.setItem('se_v1', JSON.stringify(store));
 }
 
-function makePt(name){
-  return { id: crypto.randomUUID(), name, gameId: 'frlg', party: [], recents: [] };
+function makePt(name, gameId){
+  return { id: crypto.randomUUID(), name, gameId: gameId||'frlg-fr', party: [], recents: [] };
 }
 
 function activePt(){

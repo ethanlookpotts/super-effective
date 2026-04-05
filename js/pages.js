@@ -18,9 +18,18 @@ function drawerOvClick(e){ if(e.target===document.getElementById('drawer-overlay
 // MASTHEAD
 // ═══════════════════════════════
 function updateMasthead(){
-  const name = activePt().name;
-  document.getElementById('mast-pt-label').textContent = name;
-  document.getElementById('sidebar-pt-label').textContent = name;
+  const pt = activePt();
+  if(!pt) return;
+  const gameEntry = GAMES.flatMap(g=>g.games).find(g=>g.id===pt.gameId);
+  const gameTitle = gameEntry ? gameEntry.icon+' '+gameEntry.name.toUpperCase() : '🔴 FIRERED';
+  const genEntry = GAMES.find(g=>g.games.some(gm=>gm.id===pt.gameId));
+  const gameSub = genEntry ? 'BATTLE AIDE · GEN '+genEntry.gen+' · '+genEntry.region.toUpperCase() : 'BATTLE AIDE · GEN III · KANTO';
+  document.getElementById('mast-pt-label').textContent = pt.name;
+  document.getElementById('sidebar-pt-label').textContent = pt.name;
+  document.getElementById('mast-game').textContent = gameTitle;
+  document.getElementById('mast-game-mobile').textContent = gameTitle;
+  document.getElementById('mast-pt').textContent = gameSub;
+  document.getElementById('mast-pt-mobile').textContent = gameSub;
 }
 
 // ═══════════════════════════════

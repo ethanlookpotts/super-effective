@@ -10,7 +10,7 @@ Evolving into a multi-game companion app with playthrough support.
 ## Backlog
 
 ### High Priority
-<!-- All high priority items completed ✓ -->
+- [ ] Playthrough model overhaul — game selection, first-run gating, rename UX, version-filtered obtain data — adds `gameId` ('frlg-fr' | 'frlg-lg') to every playthrough; gates the app for new users (no playthroughs in store) behind a game-picker screen; updates "New Run" flow to show a Gen III game picker before creating; migrates existing playthroughs to `gameId: 'frlg-fr'`; filters `HOW` obtain rows by `gameId` using the existing `(FR)`/`(LG)` inline tags so version-exclusive obtains hide when irrelevant; replaces the hard-to-find inline pt-name-input with a visible edit/pencil button (use `/frontend-design` recommendation for the rename UX)
 
 ### Medium Priority
 - [ ] Pokémon base stats display (Attack vs Sp.Atk to guide move choice)
