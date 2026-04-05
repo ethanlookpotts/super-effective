@@ -34,7 +34,7 @@ Before picking, check:
 7. Smoke-test the feature visually: use `browser_navigate` to `http://localhost:3000`, exercise the new flow with MCP browser tools, and confirm it renders correctly before running the full suite. Save any screenshots to `screenshots/` (git-ignored) — never to the repo root
 8. Run `npm test` — fix any failures before proceeding; do not commit with broken tests
 9. Present a summary of changes to the user and **ask for confirmation** that the task is complete before proceeding
-10. After user confirms: move the task from the Backlog into the current session heading under **Progress** (mark it `[x]`); if no session heading exists for this session, create one: `### Session N — <title>`
+10. After user confirms: move the task from the Backlog into the current session heading under **Progress** (mark it `[x]`); if no session heading exists for this session, create one: `### Session N — <title>` and prepend it at the top of the Progress section
 11. Commit all changed files — including the WORKLOG update — in one commit: `feat: <description>` (single line, no body)
 12. Push to the remote branch
 
@@ -86,20 +86,17 @@ When asked to sequence tasks, explain the rationale briefly (dependencies, risk,
 Always maintain this exact section order. Never add new top-level sections without being asked.
 
 ```
-## Progress
-  ### Session 1 — <title>   ← oldest
-  ### Session 2 — <title>
-  ...
-  ### Session N — <title>   ← newest, always appended at the bottom
-
 ## Backlog
-  ### Testing
   ### High Priority
   ### Medium Priority
   ### Future Games
   ### Architecture
 
-## Ideas / Notes
+## Progress
+  ### Session N — <title>   ← newest, always prepended at the top
+  ...
+  ### Session 2 — <title>
+  ### Session 1 — <title>   ← oldest
 ```
 
 **Formatting rules:**
