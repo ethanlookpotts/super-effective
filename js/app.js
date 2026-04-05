@@ -38,7 +38,7 @@ function _multLabel(m){
 function _multResultClass(m){
   if(m===0) return 'r0x'; if(m>=4) return 'r4x'; if(m>=2) return 'r2x'; if(m<1) return 'rhalf'; return '';
 }
-function _fmtM(m){ return (m===Math.round(m)?m:m)+'×'; }
+function _fmtM(m){ return m+'×'; }
 
 // Show why an attacking type hits the defending Pokémon as it does
 function showTypeBreakdown(atkType, defN){
@@ -329,25 +329,25 @@ function setTypeFilter(t){
     activeTypeFilter = null;
   } else {
     activeTypeFilter = t;
-    activePoke = null;
-    document.getElementById('s-in').value = '';
-    document.getElementById('s-cl').style.display = 'none';
-    document.getElementById('s-drop').style.display = 'none';
-    document.getElementById('s-scroll').scrollTop = 0;
+    _resetSearchInput();
   }
   buildTypePills();
   renderSearch();
+}
+
+function _resetSearchInput(){
+  activePoke = null;
+  document.getElementById('s-in').value = '';
+  document.getElementById('s-cl').style.display = 'none';
+  document.getElementById('s-drop').style.display = 'none';
+  document.getElementById('s-scroll').scrollTop = 0;
 }
 
 // Jump to Search with a specific type pill active (used by coverage dots + other tabs)
 function setTypeAndSearch(type){
   showPage('search');
   activeTypeFilter = type;
-  activePoke = null;
-  document.getElementById('s-in').value = '';
-  document.getElementById('s-cl').style.display = 'none';
-  document.getElementById('s-drop').style.display = 'none';
-  document.getElementById('s-scroll').scrollTop = 0;
+  _resetSearchInput();
   buildTypePills();
   renderSearch();
 }
@@ -761,13 +761,10 @@ function renderMoveSection(){
 }
 
 function onMS(v){
-  const dd=document.getElementById('ms-drop');
-  document.getElementById('ms-cl').style.display=v?'block':'none';
-  if(!v.trim()){dd.style.display='none';return;}
-  const list=POKEMON.filter(p=>p.name.toLowerCase().includes(v.toLowerCase())).slice(0,8);
-  if(!list.length){dd.style.display='none';return;}
-  dd.style.display='block';
-  dd.innerHTML=list.map(p=>`<div class="prow" role="option" aria-label="${p.name}" onclick="pickMP(${p.n})"><span class="pnum">#${String(p.n).padStart(3,'0')}</span><span class="pname">${p.name}</span><span class="pbadges">${p.types.map(t=>`<span class="tb sm t-${t}">${t}</span>`).join('')}</span></div>`).join('');
+  document.getElementById('ms-cl').style.display = v ? 'block' : 'none';
+  if(!v.trim()){ document.getElementById('ms-drop').style.display='none'; return; }
+  const list = POKEMON.filter(p=>p.name.toLowerCase().includes(v.toLowerCase())).slice(0,8);
+  renderPDrop('ms-drop', list, 'pickMP');
 }
 function pickMP(n){ mPoke=POKEMON.find(p=>p.n===n); mMoves=[]; mLearnset=null; document.getElementById('ms-drop').style.display='none'; renderModal(); document.getElementById('ms-in').value=mPoke.name; fetchLearnset(n); }
 function clearMP(){ mPoke=null; mMoves=[]; mLv=''; mLearnset=null; renderModal(); }
@@ -958,12 +955,7 @@ function goSearch(name){
   const p = POKEMON.find(x=>x.name===name);
   if(!p) return;
   showPage('search');
-  activePoke = p; activeTypeFilter = null;
-  buildTypePills();
-  document.getElementById('s-in').value = p.name;
-  document.getElementById('s-cl').style.display = 'block';
-  document.getElementById('s-drop').style.display = 'none';
-  addRecent(p); renderPokeDetail();
+  pickPoke(p.n);
 }
 
 // ═══════════════════════════════
@@ -1002,6 +994,14 @@ function renamePt(id, name){
   updateMasthead();
 }
 
+function _refreshUI(){
+  activePoke = null;
+  activeTypeFilter = null;
+  buildTypePills();
+  renderSearch();
+  renderParty();
+}
+
 function createPlaythrough(){
   const n = store.playthroughs.length + 1;
   const pt = makePt('RUN ' + n);
@@ -1011,11 +1011,7 @@ function createPlaythrough(){
   updateMasthead();
   renderPtMenu();
   closePtMenu();
-  activePoke = null;
-  activeTypeFilter = null;
-  buildTypePills();
-  renderSearch();
-  renderParty();
+  _refreshUI();
   showToast('Started '+pt.name);
 }
 
@@ -1025,11 +1021,7 @@ function switchPt(id){
   updateMasthead();
   renderPtMenu();
   closePtMenu();
-  activePoke = null;
-  activeTypeFilter = null;
-  buildTypePills();
-  renderSearch();
-  renderParty();
+  _refreshUI();
   showToast('Switched to '+activePt().name);
 }
 
@@ -1045,11 +1037,7 @@ function deletePt(id){
   saveStore();
   updateMasthead();
   renderPtMenu();
-  activePoke = null;
-  activeTypeFilter = null;
-  buildTypePills();
-  renderSearch();
-  renderParty();
+  _refreshUI();
 }
 
 // ═══════════════════════════════
