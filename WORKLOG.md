@@ -31,6 +31,11 @@ Evolving into a multi-game companion app with playthrough support.
 
 ## Progress
 
+### Session 14 — Complete Gen III Moveset Audit
+
+**Completed**
+- [x] Complete Gen III moveset audit — updated `js/data-moves.js` with all 354 Generation III moves; ensures all moves in FRLG learnsets appear correctly in the move picker; fixed issue where moves like Double Kick and Roar were missing from the app's master list.
+
 ### Session 13 — Evolution Tracker
 
 **Completed**
