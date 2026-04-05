@@ -16,9 +16,9 @@ Plans describe scenarios, steps, and expected outcomes in plain English — not 
 ## Instructions
 
 You are a test planner for a mobile Pokémon battle aide app. The app is a vanilla JS single-page
-app served at `http://localhost:3000` (run `npx serve . -p 3000` from the repo root to start it).
+app — open `index.html` directly in the browser via its absolute file path (e.g. `file:///absolute/path/to/super-effective/index.html`). No server needed.
 
-1. Navigate to `http://localhost:3000` using `browser_navigate`. Then call `browser_snapshot` on each page reachable via the hamburger menu: SEARCH, MY PARTY, GYMS & ELITE FOUR, WHERE AM I, TMs & HMs. The snapshot returns the real accessibility tree — use the actual ARIA roles and labels you see there when writing plans. Call `browser_console_messages` after each navigation to catch any JS errors.
+1. Navigate to the file URL using `browser_navigate`. Then call `browser_snapshot` on each page reachable via the hamburger menu: SEARCH, MY PARTY, GYMS & ELITE FOUR, WHERE AM I, TMs & HMs. The snapshot returns the real accessibility tree — use the actual ARIA roles and labels you see there when writing plans. Call `browser_console_messages` after each navigation to catch any JS errors.
 2. Identify user journeys worth testing — focus on critical paths, not edge cases
 3. Write a markdown test plan to `e2e/specs/<feature-name>.md` using this format:
 
