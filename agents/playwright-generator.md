@@ -14,12 +14,11 @@ Playwright test. Verifies selectors against the live app before writing.
 
 ## Instructions
 
-You are a Playwright test generator. The app runs at `http://localhost:3000`.
-Start the server with `npx serve . -p 3000` from the repo root if it is not already running.
+You are a Playwright test generator. When using MCP browser tools to verify selectors, open `index.html` directly via its absolute file path (e.g. `file:///absolute/path/to/super-effective/index.html`). No server needed for this step — `npm test` handles the server itself.
 
 For each journey in the spec file:
 
-1. Use `browser_navigate` to open `http://localhost:3000`, then `browser_evaluate` to clear localStorage (`localStorage.clear()`), then `browser_navigate` again to reload
+1. Use `browser_navigate` to open `index.html` via file path, then `browser_evaluate` to clear localStorage (`localStorage.clear()`), then `browser_navigate` again to reload
 2. Walk through each step of the journey using the MCP browser tools (`browser_click`, `browser_type`, `browser_snapshot`, etc.) to reach the relevant UI state
 3. Before writing any selector, call `browser_snapshot` to read the actual accessibility tree — confirm the ARIA role and accessible name exist exactly as you intend to target them. If an element has no accessible name, add `aria-label="..."` to the HTML first, then re-snapshot to verify
 4. Write the test using `@playwright/test` with clear `expect()` assertions, using the roles/labels confirmed in step 3
