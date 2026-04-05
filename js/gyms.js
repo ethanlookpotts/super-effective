@@ -3,6 +3,7 @@
 // ═══════════════════════════════
 function renderGyms(){
   const starterLabels = {bulbasaur:'🌿 Bulbasaur',charmander:'🔥 Charmander',squirtle:'💧 Squirtle'};
+  const rivalStarter = (activePt() && activePt().rivalStarter) || 'bulbasaur';
   // Chronological order: rival encounters interleaved with gym leaders / E4
   const order = [
     {type:'rival',i:0},  // Route 22 (before Brock)
