@@ -31,7 +31,7 @@ Before picking, check:
 4. Implement the feature across the minimum necessary files
 5. Add or update a spec plan in `e2e/specs/` describing the new behaviour in plain English
 6. Generate or update the corresponding `e2e/*.spec.ts` file — follow the instructions in `agents/playwright-generator.md` (use `browser_navigate` + `browser_snapshot` to verify selectors against the live app before writing test code)
-7. Smoke-test the feature visually: use `browser_navigate` to `http://localhost:3000`, exercise the new flow with MCP browser tools, and confirm it renders correctly before running the full suite
+7. Smoke-test the feature visually: use `browser_navigate` to `http://localhost:3000`, exercise the new flow with MCP browser tools, and confirm it renders correctly before running the full suite. Save any screenshots to `screenshots/` (git-ignored) — never to the repo root
 8. Run `npm test` — fix any failures before proceeding; do not commit with broken tests
 9. Present a summary of changes to the user and **ask for confirmation** that the task is complete before proceeding
 10. After user confirms: move the task from the Backlog into the current session heading under **Progress** (mark it `[x]`); if no session heading exists for this session, create one: `### Session N — <title>`
@@ -87,9 +87,10 @@ Always maintain this exact section order. Never add new top-level sections witho
 
 ```
 ## Progress
-  ### Session N — <title>
-    **Completed**
-    - [x] ...
+  ### Session 1 — <title>   ← oldest
+  ### Session 2 — <title>
+  ...
+  ### Session N — <title>   ← newest, always appended at the bottom
 
 ## Backlog
   ### Testing

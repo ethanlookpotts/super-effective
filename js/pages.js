@@ -18,8 +18,9 @@ function drawerOvClick(e){ if(e.target===document.getElementById('drawer-overlay
 // MASTHEAD
 // ═══════════════════════════════
 function updateMasthead(){
-  const pt = activePt();
-  document.getElementById('mast-pt-label').textContent = pt.name;
+  const name = activePt().name;
+  document.getElementById('mast-pt-label').textContent = name;
+  document.getElementById('sidebar-pt-label').textContent = name;
 }
 
 // ═══════════════════════════════

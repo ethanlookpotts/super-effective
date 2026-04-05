@@ -10,9 +10,9 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('rename a playthrough updates the masthead', async ({ page }) => {
-  await page.getByLabel('Switch playthrough').click();
+  await page.locator('#mast-pt-btn').click();
   await page.locator('#pt-overlay').getByRole('textbox').fill('NUZLOCKE');
   await page.locator('#pt-overlay').getByRole('textbox').press('Enter');
   await page.getByRole('button', { name: /CLOSE/ }).click();
-  await expect(page.getByLabel('Switch playthrough')).toContainText('NUZLOCKE');
+  await expect(page.locator('#mast-pt-label')).toContainText('NUZLOCKE');
 });
