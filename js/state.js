@@ -41,7 +41,7 @@ function saveStore(){
 }
 
 function makePt(name, gameId){
-  return { id: crypto.randomUUID(), name, gameId: gameId||'frlg-fr', party: [], recents: [] };
+  return { id: crypto.randomUUID(), name, gameId: gameId||'frlg-fr', party: [], recents: [], rivalStarter: 'bulbasaur' };
 }
 
 function activePt(){
@@ -59,19 +59,12 @@ let mSlot = -1, mPoke = null, mMoves = [], mTypeFilter = null, mMoveQ = '', mLv 
 let mHPPicking = false; // true while the Hidden Power type selector is open
 
 // ═══════════════════════════════
-// RIVAL STARTER
-// localStorage key: 'se_starter'  one of: 'bulbasaur' | 'charmander' | 'squirtle'
+// RIVAL STARTER — stored per playthrough
+// one of: 'bulbasaur' | 'charmander' | 'squirtle'
 // ═══════════════════════════════
-let rivalStarter = 'bulbasaur';
-function loadRivalStarter(){
-  try{ const r = localStorage.getItem('se_starter'); if(r) rivalStarter = r; }catch(e){}
-}
-function saveRivalStarter(){
-  try{ localStorage.setItem('se_starter', rivalStarter); }catch(e){}
-}
 function setRivalStarter(s){
-  rivalStarter = s;
-  saveRivalStarter();
+  activePt().rivalStarter = s;
+  saveStore();
   renderGyms();
 }
 
