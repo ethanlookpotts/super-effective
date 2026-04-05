@@ -97,6 +97,16 @@ Every push to that branch auto-redeploys. No Actions needed.
 - Use relative paths only (`js/data.js`, not absolute URLs) so the app works both on GitHub Pages and locally via `file://`
 - Test locally by opening `index.html` directly in a browser — no dev server needed
 
+## Browser Screenshots
+
+When using MCP browser tools to take screenshots (smoke-testing, visual debugging, research), always save them to `screenshots/`:
+
+```
+browser_take_screenshot filename="screenshots/my-description.png"
+```
+
+The `screenshots/` folder is git-ignored. Never save screenshots to the repo root or any tracked path.
+
 ## Commit Style
 
 Use conventional commits:

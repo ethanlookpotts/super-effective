@@ -11,26 +11,24 @@
 <body>
 <div class="app">
 
-  <!-- MASTHEAD -->
-  <div class="masthead">
-    <div class="mast-inner">
-      <button class="hamburger-btn" onclick="openDrawer()" aria-label="Open menu">☰</button>
-      <div class="mast-text">
-        <div class="mast-title" id="mast-game">🔴 FIRERED / LEAFGREEN</div>
-        <div class="mast-sub" id="mast-pt">BATTLE AIDE · GEN III · KANTO</div>
-      </div>
-      <button class="mast-pt-btn" id="mast-pt-btn" onclick="openPtMenu()" aria-label="Switch playthrough">
-        <span id="mast-pt-label">RUN 1</span> ▾
-      </button>
-    </div>
-  </div>
-
-  <!-- DRAWER NAV -->
+  <!-- DRAWER NAV (sidebar on desktop, overlay on mobile) -->
   <div class="drawer-overlay" id="drawer-overlay" onclick="drawerOvClick(event)">
     <div class="drawer">
       <div class="drawer-hd">
-        <div class="drawer-brand">SUPER EFFECTIVE</div>
+        <!-- Game context: shown in sidebar header on desktop; shown in open drawer on mobile -->
+        <div class="drawer-hd-game">
+          <div class="mast-title" id="mast-game">🔴 FIRERED / LEAFGREEN</div>
+          <div class="mast-sub" id="mast-pt">BATTLE AIDE · GEN III · KANTO</div>
+        </div>
+        <!-- Run switcher: desktop sidebar only (mobile has its own in the masthead) -->
+        <button class="mast-pt-btn sidebar-pt-btn" onclick="openPtMenu()" aria-label="Switch playthrough">
+          <span id="sidebar-pt-label">RUN 1</span> ▾
+        </button>
+        <!-- Close button: mobile drawer only -->
         <button class="drawer-x" onclick="closeDrawer()">✕</button>
+      </div>
+      <div class="drawer-brand-row">
+        <div class="drawer-brand">SUPER EFFECTIVE</div>
       </div>
       <nav class="drawer-nav">
         <button class="drawer-item active" data-page="search" onclick="showPage('search')">
@@ -49,6 +47,23 @@
           <span class="di-icon">📀</span><span class="di-label">TMs &amp; HMs</span>
         </button>
       </nav>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT AREA (masthead + pages) -->
+  <div class="main-wrap">
+
+  <!-- MASTHEAD: mobile only — hamburger + game title + run switcher -->
+  <div class="masthead">
+    <div class="mast-inner">
+      <button class="hamburger-btn" onclick="openDrawer()" aria-label="Open menu">☰</button>
+      <div class="mast-text">
+        <div class="mast-title">🔴 FIRERED / LEAFGREEN</div>
+        <div class="mast-sub">BATTLE AIDE · GEN III · KANTO</div>
+      </div>
+      <button class="mast-pt-btn" id="mast-pt-btn" onclick="openPtMenu()" aria-label="Switch playthrough">
+        <span id="mast-pt-label">RUN 1</span> ▾
+      </button>
     </div>
   </div>
 
@@ -116,6 +131,8 @@
     </div>
     <div class="scroll" id="tms-scroll"></div>
   </div>
+
+  </div><!-- /.main-wrap -->
 
   <!-- ══ PARTY EDIT MODAL ══ -->
   <div class="overlay" id="overlay" onclick="oClick(event)">

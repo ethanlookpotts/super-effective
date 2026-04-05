@@ -61,35 +61,6 @@ Evolving into a multi-game companion app with playthrough support.
 **Completed**
 - [x] **[1] Investigate API alternatives** — researched PokéAPI REST + GraphQL; recommendation: use PokéAPI only for learnsets (task [3]); all other data stays static; findings in Ideas / Notes
 
-### Session 11 — File Splitting & Stack Evaluation
-
-**Completed**
-- [x] Split data.js (44KB) into 6 focused files: data-types, data-abilities, data-pokemon, data-locations, data-moves, data-bosses — each covering one data domain
-- [x] Split app.js (46KB) into 8 focused files: breakdown, state, search, party, gyms, pages, playthroughs, init — each covering one feature area
-- [x] Updated AGENTS.md file map and added guidance to keep files small for agent context efficiency
-- [x] Evaluated modern stack migration (task [5]) — rejected: React+Next.js runtime alone (~170KB gzipped) exceeds current entire app (~50KB); no bundle size benefit; GitHub Pages static export adds build complexity; vanilla approach optimal for this use case. Stack finding documented in Ideas / Notes.
-
-### Session 10 — Code Simplification
-
-**Completed**
-- [x] Run /simplify on the codebase — extracted `_resetSearchInput`, `_refreshUI`, fixed `_fmtM` no-op, simplified `goSearch`, deduplicated `onMS`; 30 lines removed, no behaviour change
-
-### Session 9 — TMs & HMs + Hamburger Nav
-
-**Completed**
-- [x] TM/HM location reference — dedicated TMs & HMs page (57 moves), searchable by name or TM number; FRLG locations verified via Serebii + Bulbapedia
-- [x] Hamburger drawer navigation — replaces tab bar; slide-in drawer with all 5 pages; TMs & HMs promoted to first-class nav item
-
-### Session 8 — Rival Encounters
-
-**Completed**
-- [x] Rival (Gary) battle encounters — 6 encounters interleaved chronologically with gym leaders; starter selector (Bulbasaur / Charmander / Squirtle) swaps Gary's team; persisted in localStorage (`se_starter`)
-
-### Session 7 — Learnset Filtering
-
-**Completed**
-- [x] **[3] Filter move picker to learnable moves only** — fetches FRLG learnset from PokéAPI, caches in se_learnsets_v1; always-on filter with loading state and offline fallback
-
 ### Session 6 — Data Accuracy & Battle Matchup Overhaul
 
 **Completed**
@@ -99,13 +70,47 @@ Evolving into a multi-game companion app with playthrough support.
 - [x] Party matchup cards show explicit defense matchup (enemy best type + multiplier) alongside offense
 - [x] Move breakdown sheet — tap any move row in party matchup to see step-by-step math (type interactions, STAB, ability overrides)
 
+### Session 7 — Learnset Filtering
+
+**Completed**
+- [x] **[3] Filter move picker to learnable moves only** — fetches FRLG learnset from PokéAPI, caches in se_learnsets_v1; always-on filter with loading state and offline fallback
+
+### Session 8 — Rival Encounters
+
+**Completed**
+- [x] Rival (Gary) battle encounters — 6 encounters interleaved chronologically with gym leaders; starter selector (Bulbasaur / Charmander / Squirtle) swaps Gary's team; persisted in localStorage (`se_starter`)
+
+### Session 9 — TMs & HMs + Hamburger Nav
+
+**Completed**
+- [x] TM/HM location reference — dedicated TMs & HMs page (57 moves), searchable by name or TM number; FRLG locations verified via Serebii + Bulbapedia
+- [x] Hamburger drawer navigation — replaces tab bar; slide-in drawer with all 5 pages; TMs & HMs promoted to first-class nav item
+
+### Session 10 — Code Simplification
+
+**Completed**
+- [x] Run /simplify on the codebase — extracted `_resetSearchInput`, `_refreshUI`, fixed `_fmtM` no-op, simplified `goSearch`, deduplicated `onMS`; 30 lines removed, no behaviour change
+
+### Session 11 — File Splitting & Stack Evaluation
+
+**Completed**
+- [x] Split data.js (44KB) into 6 focused files: data-types, data-abilities, data-pokemon, data-locations, data-moves, data-bosses — each covering one data domain
+- [x] Split app.js (46KB) into 8 focused files: breakdown, state, search, party, gyms, pages, playthroughs, init — each covering one feature area
+- [x] Updated AGENTS.md file map and added guidance to keep files small for agent context efficiency
+- [x] Evaluated modern stack migration (task [5]) — rejected: React+Next.js runtime alone (~170KB gzipped) exceeds current entire app (~50KB); no bundle size benefit; GitHub Pages static export adds build complexity; vanilla approach optimal for this use case. Stack finding documented in Ideas / Notes.
+
+### Session 12 — Desktop Responsive Layout
+
+**Completed**
+- [x] **[4] Desktop responsive layout** — persistent sidebar nav (240px) at ≥720px; game title + run switcher in sidebar header; masthead hidden on desktop; mobile masthead unchanged (hamburger + game title + run switcher); type filter pills wrap on desktop; 3-column party grid at ≥900px; modals become centered dialogs instead of bottom sheets; 8 desktop-viewport E2E tests added (`e2e/desktop.spec.ts`); screenshots convention added (`screenshots/` git-ignored, documented in AGENTS.md and agent prompts); Playwright config set to 390×844 mobile viewport for existing tests
+
 ---
 
 ## Backlog
 
 ### Testing
 
-Playwright E2E — 6 tests passing. Three agent prompts in `agents/` for any AI to maintain tests:
+Playwright E2E — 23 tests passing (15 mobile @ 390×844, 8 desktop @ 1280×800). Three agent prompts in `agents/` for any AI to maintain tests:
 - `agents/playwright-planner.md` — write new spec plans in `e2e/specs/`
 - `agents/playwright-generator.md` — generate `e2e/*.spec.ts` from specs
 - `agents/playwright-healer.md` — repair broken tests after UI changes
@@ -123,7 +128,6 @@ CI runs on push to main and PRs via `.github/workflows/test.yml`.
 - [x] Refactor E2E tests to use accessible selectors — replace class/id-based locators with `getByRole`, `getByLabel`, `getByText`; add `aria-label` attributes to key interactive elements; update playwright-generator, playwright-planner, playwright-healer agent prompts and AGENTS.md E2E section to enforce this convention going forward
 
 ### Medium Priority
-- [ ] **[4] Desktop responsive layout** — extend mobile-first layout to work well on wider screens (sidebar nav, wider cards, responsive breakpoints); keep mobile experience unchanged
 - [ ] Evolution tracker (level/stone/trade conditions)
 - [ ] Pokémon base stats display (Attack vs Sp.Atk to guide move choice)
 - [ ] Search by move name → show all Pokémon that can learn it

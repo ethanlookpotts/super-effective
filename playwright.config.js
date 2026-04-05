@@ -11,6 +11,7 @@ module.exports = defineConfig({
     baseURL: 'http://localhost:3000',
     screenshot: 'on',
     trace: 'on-first-retry',
+    viewport: { width: 390, height: 844 },
   },
   webServer: {
     command: 'npx serve . -p 3000 -s',
