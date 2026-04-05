@@ -10,6 +10,7 @@ Evolving into a multi-game companion app with playthrough support.
 ## Backlog
 
 ### High Priority
+- [ ] Party Builder — extend My Party page with a full PC box (store all caught Pokémon, not just the active 6), then add an automated party suggestion flow that scores candidate teams by type coverage and surfaces the best options with one tap
 
 ### Medium Priority
 - [ ] Pokémon base stats display (Attack vs Sp.Atk to guide move choice)
