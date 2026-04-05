@@ -6,14 +6,13 @@ test.beforeEach(async ({ page }) => {
   await page.goto('/');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
-  await expect(page.locator('#s-in')).toBeVisible();
+  await expect(page.getByLabel('Search Pokémon')).toBeVisible();
 });
 
 test('rename a playthrough updates the masthead', async ({ page }) => {
-  await page.locator('#mast-pt-btn').click();
-  const input = page.locator('.pt-name-input').first();
-  await input.fill('NUZLOCKE');
-  await input.press('Enter');
-  await page.locator('#pt-overlay .modal-x').click();
-  await expect(page.locator('#mast-pt-label')).toHaveText('NUZLOCKE');
+  await page.getByLabel('Switch playthrough').click();
+  await page.locator('#pt-overlay').getByRole('textbox').fill('NUZLOCKE');
+  await page.locator('#pt-overlay').getByRole('textbox').press('Enter');
+  await page.getByRole('button', { name: /CLOSE/ }).click();
+  await expect(page.getByLabel('Switch playthrough')).toContainText('NUZLOCKE');
 });
