@@ -61,6 +61,14 @@ Evolving into a multi-game companion app with playthrough support.
 **Completed**
 - [x] **[1] Investigate API alternatives** — researched PokéAPI REST + GraphQL; recommendation: use PokéAPI only for learnsets (task [3]); all other data stays static; findings in Ideas / Notes
 
+### Session 11 — File Splitting & Stack Evaluation
+
+**Completed**
+- [x] Split data.js (44KB) into 6 focused files: data-types, data-abilities, data-pokemon, data-locations, data-moves, data-bosses — each covering one data domain
+- [x] Split app.js (46KB) into 8 focused files: breakdown, state, search, party, gyms, pages, playthroughs, init — each covering one feature area
+- [x] Updated AGENTS.md file map and added guidance to keep files small for agent context efficiency
+- [x] Evaluated modern stack migration (task [5]) — rejected: React+Next.js runtime alone (~170KB gzipped) exceeds current entire app (~50KB); no bundle size benefit; GitHub Pages static export adds build complexity; vanilla approach optimal for this use case. Stack finding documented in Ideas / Notes.
+
 ### Session 10 — Code Simplification
 
 **Completed**
@@ -127,7 +135,6 @@ CI runs on push to main and PRs via `.github/workflows/test.yml`.
 - [ ] Diamond / Pearl / Platinum (Gen IV)
 
 ### Architecture
-- [ ] **[5] Evaluate modern web stack** — assess migrating to a modern stack (Next.js + React + Tailwind is the primary candidate; Svelte/SvelteKit is a lighter alternative) for better DX, component model, and community ecosystem; document trade-offs vs current no-build vanilla approach before committing
 - [ ] Game module loader (lazy-load data for selected game)
 - [ ] Per-game obtain data files
 - [ ] Shared type chart per generation (Gen I differs from Gen II+)
@@ -135,6 +142,22 @@ CI runs on push to main and PRs via `.github/workflows/test.yml`.
 ---
 
 ## Ideas / Notes
+
+### Stack Evaluation Finding (task [5])
+
+Evaluated Next.js + React + Tailwind + TanstackQuery as a migration target.
+
+**Verdict: rejected.** The motivation was reducing Claude context overhead from large files. File splitting (now done) addresses this directly without a framework migration.
+
+Key numbers:
+- Current entire app: ~129KB uncompressed, ~50KB gzipped (GitHub Pages serves with gzip)
+- React + ReactDOM alone: ~130KB gzipped — exceeds the whole current app before any app code
+- Next.js runtime adds another 30–50KB gzipped
+- TanstackQuery: ~12KB gzipped for one API endpoint already cached in localStorage
+
+**The stack migration would triple or quadruple the user-facing bundle with no user-visible benefit.** GitHub Pages serves the current vanilla app with zero build steps, which is a feature. A Service Worker (single ~30-line file) is the right future move if aggressive caching becomes desirable.
+
+
 
 ### API Alternatives Research (task [1] findings)
 
