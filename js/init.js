@@ -16,10 +16,18 @@ function showToast(msg, color){
 loadStore();
 loadLearnsetCache();
 loadRivalStarter();
-updateMasthead();
-buildTypePills();
-renderSearch();
-renderLocs(LOCATIONS);
-renderTMs(TM_HM);
-renderGyms();
-renderParty();
+if(!store.playthroughs.length){
+  showGameGate();
+} else {
+  initApp();
+}
+
+function initApp(){
+  updateMasthead();
+  buildTypePills();
+  renderSearch();
+  renderLocs(LOCATIONS);
+  renderTMs(TM_HM);
+  renderGyms();
+  renderParty();
+}

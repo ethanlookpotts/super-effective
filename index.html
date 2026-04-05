@@ -58,8 +58,8 @@
     <div class="mast-inner">
       <button class="hamburger-btn" onclick="openDrawer()" aria-label="Open menu">☰</button>
       <div class="mast-text">
-        <div class="mast-title">🔴 FIRERED / LEAFGREEN</div>
-        <div class="mast-sub">BATTLE AIDE · GEN III · KANTO</div>
+        <div class="mast-title" id="mast-game-mobile">🔴 FIRERED / LEAFGREEN</div>
+        <div class="mast-sub" id="mast-pt-mobile">BATTLE AIDE · GEN III · KANTO</div>
       </div>
       <button class="mast-pt-btn" id="mast-pt-btn" onclick="openPtMenu()" aria-label="Switch playthrough">
         <span id="mast-pt-label">RUN 1</span> ▾
@@ -180,6 +180,15 @@
 
   <!-- ══ TOAST ══ -->
   <div id="toast" class="toast"></div>
+
+  <!-- ══ GAME GATE (first-run, no playthrough) ══ -->
+  <div id="game-gate" class="game-gate" style="display:none">
+    <div class="gg-inner">
+      <div class="gg-title">SUPER EFFECTIVE</div>
+      <div class="gg-sub">CHOOSE YOUR GAME TO BEGIN</div>
+      <div id="gg-gens"></div>
+    </div>
+  </div>
 
 </div><!-- .app -->
 

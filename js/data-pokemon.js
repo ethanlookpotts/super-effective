@@ -134,7 +134,20 @@ const HOW={
   147:['Grass: Safari Zone Zone 4 (rare)'],148:['Evolve Dratini Lv.30'],149:['Evolve Dragonair Lv.55'],
   150:['One-time: Cerulean Cave B1F'],151:['Event only (Mew glitch or event)'],
 };
-function getObtain(n){return HOW[n]||['Method unknown'];}
+function getObtain(n, gameId){
+  const rows = HOW[n]||['Method unknown'];
+  if(!gameId) return rows;
+  const frPat = /\(fr\)|\(firered\)/i;
+  const lgPat = /\(lg\)|\(leafgreen\)/i;
+  const filtered = rows.filter(row=>{
+    const frOnly = frPat.test(row) && !lgPat.test(row);
+    const lgOnly = lgPat.test(row) && !frPat.test(row);
+    if(frOnly && gameId!=='frlg-fr') return false;
+    if(lgOnly && gameId!=='frlg-lg') return false;
+    return true;
+  });
+  return filtered.length ? filtered : ['Not obtainable in this version'];
+}
 
 // Build full evolution chain starting from the root of n's chain.
 // Returns stages = [{n, next?}, ...] for linear chains.

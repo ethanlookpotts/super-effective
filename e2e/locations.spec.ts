@@ -1,9 +1,8 @@
 // spec: e2e/specs/locations.md
 // seed: e2e/seed.spec.ts
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/');
   await page.getByRole('button', { name: 'Open menu' }).click();
   await page.getByRole('button', { name: 'WHERE AM I' }).click();
 });
