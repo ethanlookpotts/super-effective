@@ -1,21 +1,8 @@
 // spec: e2e/specs/desktop-layout.md
 // Runs at desktop viewport (1280×800) — tests sidebar layout, navigation, and centered modals.
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 
 test.use({ viewport: { width: 1280, height: 800 } });
-
-test.beforeEach(async ({ page }) => {
-  await page.goto('/');
-  await page.evaluate(() => {
-    localStorage.clear();
-    localStorage.setItem('se_v1', JSON.stringify({
-      playthroughs: [{ id: 'seed-001', name: 'RUN 1', gameId: 'frlg-fr', party: [], recents: [] }],
-      activePtId: 'seed-001'
-    }));
-  });
-  await page.reload();
-  await expect(page.getByLabel('Search Pokémon')).toBeVisible();
-});
 
 test('hamburger button is hidden on desktop', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Open menu' })).toBeHidden();

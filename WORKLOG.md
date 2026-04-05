@@ -10,7 +10,7 @@ Evolving into a multi-game companion app with playthrough support.
 ## Backlog
 
 ### High Priority
-- [ ] Playthrough model overhaul — game selection, first-run gating, rename UX, version-filtered obtain data — adds `gameId` ('frlg-fr' | 'frlg-lg') to every playthrough; gates the app for new users (no playthroughs in store) behind a game-picker screen; updates "New Run" flow to show a Gen III game picker before creating; migrates existing playthroughs to `gameId: 'frlg-fr'`; filters `HOW` obtain rows by `gameId` using the existing `(FR)`/`(LG)` inline tags so version-exclusive obtains hide when irrelevant; replaces the hard-to-find inline pt-name-input with a visible edit/pencil button (use `/frontend-design` recommendation for the rename UX)
+<!-- All high priority items completed ✓ -->
 
 ### Medium Priority
 - [ ] Pokémon base stats display (Attack vs Sp.Atk to guide move choice)
@@ -30,6 +30,11 @@ Evolving into a multi-game companion app with playthrough support.
 ---
 
 ## Progress
+
+### Session 15 — Playthrough Model Overhaul
+
+**Completed**
+- [x] Playthrough model overhaul — game selection, first-run gating, rename UX, version-filtered obtain data — `GAMES` registry + `gameId` on every playthrough; first-time users gated behind a full-screen game picker (FireRed / LeafGreen organised by Gen); "New Run" flow shows in-menu game picker with back button; ✏ edit button replaces invisible inline input for renaming; `getObtain` filters `HOW` rows by `(FR)`/`(LG)` tags so version-exclusive obtains hide; masthead updates dynamically per game; existing playthroughs migrated to `frlg-fr`; `e2e/fixtures.ts` shared seed fixture; 34 tests passing (5 new playthrough tests)
 
 ### Session 14 — Complete Gen III Moveset Audit
 
