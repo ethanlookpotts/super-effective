@@ -1,7 +1,6 @@
-# Agent Prompt: WORKLOG Implementer
-
-Use this prompt when executing a task from WORKLOG.md, managing the backlog, or maintaining WORKLOG structure.
-
+---
+name: worklogger
+description: Use when implementing Active Todos from WORKLOG.md, executing backlog tasks, managing WORKLOG structure, or when asked to "work on the next task". Handles the full implement → test → mark done → commit sequence and all WORKLOG structure rules.
 ---
 
 ## Mode A — Picking what to work on next
@@ -30,7 +29,7 @@ Before picking, check:
 3. If anything is ambiguous, ask one question — do not guess and proceed
 4. Implement the feature across the minimum necessary files
 5. Add or update a spec plan in `e2e/specs/` describing the new behaviour in plain English
-6. Generate or update the corresponding `e2e/*.spec.ts` file — follow the instructions in `agents/playwright-generator.md` (use `browser_navigate` + `browser_snapshot` to verify selectors against the live app before writing test code)
+6. Generate or update the corresponding `e2e/*.spec.ts` file — follow the instructions in `skills/playwright-generator/SKILL.md` (use `browser_navigate` + `browser_snapshot` to verify selectors against the live app before writing test code)
 7. Smoke-test the feature visually: use `browser_navigate` to open `index.html` directly via its absolute file path (e.g. `file:///absolute/path/to/super-effective/index.html` — no server needed), exercise the new flow with MCP browser tools, and confirm it renders correctly before running the full suite. Save any screenshots to `screenshots/` (git-ignored) — never to the repo root
 8. Run `npm test` — fix any failures before proceeding; do not commit with broken tests
 9. Present a summary of changes to the user and **ask for confirmation** that the task is complete before proceeding
@@ -102,7 +101,7 @@ Always maintain this exact section order. Never add new top-level sections witho
 **Formatting rules:**
 - Every entry is a single line: `- [ ]` or `- [x]`
 - Rationale goes inline after an em dash: `— reason`
-- Do not nest bullets under todo items — if a task needs sub-steps, write a spec or a separate agent prompt instead
+- Do not nest bullets under todo items — if a task needs sub-steps, write a spec or a separate skill instead
 - When a task is completed, remove it from the Backlog and add it `[x]` under the session heading in Progress — never leave completed work in the Backlog
 - Keep **Ideas / Notes** as a freeform scratchpad; anything that doesn't fit elsewhere goes there
 

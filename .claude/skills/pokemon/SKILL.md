@@ -1,0 +1,1 @@
+../../../skills/pokemon.md

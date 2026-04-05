@@ -1,13 +1,14 @@
-# Agent Prompt: Playwright Test Generator
-
-Use this prompt to convert test plans in `e2e/specs/` into runnable Playwright test files in `e2e/`.
+---
+name: playwright-generator
+description: Use when converting test plans in e2e/specs/ into runnable Playwright spec files in e2e/. Verifies selectors against the live app before writing tests. Use after a planner has written or updated a spec, or when a spec exists but has no corresponding test file.
+---
 
 ## When to use
 
 - After a planner has written or updated a spec in `e2e/specs/`
 - When a spec file exists but has no corresponding test file yet
 
-## What this agent does
+## What this skill does
 
 Reads a markdown test plan and produces a `*.spec.ts` file that implements each journey as a
 Playwright test. Verifies selectors against the live app before writing.

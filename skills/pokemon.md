@@ -1,6 +1,7 @@
-# Agent Prompt: Pokémon Data Researcher
-
-Use this prompt when you need accurate Pokémon game data before writing or updating code.
+---
+name: pokemon
+description: Use when researching accurate Pokémon game data — obtain methods, boss teams, learnsets, encounter rates, version exclusives, type chart differences, or when adding a new game module. Do not guess; only report data you are confident is correct for the specified game version.
+---
 
 ## When to use
 

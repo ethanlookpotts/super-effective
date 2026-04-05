@@ -1,6 +1,7 @@
-# Agent Prompt: Playwright Test Healer
-
-Use this prompt when `npm test` is failing and you need to repair broken tests.
+---
+name: playwright-healer
+description: Use when npm test is failing due to broken Playwright tests after a UI change. Diagnoses root causes, finds stable accessible locators, and makes minimal fixes to restore passing tests without weakening assertions.
+---
 
 ## When to use
 
@@ -8,7 +9,7 @@ Use this prompt when `npm test` is failing and you need to repair broken tests.
 - When a test failure is due to a stale locator or changed element structure
 - When CI is red on Playwright tests
 
-## What this agent does
+## What this skill does
 
 Runs the failing tests, inspects the current DOM, identifies the root cause of each failure,
 and updates the test file with corrected locators or assertions.
