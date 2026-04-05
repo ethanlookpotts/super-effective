@@ -321,7 +321,7 @@ function updateMasthead(){
 // ═══════════════════════════════
 function buildTypePills(){
   const row = document.getElementById('type-filter-row');
-  row.innerHTML = TYPES.map(t=>`<div class="tpill t-${t}${activeTypeFilter===t?' active':''}" onclick="setTypeFilter('${t}')">${t}</div>`).join('');
+  row.innerHTML = TYPES.map(t=>`<div class="tpill t-${t}${activeTypeFilter===t?' active':''}" role="button" onclick="setTypeFilter('${t}')">${t}</div>`).join('');
 }
 
 function setTypeFilter(t){
@@ -445,7 +445,7 @@ function renderPokeDetail(){
     <div class="poke-card-row">
       <div>
         <div class="pc-num">#${String(p.n).padStart(3,'0')}</div>
-        <div class="pc-name">${p.name}</div>
+        <div class="pc-name" role="heading">${p.name}</div>
         <div class="pc-types">${et.map(t=>`<span class="tb t-${t}">${t}</span>`).join('')}</div>
       </div>
       <img src="${spriteUrl(p.n)}" style="width:64px;height:64px;object-fit:contain;opacity:.9;" onerror="this.style.display='none'">
@@ -573,7 +573,7 @@ function renderPDrop(id, list, fn){
   const dd = document.getElementById(id);
   if(!list.length){ dd.style.display='none'; return; }
   dd.style.display = 'block';
-  dd.innerHTML = list.map(p=>`<div class="prow" onclick="${fn}(${p.n})">
+  dd.innerHTML = list.map(p=>`<div class="prow" role="option" aria-label="${p.name}" onclick="${fn}(${p.n})">
     <span class="pnum">#${String(p.n).padStart(3,'0')}</span>
     <span class="pname">${p.name}</span>
     <span class="pbadges">${p.types.map(t=>`<span class="tb sm t-${t}">${t}</span>`).join('')}</span>
@@ -611,7 +611,7 @@ function renderParty(){
       ? pm.moves.map(m=>`<div class="ps-mv">▸ ${m.name}</div>`).join('')
       : `<div class="ps-mv" style="color:var(--text3);font-style:italic;font-size:9px;">no moves set</div>`;
     const lvTxt = pm.level ? `<span class="ps-lv">Lv.${pm.level}</span>` : '';
-    html += `<div class="pslot filled" onclick="openModal(${i})">
+    html += `<div class="pslot filled" role="button" aria-label="Edit ${pm.name}" onclick="openModal(${i})">
       <div class="ps-num">#${String(pm.n).padStart(3,'0')}</div>
       <div class="ps-head"><span class="ps-name">${pm.name}</span>${lvTxt}</div>
       <div class="ps-types">${tb}</div>
@@ -767,7 +767,7 @@ function onMS(v){
   const list=POKEMON.filter(p=>p.name.toLowerCase().includes(v.toLowerCase())).slice(0,8);
   if(!list.length){dd.style.display='none';return;}
   dd.style.display='block';
-  dd.innerHTML=list.map(p=>`<div class="prow" onclick="pickMP(${p.n})"><span class="pnum">#${String(p.n).padStart(3,'0')}</span><span class="pname">${p.name}</span><span class="pbadges">${p.types.map(t=>`<span class="tb sm t-${t}">${t}</span>`).join('')}</span></div>`).join('');
+  dd.innerHTML=list.map(p=>`<div class="prow" role="option" aria-label="${p.name}" onclick="pickMP(${p.n})"><span class="pnum">#${String(p.n).padStart(3,'0')}</span><span class="pname">${p.name}</span><span class="pbadges">${p.types.map(t=>`<span class="tb sm t-${t}">${t}</span>`).join('')}</span></div>`).join('');
 }
 function pickMP(n){ mPoke=POKEMON.find(p=>p.n===n); mMoves=[]; mLearnset=null; document.getElementById('ms-drop').style.display='none'; renderModal(); document.getElementById('ms-in').value=mPoke.name; fetchLearnset(n); }
 function clearMP(){ mPoke=null; mMoves=[]; mLv=''; mLearnset=null; renderModal(); }
@@ -869,13 +869,13 @@ function renderGyms(){
       const r = RIVALS[entry.i];
       return `
         <div class="gym-card" id="rc-${entry.i}">
-          <div class="gym-hd" onclick="document.getElementById('rc-${entry.i}').classList.toggle('open')">
+          <div class="gym-hd" role="button" aria-label="Expand ${r.location}" onclick="document.getElementById('rc-${entry.i}').classList.toggle('open')">
             <div class="gym-icon" style="background:#ffc93c22;border-color:#ffc93c44;">${r.icon}</div>
             <div class="gym-info"><div class="gym-name">${r.location}</div><div class="gym-sub">${r.sub}</div></div>
             <div class="gym-arr">▾</div>
           </div>
           <div class="gym-body">
-            <div class="gym-team">${r.teams[rivalStarter].map(p=>`<div class="gym-poke" onclick="goSearch('${p.name}')">
+            <div class="gym-team">${r.teams[rivalStarter].map(p=>`<div class="gym-poke" role="button" aria-label="${p.name} Lv.${p.lv}" onclick="goSearch('${p.name}')">
               <span class="gym-poke-lv">Lv.${p.lv}</span>
               <span class="gym-poke-name">${p.name}</span>
               <span class="pbadges">${p.types.map(t=>`<span class="tb sm t-${t}">${t}</span>`).join('')}</span>
@@ -886,13 +886,13 @@ function renderGyms(){
       const boss = BOSSES[entry.i];
       return `
         <div class="gym-card" id="gc-${entry.i}">
-          <div class="gym-hd" onclick="document.getElementById('gc-${entry.i}').classList.toggle('open')">
+          <div class="gym-hd" role="button" aria-label="Expand ${boss.name}" onclick="document.getElementById('gc-${entry.i}').classList.toggle('open')">
             <div class="gym-icon" style="background:${boss.color}22;border-color:${boss.color}44;">${boss.icon}</div>
             <div class="gym-info"><div class="gym-name">${boss.name}</div><div class="gym-sub">${boss.sub}</div></div>
             <div class="gym-arr">▾</div>
           </div>
           <div class="gym-body">
-            <div class="gym-team">${boss.team.map(p=>`<div class="gym-poke" onclick="goSearch('${p.name}')">
+            <div class="gym-team">${boss.team.map(p=>`<div class="gym-poke" role="button" aria-label="${p.name} Lv.${p.lv}" onclick="goSearch('${p.name}')">
               <span class="gym-poke-lv">Lv.${p.lv}</span>
               <span class="gym-poke-name">${p.name}</span>
               <span class="pbadges">${p.types.map(t=>`<span class="tb sm t-${t}">${t}</span>`).join('')}</span>
