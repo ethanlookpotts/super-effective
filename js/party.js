@@ -1,4 +1,26 @@
 // ═══════════════════════════════
+// EVOLVE PARTY MEMBER
+// ═══════════════════════════════
+function evolvePartyMember(fromN, toN){
+  const pt = activePt();
+  const member = pt.party.find(m=>m.n===fromN);
+  if(!member) return;
+  const toPoke = POKEMON.find(p=>p.n===toN);
+  if(!toPoke) return;
+  const oldName = member.name;
+  member.n = toN;
+  member.name = toPoke.name;
+  member.types = [...toPoke.types];
+  saveStore();
+  activePoke = toPoke;
+  document.getElementById('s-in').value = toPoke.name;
+  addRecent(toPoke);
+  renderParty();
+  renderSearch();
+  showToast(oldName + ' evolved to ' + toPoke.name + '!');
+}
+
+// ═══════════════════════════════
 // ADD TO PARTY
 // ═══════════════════════════════
 function addToParty(n){
@@ -103,7 +125,7 @@ function renderModal(){
       <div style="font-family:var(--fp);font-size:8.5px;color:var(--gold);margin-bottom:5px;">${mPoke.name}</div>
       <div>${tb}</div>
     </div>
-    <div style="margin-bottom:2px;">
+    <div style="margin-bottom:12px;">
       <div class="field-lbl">LEVEL (OPTIONAL)</div>
       <input class="field-in" id="f-lv" type="number" min="1" max="100" placeholder="—" value="${mLv}" oninput="mLv=this.value" style="width:90px;">
     </div>`;

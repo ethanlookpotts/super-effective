@@ -123,6 +123,9 @@ function renderPokeDetail(){
       <div class="obtain-row" style="color:var(--gold);font-weight:600;">${abilityMod.name}${note}</div>`;
   }
 
+  // Evolution chain section
+  const evoHtml = buildEvoChainHtml(p);
+
   let html = `<div class="poke-card">
     <div class="poke-card-row">
       <div>
@@ -136,6 +139,7 @@ function renderPokeDetail(){
       <div class="obtain-label">HOW TO OBTAIN</div>
       ${obtainHtml}
       ${abilityHtml}
+      ${evoHtml}
     </div>
   </div>`;
 
@@ -248,6 +252,63 @@ function renderPokeDetail(){
 
   scroll.innerHTML = html;
   scroll.scrollTop = 0;
+}
+
+// Full evolution chain HTML for the detail card obtain section.
+// Shows all stages horizontally, highlights the current Pokémon, and adds
+// EVOLVE buttons for any party member in the same chain.
+function buildEvoChainHtml(p){
+  if(!EVOS[p.n]) return '';
+  const chain = getEvoChain(p.n);
+  const hasBranch = chain.some(s=>s.branches);
+  let html = '';
+
+  if(hasBranch){
+    const root = chain[0];
+    const rp = POKEMON.find(pk=>pk.n===root.n);
+    html += `<div class="evo-chain">`;
+    html += `<div class="evo-stage${root.n===p.n?' current':''}" role="button" aria-label="View ${rp.name}" onclick="pickPoke(${root.n})">`;
+    html += `<span class="es-name">${rp.name}</span><span class="es-num">#${String(root.n).padStart(3,'0')}</span></div>`;
+    html += `<div class="evo-step"><span class="es-arr">→</span></div>`;
+    html += `<div class="evo-branches">`;
+    root.branches.forEach(b=>{
+      const bp = POKEMON.find(pk=>pk.n===b.n);
+      html += `<div class="evo-branch-item">`;
+      html += `<div class="evo-stage${b.n===p.n?' current':''}" role="button" aria-label="View ${bp.name}" onclick="pickPoke(${b.n})">`;
+      html += `<span class="es-name">${bp.name}</span><span class="es-num">#${String(b.n).padStart(3,'0')}</span></div>`;
+      html += `<span class="es-cond">${b.c}</span></div>`;
+    });
+    html += `</div></div>`;
+  } else {
+    html += `<div class="evo-chain">`;
+    chain.forEach(stage=>{
+      const sp = POKEMON.find(pk=>pk.n===stage.n);
+      html += `<div class="evo-stage${stage.n===p.n?' current':''}" role="button" aria-label="View ${sp.name}" onclick="pickPoke(${sp.n})">`;
+      html += `<span class="es-name">${sp.name}</span><span class="es-num">#${String(sp.n).padStart(3,'0')}</span></div>`;
+      if(stage.next){
+        html += `<div class="evo-step"><span class="es-arr">→</span><span class="es-cond">${stage.next}</span></div>`;
+      }
+    });
+    html += `</div>`;
+  }
+
+  // Evolve buttons for party members that can evolve within this chain
+  const allNums = new Set(chain.map(s=>s.n));
+  chain.forEach(s=>{ if(s.branches) s.branches.forEach(b=>allNums.add(b.n)); });
+  const pt = activePt();
+  let btnHtml = '';
+  pt.party.forEach(pm=>{
+    if(!allNums.has(pm.n)) return;
+    const pmEvo = EVOS[pm.n];
+    if(!pmEvo||!pmEvo.into) return;
+    pmEvo.into.forEach(e=>{
+      const tp = POKEMON.find(pk=>pk.n===e.n);
+      if(tp) btnHtml += `<button class="evo-btn" onclick="evolvePartyMember(${pm.n},${e.n})">EVOLVE ${pm.name} → ${tp.name} <span class="evo-btn-cond">${e.c}</span></button>`;
+    });
+  });
+  if(btnHtml) html += `<div class="evo-evolve-btns">${btnHtml}</div>`;
+
+  return `<div class="obtain-label" style="margin-top:8px;">EVOLUTION CHAIN</div>${html}`;
 }
 
 // Shared dropdown renderer
