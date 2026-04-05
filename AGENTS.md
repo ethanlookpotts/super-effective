@@ -4,7 +4,7 @@
 
 - **Ask questions** — if anything is ambiguous, ask before implementing
 - **Small, focused commits** — one logical change per commit using conventional commit messages. Commit messages are single-line only — no body, no Co-Authored-By trailer.
-- **WORKLOG flow** — use `agents/worklog-implementer.md` to execute any Active Todo or manage the backlog; it owns the implement → test → mark → commit sequence and all WORKLOG structure rules.
+- **WORKLOG flow** — use the `worklogger` skill (or `skills/worklogger.md`) to execute any Active Todo or manage the backlog; it owns the implement → test → mark → commit sequence and all WORKLOG structure rules.
 - **Keep docs current** — update README, WORKLOG, and CLAUDE.md alongside code changes
 - **WORKLOG.md** tracks progress, active todos, backlog, and session notes — update it every session so the next agent can pick up instantly
 - **README.md** — brief repo overview: what it is, file map, how to run/deploy locally
@@ -38,7 +38,7 @@ js/gyms.js              Gyms & Elite Four page rendering
 js/pages.js             Nav/drawer, masthead, Where Am I page, TMs page, goSearch
 js/playthroughs.js      Playthrough menu (create/switch/delete/rename)
 js/init.js              showToast, app initialisation
-agents/                 Sub-agent prompt specs (see agents/pokemon.md)
+skills/                 Flat skill files (any agent) — symlinked into .claude/skills/ for Claude Code
 AGENTS.md               Canonical build guide (this file)
 CLAUDE.md               Thin wrapper — @AGENTS.md include
 README.md               Brief overview, file map, deploy instructions
@@ -119,17 +119,17 @@ Use conventional commits:
 
 Keep commits small and focused — one logical change per commit. Commit messages must be a single line only — no body, no Co-Authored-By trailer.
 
-## Sub-Agent Prompts
+## Skills
 
-All agent prompts live in `agents/` and are written for any AI (Claude, Codex, Gemini, etc.).
+All skills live in `skills/` and are symlinked to `.claude/skills/` for automatic Claude Code loading. Each `SKILL.md` contains YAML frontmatter (name + description for triggering) followed by instructions usable by any AI agent.
 
-| Prompt | When to use |
+| Skill | When to use |
 |---|---|
-| `agents/worklog-implementer.md` | Executing Active Todos, managing backlog, maintaining WORKLOG structure |
-| `agents/pokemon.md` | Researching accurate game data (obtain methods, boss teams, move learnsets) |
-| `agents/playwright-planner.md` | Writing new E2E test plans in `e2e/specs/` |
-| `agents/playwright-generator.md` | Converting spec plans into runnable `e2e/*.spec.ts` files |
-| `agents/playwright-healer.md` | Repairing broken tests after UI changes |
+| `skills/worklogger.md` | Executing Active Todos, managing backlog, maintaining WORKLOG structure |
+| `skills/pokemon.md` | Researching accurate game data (obtain methods, boss teams, move learnsets) |
+| `skills/playwright-planner.md` | Writing new E2E test plans in `e2e/specs/` |
+| `skills/playwright-generator.md` | Converting spec plans into runnable `e2e/*.spec.ts` files |
+| `skills/playwright-healer.md` | Repairing broken tests after UI changes |
 
 ## E2E Testing
 
@@ -144,9 +144,9 @@ e2e/
 ```
 
 **Workflow:**
-1. When adding a feature, add a plan to `e2e/specs/` (or use `agents/playwright-planner.md`)
-2. Generate tests with `agents/playwright-generator.md`
-3. If tests break after a change, use `agents/playwright-healer.md` to repair them
+1. When adding a feature, add a plan to `e2e/specs/` (or use the `playwright-planner` skill)
+2. Generate tests with the `playwright-generator` skill
+3. If tests break after a change, use the `playwright-healer` skill to repair them
 4. Run `npm test` before every commit — all tests must pass
 
 **Selector convention — accessible locators only:**

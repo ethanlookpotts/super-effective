@@ -1,6 +1,7 @@
-# Agent Prompt: Playwright Test Planner
-
-Use this prompt when you need to write or update E2E test plans for Super Effective.
+---
+name: playwright-planner
+description: Use when writing or updating E2E test plans for Super Effective. Explores the running app and writes human-readable markdown plans to e2e/specs/ before any test code is generated. Use before generating new test files or when a new feature needs test coverage.
+---
 
 ## When to use
 
@@ -8,7 +9,7 @@ Use this prompt when you need to write or update E2E test plans for Super Effect
 - When adding a new feature that needs test coverage
 - When reviewing whether existing plans cover a new user journey
 
-## What this agent does
+## What this skill does
 
 Explores the running app and writes human-readable test plans as markdown files in `e2e/specs/`.
 Plans describe scenarios, steps, and expected outcomes in plain English — not code.
