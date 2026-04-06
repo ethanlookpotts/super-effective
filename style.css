@@ -245,6 +245,60 @@ border-radius:7px;color:var(--blue);font-family:var(--fp);font-size:6px;cursor:p
 .tb.why:active{opacity:.6;}
 .sc-mr.why{cursor:pointer;}
 .sc-mr.why:active{opacity:.7;}
+/* ── BASE STATS ── */
+.stats-section{background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:9px 11px;margin-top:6px;}
+.stat-row{display:flex;align-items:center;gap:6px;margin-bottom:4px;}
+.stat-row:last-child{margin-bottom:0;}
+.stat-label{font-family:var(--fp);font-size:5px;color:var(--text3);width:26px;flex-shrink:0;letter-spacing:.03em;}
+.stat-label.hi{color:var(--gold);}
+.stat-num{font-family:var(--fp);font-size:6px;color:var(--text2);width:22px;text-align:right;flex-shrink:0;}
+.stat-num.hi{color:var(--gold);}
+.stat-bar{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.stat-fill{height:100%;border-radius:2px;}
+.stat-fill.hp{background:#ff5252;}.stat-fill.atk{background:#ff8c00;}
+.stat-fill.def{background:#c8b820;}.stat-fill.spa{background:#6495ed;}
+.stat-fill.spd{background:#3bbcb8;}.stat-fill.spe{background:#7ec850;}
+/* ℹ info button in sec-head */
+.stat-info-btn{background:none;border:1px solid var(--border2);border-radius:50%;width:16px;height:16px;flex-shrink:0;
+  color:var(--text3);font-size:9px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;
+  transition:all .15s;vertical-align:middle;}
+.stat-info-btn:active{background:var(--card2);color:var(--text2);}
+/* Stats info modal content */
+.si-rec{font-family:var(--fp);font-size:6px;padding:10px 12px;border-radius:8px;line-height:1.9;margin-bottom:12px;}
+.si-rec.phy{background:rgba(255,140,0,.1);border:1px solid rgba(255,140,0,.2);color:#d07020;}
+.si-rec.spe{background:rgba(100,149,237,.1);border:1px solid rgba(100,149,237,.2);color:#4070b0;}
+.si-rec.even{background:var(--card2);border:1px solid var(--border2);color:var(--text3);}
+.si-section-lbl{font-family:var(--fp);font-size:5.5px;color:var(--text3);letter-spacing:.04em;margin-bottom:8px;}
+.si-stat-row{display:flex;gap:10px;align-items:flex-start;margin-bottom:11px;}
+.si-stat-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:3px;}
+.si-stat-dot.hp{background:#ff5252;}.si-stat-dot.atk{background:#ff8c00;}
+.si-stat-dot.def{background:#c8b820;}.si-stat-dot.spa{background:#6495ed;}
+.si-stat-dot.spd{background:#3bbcb8;}.si-stat-dot.spe{background:#7ec850;}
+.si-stat-title{font-family:var(--fp);font-size:6.5px;color:var(--text);margin-bottom:3px;}
+.si-stat-desc{font-size:12px;color:var(--text2);line-height:1.6;}
+.si-note{font-size:12px;color:var(--text2);line-height:1.7;background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:10px 12px;}
+/* stat note on party suggestion cards */
+.sc-stat-note{font-family:var(--fp);font-size:5px;color:var(--text3);margin-top:2px;line-height:1.5;}
+.sc-stat-note.phy{color:#c07010;}.sc-stat-note.spe{color:#4070a8;}
+/* Move power / accuracy / effect in party suggestion rows */
+.sc-mr{align-items:flex-start;}
+.mv-sub{font-size:9px;color:var(--text3);margin-top:2px;display:flex;gap:5px;align-items:center;flex-wrap:wrap;line-height:1.4;}
+.mv-pow{color:var(--text2);}
+.mv-acc{color:#c09020;}
+.mv-eff{border-radius:3px;padding:1px 4px;font-size:8px;font-family:var(--fp);}
+.mv-eff.burn{background:rgba(220,80,0,.15);color:#d06030;}
+.mv-eff.para{background:rgba(220,180,0,.15);color:#b09000;}
+.mv-eff.sleep{background:rgba(100,80,200,.15);color:#8060c0;}
+.mv-eff.psn{background:rgba(160,0,200,.15);color:#a030c0;}
+.mv-eff.freeze{background:rgba(80,160,230,.15);color:#3080c0;}
+.mv-eff.flinch{background:rgba(160,160,160,.12);color:#808080;}
+.mv-eff.drain{background:rgba(0,200,100,.12);color:#20a060;}
+.mv-eff.ohko{background:rgba(255,50,50,.18);color:#d04040;}
+.mv-eff.stat{background:rgba(100,160,230,.1);color:#5080a0;}
+/* Move info in breakdown overlay */
+.bd-move-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px;padding:7px 9px;background:var(--card2);border:1px solid var(--border2);border-radius:7px;}
+.bd-meta-item{font-family:var(--fp);font-size:5.5px;color:var(--text3);}
+.bd-meta-item span{color:var(--text2);font-size:6px;}
 /* Breakdown sheet content */
 .bd-section{margin-bottom:14px;}
 .bd-lbl{font-family:var(--fp);font-size:5.5px;color:var(--text3);letter-spacing:.04em;margin-bottom:6px;}

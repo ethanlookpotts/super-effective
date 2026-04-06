@@ -62,6 +62,63 @@ test('EVOLVE button appears when party member can evolve', async ({ page }) => {
   await expect(page.locator('#s-scroll').getByRole('button', { name: /EVOLVE Bulbasaur/ })).toBeVisible();
 });
 
+test('base stats section shows all 6 stats for a Pokémon', async ({ page }) => {
+  await page.getByLabel('Search Pokémon').fill('Charizard');
+  await page.getByRole('option', { name: 'Charizard' }).click();
+  const stats = page.locator('.stats-section');
+  await expect(stats).toBeVisible();
+  await expect(stats.getByText('HP')).toBeVisible();
+  await expect(stats.getByText('ATK')).toBeVisible();
+  await expect(stats.getByText('SpA')).toBeVisible();
+  await expect(stats.getByText('109')).toBeVisible(); // Charizard SpA
+});
+
+test('base stats info button opens explanation modal', async ({ page }) => {
+  await page.getByLabel('Search Pokémon').fill('Charizard');
+  await page.getByRole('option', { name: 'Charizard' }).click();
+  await page.getByRole('button', { name: 'Base stats help' }).click();
+  await expect(page.getByText('BASE STATS EXPLAINED')).toBeVisible();
+  await expect(page.getByText('HP — Hit Points')).toBeVisible();
+  await expect(page.getByText('SPE — Speed')).toBeVisible();
+  // Recommendation shown for Charizard (SpA 109 > ATK 84)
+  await expect(page.getByText(/Special attacker.*SpA 109/)).toBeVisible();
+});
+
+test('base stats info modal closes', async ({ page }) => {
+  await page.getByLabel('Search Pokémon').fill('Pikachu');
+  await page.getByRole('option', { name: 'Pikachu' }).click();
+  await page.getByRole('button', { name: 'Base stats help' }).click();
+  await expect(page.getByText('BASE STATS EXPLAINED')).toBeVisible();
+  await page.locator('#stats-info-overlay').getByRole('button', { name: /CLOSE/ }).click();
+  await expect(page.getByText('BASE STATS EXPLAINED')).not.toBeVisible();
+});
+
+test('party matchup shows stat category note and move power/effect', async ({ page }) => {
+  // Add Charizard to party
+  await page.getByLabel('Search Pokémon').fill('Charizard');
+  await page.getByRole('option', { name: 'Charizard' }).click();
+  await page.getByRole('button', { name: /ADD TO PARTY/ }).click();
+  // Add Flamethrower via edit modal
+  await page.getByRole('button', { name: 'Open menu' }).click();
+  await page.getByRole('button', { name: 'MY PARTY' }).click();
+  await page.getByRole('button', { name: 'Edit Charizard' }).click();
+  await page.getByRole('textbox', { name: 'Search moves...' }).fill('Flamethrower');
+  await page.locator('#move-section').getByText('Flamethrower').click();
+  await page.getByRole('button', { name: /SAVE/ }).click();
+  // Navigate back to search
+  await page.getByRole('button', { name: 'Open menu' }).click();
+  await page.getByRole('button', { name: 'SEARCH' }).click();
+  // Search a Grass enemy — Charizard should be top suggestion
+  await page.getByLabel('Search Pokémon').fill('Oddish');
+  await page.getByRole('option', { name: 'Oddish' }).click();
+  const scroll = page.locator('#s-scroll');
+  // Stat note: Charizard SpA 109 > ATK 84 → SPE
+  await expect(scroll.getByText('SPE · SpA 109')).toBeVisible();
+  // Move row sub-line: power and effect
+  await expect(scroll.getByText('95bp')).toBeVisible();
+  await expect(scroll.getByText('burn 10%')).toBeVisible();
+});
+
 test('EVOLVE button swaps party member to next form', async ({ page }) => {
   await page.getByLabel('Search Pokémon').fill('Bulbasaur');
   await page.getByRole('option', { name: 'Bulbasaur' }).click();
