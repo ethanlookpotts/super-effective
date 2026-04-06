@@ -111,12 +111,23 @@ function showMoveBreakdown(moveName, moveType, defN, pmN){
   document.getElementById('bd-ttl').textContent = moveName.toUpperCase()+' → '+defPoke.name.toUpperCase();
   let html = '';
 
-  // Move info line
-  html += `<div style="display:flex;align-items:center;gap:7px;margin-bottom:12px;">
+  // Move info line with power / accuracy / effect
+  const md = MOVE_DATA[moveName];
+  const pow = md ? md[0] : null;
+  const acc = md ? md[1] : null;
+  const effNote = md ? md[2] : null;
+  let metaItems = [];
+  if(pow > 0) metaItems.push(`<div class="bd-meta-item">PWR <span>${pow}</span></div>`);
+  if(acc > 0 && acc < 100) metaItems.push(`<div class="bd-meta-item">ACC <span>${acc}%</span></div>`);
+  else if(acc === 0 && pow > 0) metaItems.push(`<div class="bd-meta-item">ACC <span>∞</span></div>`);
+  if(effNote) metaItems.push(`<div class="bd-meta-item">EFFECT <span>${effNote}</span></div>`);
+  metaItems.push(`<div class="bd-meta-item" style="margin-left:auto;">CAT <span style="color:${phys?'#c08030':'#5080b8'}">${phys?'PHY':'SPE'}</span></div>`);
+
+  html += `<div style="display:flex;align-items:center;gap:7px;margin-bottom:8px;">
     <span class="tb t-${moveType}">${moveType}</span>
-    <span style="font-family:var(--fp);font-size:6.5px;color:var(--text2);">${moveName}</span>
-    <span style="font-family:var(--fp);font-size:5.5px;color:${phys?'#907030':'#5080b8'};margin-left:auto;">${phys?'PHY':'SPE'}</span>
-  </div>`;
+    <span style="font-family:var(--fp);font-size:6.5px;color:var(--text2);flex:1;">${moveName}</span>
+  </div>
+  <div class="bd-move-meta">${metaItems.join('')}</div>`;
 
   // Type matchup rows
   html += `<div class="bd-section"><div class="bd-lbl">TYPE MATCHUP</div>`;

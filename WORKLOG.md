@@ -13,8 +13,9 @@ Evolving into a multi-game companion app with playthrough support.
 - [ ] Party Builder — extend My Party page with a full PC box (store all caught Pokémon, not just the active 6), then add an automated party suggestion flow that scores candidate teams by type coverage and surfaces the best options with one tap
 
 ### Medium Priority
-- [ ] Pokémon base stats display (Attack vs Sp.Atk to guide move choice)
+- [ ] Per-Pokémon actual stat entry (IVs/EVs/nature/level → compute real Atk/SpA/Spe) and exact damage formula display — show calculated damage range per move in party matchup cards; replaces base-stat heuristics with precise battle math
 - [ ] Search by move name → show all Pokémon that can learn it
+- [ ] Audit and replace E2E locators that use CSS id/class selectors (e.g. #move-section) with accessible role/heading/label alternatives so tests behave like real users — add appropriate aria labels to HTML where needed to enable this
 
 ### Future Games
 - [ ] Red / Blue / Yellow (Gen I)
@@ -30,6 +31,11 @@ Evolving into a multi-game companion app with playthrough support.
 ---
 
 ## Progress
+
+### Session 17 — Base Stats, Move Guidance & Info Modal
+
+**Completed**
+- [x] Pokémon base stats display + move guidance overhaul — added STATS constant (all 151 Gen I Pokémon) and MOVE_DATA constant (350+ moves with base power, accuracy, secondary effect); base stats shown as colour-coded bars in detail card with dominant stat highlighted; PHY/SPE stat note on each party matchup card; move rows in party matchup show power (e.g. 95bp), imperfect accuracy, and coloured effect badges (burn/para/sleep/psn/freeze/flinch/drain); moves sorted by power when type effectiveness is equal; ℹ button in BASE STATS heading opens explanation modal with per-stat descriptions, PHY vs SPE recommendation, and IVs/EVs/nature/level caveat; breakdown overlay shows power/accuracy/effect at top; 4 new E2E tests (40 total passing)
 
 ### Session 16 — Static Learnsets + Hidden Power UI
 
