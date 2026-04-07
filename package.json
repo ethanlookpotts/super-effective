@@ -1,7 +1,9 @@
 {
   "private": true,
   "scripts": {
-    "test": "playwright test"
+    "test:unit": "node --test test/party-calc.test.js",
+    "test:e2e": "playwright test",
+    "test": "npm run test:unit && npm run test:e2e"
   },
   "devDependencies": {
     "@playwright/test": "^1.44.0",

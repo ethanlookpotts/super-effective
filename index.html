@@ -91,13 +91,17 @@
       <div class="party-ph-title">🎒 MY PARTY</div>
       <div class="party-ph-sub">TAP SLOT TO ADD OR EDIT · UP TO 6</div>
     </div>
-    <div id="cov-wrap" class="coverage-wrap" style="display:none">
-      <div class="cov-label">TYPE COVERAGE — TAP A DOT TO BROWSE THAT TYPE</div>
-      <div class="cov-bar" id="cov-bar"></div>
-    </div>
-    <div class="party-grid" id="party-grid"></div>
-    <div class="party-ct-wrap">
-      <div id="party-ct" class="party-ct"></div>
+    <div class="party-scroll">
+      <div id="cov-wrap" class="coverage-wrap" style="display:none">
+        <div class="cov-label">TYPE COVERAGE — TAP A DOT TO BROWSE THAT TYPE</div>
+        <div class="cov-bar" id="cov-bar"></div>
+      </div>
+      <div class="party-grid" id="party-grid"></div>
+      <div class="party-ct-wrap">
+        <div id="party-ct" class="party-ct"></div>
+      </div>
+      <div id="suggest-wrap"></div>
+      <div id="pc-section"></div>
     </div>
   </div>
 
@@ -178,6 +182,17 @@
     </div>
   </div>
 
+  <!-- ══ PARTY SUGGESTION MODAL ══ -->
+  <div class="overlay" id="suggest-overlay" onclick="suggestOvClick(event)">
+    <div class="modal">
+      <div class="modal-hd">
+        <div class="modal-ttl" id="suggest-modal-ttl">✨ PARTY SUGGESTIONS</div>
+        <button class="modal-x" onclick="closeSuggestModal()">✕ CLOSE</button>
+      </div>
+      <div class="modal-body" id="suggest-body"></div>
+    </div>
+  </div>
+
   <!-- ══ STATS INFO ══ -->
   <div class="overlay" id="stats-info-overlay" onclick="statsInfoOvClick(event)">
     <div class="modal">
@@ -213,6 +228,7 @@
 <script src="js/breakdown.js"></script>
 <script src="js/state.js"></script>
 <script src="js/search.js"></script>
+<script src="js/party-calc.js"></script>
 <script src="js/party.js"></script>
 <script src="js/gyms.js"></script>
 <script src="js/pages.js"></script>

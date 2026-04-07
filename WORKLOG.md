@@ -10,7 +10,6 @@ Evolving into a multi-game companion app with playthrough support.
 ## Backlog
 
 ### High Priority
-- [ ] Party Builder — extend My Party page with a full PC box (store all caught Pokémon, not just the active 6), then add an automated party suggestion flow that scores candidate teams by type coverage and surfaces the best options with one tap
 
 ### Medium Priority
 - [ ] Per-Pokémon actual stat entry (IVs/EVs/nature/level → compute real Atk/SpA/Spe) and exact damage formula display — show calculated damage range per move in party matchup cards; replaces base-stat heuristics with precise battle math
@@ -31,6 +30,19 @@ Evolving into a multi-game companion app with playthrough support.
 ---
 
 ## Progress
+
+### Session 19 — Party Suggestion Overhaul + Unit Tests
+
+**Completed**
+- [x] Reworked party suggestion engine: extracted to `js/party-calc.js` pure module (`makePartyCalc` factory); improved greedy algorithm uses marginal coverage scoring (new types ×3 − stacked weakness penalty + BST/600 tiebreaker) instead of team-rescore heuristic; 5 diverse suggestions generated from top-scoring seeds, each sorted by dex number; `_computeSuggestions` in `party.js` delegates to module
+- [x] UI: replaced single "SUGGEST MY PARTY" button with 5 sprite-strip cards (sprites + X/18 score inline, tap to open detail modal); detail modal shows single suggestion with full coverage bar, weak-to badges, USE THIS PARTY; desktop layout renders strip cards as horizontal row; suggestion members sorted by dex number
+- [x] Unit test suite: `test/party-calc.test.js` — 29 tests across `bst`, `countOffCov`, `individualScore`, `marginalScore`, `scoreTeam`, `buildGreedyTeam`, `computeSuggestions`; loads browser source via `node:vm` with no conditional exports; `npm run test:unit` / `npm run test:e2e` / `npm test`
+- [x] CI fixed: `test.yml` now runs `npm test` (was `npx playwright test`, skipping unit tests); AGENTS.md updated with full Testing section covering both suites; worklogger skill updated
+
+### Session 18 — Party Builder: PC Box & Party Suggestions
+
+**Completed**
+- [x] Party Builder — PC Box (unlimited caught Pokémon storage) + automated party suggestion engine; `pc[]` array added to playthrough model with migration; "📦 SEND TO PC" / "📦 IN PC BOX" buttons in search detail card; PC Box collapsible 3-column grid on party page with sprite, type badges, "→ PARTY" and inline-confirm remove; "✨ SUGGEST MY PARTY" button appears when ≥6 in PC; suggestion modal scores teams by base-type offensive coverage (×3) + move bonus (×1) − defensive exposure (×0.5) using greedy algorithm with 3 diverse seeds, shows up to 3 options with coverage bar and "USE THIS PARTY" CTA; applying a suggestion swaps current party to PC and fills party from PC; 10 new E2E tests (50 total passing)
 
 ### Session 17 — Base Stats, Move Guidance & Info Modal
 

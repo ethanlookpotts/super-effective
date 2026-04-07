@@ -182,11 +182,17 @@ function renderPokeDetail(){
     ${sec('xq','¼× Resists',g[.25])}
     ${sec('xh','½× Resists',g[.5])}`;
 
-  // Add to party button
+  // Add to party / PC buttons
   if(inParty){
     html += `<button class="add-party-btn in-party" onclick="showPage('party')">✓ IN PARTY — VIEW PARTY ›</button>`;
   } else {
     html += `<button class="add-party-btn" onclick="addToParty(${p.n})">➕ ADD TO PARTY</button>`;
+    const inPC = pt.pc && pt.pc.some(pm=>pm.n===p.n);
+    if(inPC){
+      html += `<button class="add-pc-btn in-pc" disabled>📦 IN PC BOX</button>`;
+    } else {
+      html += `<button class="add-pc-btn" onclick="addToPC(${p.n})">📦 SEND TO PC</button>`;
+    }
   }
 
   // Party suggestions — with both attack and defense matchups
