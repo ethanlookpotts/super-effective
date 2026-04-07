@@ -64,6 +64,8 @@ function renderParty(){
   g.innerHTML = html;
   document.getElementById('party-ct').textContent = pt.party.length ? `${pt.party.length} / 6 IN PARTY` : '';
   renderCoverage();
+  renderSuggestBtn();
+  renderPC();
 }
 
 function renderCoverage(){
@@ -244,12 +246,14 @@ function rmParty(i){
 }
 
 // ═══════════════════════════════
-// PC SWAP MODAL
+// PC SWAP MODAL (search → party)
 // ═══════════════════════════════
 let swapTargetN = null;
+let swapSourcePcIdx = -1;
 
 function openSwapModal(n){
   swapTargetN = n;
+  swapSourcePcIdx = -1;
   const pt = activePt();
   const body = document.getElementById('swap-body');
   body.innerHTML = `<div style="font-family:var(--fp);font-size:5.5px;color:var(--text3);margin-bottom:10px;line-height:1.8;">PARTY FULL — TAP A POKEMON TO REPLACE IT</div>` +
@@ -261,7 +265,7 @@ function openSwapModal(n){
       </div>`).join('');
   document.getElementById('swap-overlay').classList.add('open');
 }
-function closeSwapModal(){ document.getElementById('swap-overlay').classList.remove('open'); swapTargetN=null; }
+function closeSwapModal(){ document.getElementById('swap-overlay').classList.remove('open'); swapTargetN=null; swapSourcePcIdx=-1; }
 function swapOvClick(e){ if(e.target===document.getElementById('swap-overlay')) closeSwapModal(); }
 
 function swapIn(slotIdx){
@@ -275,4 +279,249 @@ function swapIn(slotIdx){
   showToast('Swapped in '+poke.name);
   renderParty();
   if(activePoke) renderPokeDetail();
+}
+
+// ═══════════════════════════════
+// PC BOX
+// ═══════════════════════════════
+let pcCollapsed = false;
+let pcConfirmIdx = -1;
+
+function addToPC(n){
+  const pt = activePt();
+  const poke = POKEMON.find(p=>p.n===n);
+  if(!poke) return;
+  pt.pc.push({n:poke.n, name:poke.name, types:[...poke.types], moves:[], level:''});
+  saveStore();
+  showToast('Sent to PC Box');
+  if(activePoke && activePoke.n===n) renderPokeDetail();
+  renderSuggestBtn();
+  renderPC();
+}
+
+function confirmRemovePC(idx){
+  pcConfirmIdx = idx;
+  renderPC();
+}
+function cancelRemovePC(){
+  pcConfirmIdx = -1;
+  renderPC();
+}
+function removeFromPC(idx){
+  const pt = activePt();
+  pt.pc.splice(idx, 1);
+  pcConfirmIdx = -1;
+  saveStore();
+  renderSuggestBtn();
+  renderPC();
+}
+
+function moveToPartyFromPC(idx){
+  const pt = activePt();
+  const pm = pt.pc[idx];
+  if(!pm) return;
+  if(pt.party.length >= 6){
+    swapSourcePcIdx = idx;
+    const body = document.getElementById('swap-body');
+    body.innerHTML = `<div style="font-family:var(--fp);font-size:5.5px;color:var(--text3);margin-bottom:10px;line-height:1.8;">PARTY FULL — TAP A POKÉMON TO REPLACE IT</div>` +
+      pt.party.map((pm2,i)=>`
+        <div class="swap-row" onclick="swapInFromPC(${i})">
+          <img class="swap-row-sprite" src="${spriteUrl(pm2.n)}" onerror="this.style.display='none'">
+          <span class="swap-row-name">${pm2.name}</span>
+          <span class="swap-row-types">${pm2.types.map(t=>`<span class="tb sm t-${t}">${t}</span>`).join('')}</span>
+        </div>`).join('');
+    document.getElementById('swap-overlay').classList.add('open');
+  } else {
+    pt.party.push({...pm});
+    pt.pc.splice(idx, 1);
+    saveStore();
+    renderParty();
+    showToast('Moved to party');
+  }
+}
+
+function swapInFromPC(slotIdx){
+  if(swapSourcePcIdx === -1) return;
+  const pt = activePt();
+  const pm = pt.pc[swapSourcePcIdx];
+  if(!pm) return;
+  const displaced = {...pt.party[slotIdx]};
+  pt.party[slotIdx] = {...pm};
+  pt.pc.splice(swapSourcePcIdx, 1);
+  pt.pc.push(displaced);
+  swapSourcePcIdx = -1;
+  saveStore();
+  closeSwapModal();
+  showToast('Moved to party');
+  renderParty();
+}
+
+function togglePC(){
+  pcCollapsed = !pcCollapsed;
+  renderPC();
+}
+
+function renderSuggestions(){
+  const wrap = document.getElementById('suggest-wrap');
+  if(!wrap) return;
+  const pt = activePt();
+  const total = pt.party.length + pt.pc.length;
+  if(!total){
+    wrap.innerHTML = `<div class="sugg-empty-note">Add Pokémon to your party or PC Box to get party suggestions.</div>`;
+    return;
+  }
+  const suggestions = _computeSuggestions();
+  if(!suggestions.length){ wrap.innerHTML=''; return; }
+  let html = `<div class="sugg-strip-hd">✨ SUGGESTED PARTIES</div>`;
+  suggestions.forEach((s,idx)=>{
+    const sprites = s.members.map(pm=>`<img class="sugg-strip-sprite" src="${spriteUrl(pm.n)}" onerror="this.style.display='none'">`).join('');
+    html += `<button class="sugg-strip-card" onclick="openSuggestModal(${idx})" aria-label="Suggestion ${idx+1}: ${s.coverage}/18 covered">
+      <span class="sugg-strip-num">#${idx+1}</span>
+      <span class="sugg-strip-sprites">${sprites}</span>
+      <span class="sugg-strip-score">${s.coverage}/18</span>
+      <span class="sugg-strip-arrow">▶</span>
+    </button>`;
+  });
+  wrap.innerHTML = html;
+  // Cache so modal can reference without recomputing
+  _suggestions = suggestions;
+}
+// Keep old name as alias so renderParty() still works
+function renderSuggestBtn(){ renderSuggestions(); }
+
+function renderPC(){
+  const section = document.getElementById('pc-section');
+  if(!section) return;
+  const pt = activePt();
+  const pc = pt.pc;
+  const arrow = pcCollapsed ? '▶' : '▼';
+  let html = `<div class="pc-hd" role="button" aria-label="Toggle PC Box" onclick="togglePC()">
+    <span class="pc-hd-title">📦 PC BOX</span>
+    <span class="pc-hd-count">(${pc.length} CAUGHT)</span>
+    <span class="pc-hd-arrow">${arrow}</span>
+  </div>`;
+  if(!pcCollapsed){
+    if(!pc.length){
+      html += `<div class="pc-empty">Pokémon you catch but aren't in your active party live here. Add from the Search page.</div>`;
+    } else {
+      html += `<div class="pc-grid">`;
+      pc.forEach((pm,idx)=>{
+        if(pcConfirmIdx === idx){
+          html += `<div class="pc-slot confirming">
+            <div class="pcs-confirm-msg">REMOVE?</div>
+            <div class="pcs-confirm-btns">
+              <button class="pcs-confirm-yes" onclick="removeFromPC(${idx})">YES</button>
+              <button class="pcs-confirm-no" onclick="cancelRemovePC()">NO</button>
+            </div>
+          </div>`;
+        } else {
+          const shortName = pm.name.length > 9 ? pm.name.slice(0,8)+'…' : pm.name;
+          html += `<div class="pc-slot">
+            <img class="pcs-sprite" src="${spriteUrl(pm.n)}" onerror="this.style.display='none'">
+            <div class="pcs-num">#${String(pm.n).padStart(3,'0')}</div>
+            <div class="pcs-name">${shortName}</div>
+            <div class="pcs-types">${pm.types.map(t=>`<span class="tb sm t-${t}">${t}</span>`).join('')}</div>
+            <div class="pcs-actions">
+              <button class="pcs-move-btn" aria-label="Move ${pm.name} to party" onclick="moveToPartyFromPC(${idx})">→ PARTY</button>
+              <button class="pcs-rm-btn" aria-label="Remove ${pm.name} from PC" onclick="confirmRemovePC(${idx})">✕</button>
+            </div>
+          </div>`;
+        }
+      });
+      html += `</div>`;
+    }
+  }
+  section.innerHTML = html;
+}
+
+// ═══════════════════════════════
+// PARTY SUGGESTION ENGINE — delegates to party-calc.js
+// ═══════════════════════════════
+const _calc = makePartyCalc(TYPES, STATS, gm, dmult);
+
+function _computeSuggestions(){
+  const pt = activePt();
+  const pool = [
+    ...pt.party.map((pm,idx)=>({...pm, _src:'party', _srcIdx:idx})),
+    ...pt.pc.map((pm,idx)=>({...pm, _src:'pc', _srcIdx:idx})),
+  ];
+  return _calc.computeSuggestions(pool);
+}
+
+// ═══════════════════════════════
+// SUGGESTION MODAL
+// ═══════════════════════════════
+let _suggestions = [];
+let _suggIdx = 0;
+
+function openSuggestModal(idx){
+  _suggIdx = idx || 0;
+  renderSuggestModal();
+  document.getElementById('suggest-overlay').classList.add('open');
+}
+function closeSuggestModal(){ document.getElementById('suggest-overlay').classList.remove('open'); }
+function suggestOvClick(e){ if(e.target===document.getElementById('suggest-overlay')) closeSuggestModal(); }
+
+function renderSuggestModal(){
+  const hd = document.getElementById('suggest-modal-ttl');
+  const body = document.getElementById('suggest-body');
+  const s = _suggestions[_suggIdx];
+  if(!s){
+    if(hd) hd.textContent = 'PARTY SUGGESTIONS';
+    body.innerHTML = `<div style="text-align:center;padding:20px;font-family:var(--fp);font-size:6px;color:var(--text3);line-height:2.2;">NO POKÉMON AVAILABLE.<br>ADD SOME TO YOUR PARTY OR PC BOX FIRST.</div>`;
+    return;
+  }
+  if(hd) hd.textContent = `OPTION ${_suggIdx+1} · ${s.coverage}/18 COVERED`;
+  // Sprites row with type badges + source
+  let html = `<div class="sugg-sprites">`;
+  s.members.forEach(pm=>{
+    const n = pm.name.length > 9 ? pm.name.slice(0,8)+'…' : pm.name;
+    const srcBadge = pm._src==='party'
+      ? `<div class="sugg-src-party">IN PARTY</div>`
+      : `<div class="sugg-src-pc">FROM PC</div>`;
+    const typeBadges = pm.types.map(t=>`<span class="tb sm t-${t}">${t}</span>`).join('');
+    html += `<div class="sugg-poke">
+      <img src="${spriteUrl(pm.n)}" class="sugg-sprite" onerror="this.style.display='none'">
+      <div class="sugg-pname">${n}</div>
+      <div class="sugg-ptypes">${typeBadges}</div>
+      ${srcBadge}
+    </div>`;
+  });
+  html += `</div>`;
+  // Offensive coverage bar
+  const covered = new Set();
+  s.members.forEach(pm=>{
+    const atkTypes=[...pm.types,...(pm.moves||[]).map(m=>m.type)];
+    TYPES.forEach(def=>{ if(atkTypes.some(at=>gm(at,def)>=2)) covered.add(def); });
+  });
+  html += `<div class="sugg-section-lbl">COVERS</div>`;
+  html += `<div class="sugg-cov-bar">${TYPES.map(t=>`<span class="cdot t-${t} ${covered.has(t)?'covered':'gap'}">${t.slice(0,3).toUpperCase()}</span>`).join('')}</div>`;
+  // Defensive exposures
+  const exposed = new Set();
+  s.members.forEach(pm=>{ TYPES.forEach(at=>{ if(dmult(at,pm.types)>=2) exposed.add(at); }); });
+  if(exposed.size){
+    html += `<div class="sugg-section-lbl">WEAK TO</div>`;
+    html += `<div class="sugg-weak-row">${[...exposed].map(t=>`<span class="tb sm t-${t}">${t}</span>`).join('')}</div>`;
+  }
+  html += `<button class="sugg-apply-btn" onclick="applySuggestion(${_suggIdx})">USE THIS PARTY</button>`;
+  body.innerHTML = html;
+}
+
+function applySuggestion(idx){
+  const s = _suggestions[idx];
+  if(!s) return;
+  const pt = activePt();
+  const usedPartyIdx = new Set(s.members.filter(m=>m._src==='party').map(m=>m._srcIdx));
+  const usedPcIdx    = new Set(s.members.filter(m=>m._src==='pc').map(m=>m._srcIdx));
+  // New PC = original PC (minus those moving to party) + displaced party members
+  pt.pc = [
+    ...pt.pc.filter((_,i)=>!usedPcIdx.has(i)),
+    ...pt.party.filter((_,i)=>!usedPartyIdx.has(i)),
+  ];
+  // New party = the suggested team, stripped of internal tracking props
+  pt.party = s.members.map(({_src,_srcIdx,...pm})=>({...pm}));
+  saveStore();
+  closeSuggestModal();
+  renderParty();
+  showToast(`PARTY UPDATED — ${s.coverage}/18 TYPES COVERED`);
 }

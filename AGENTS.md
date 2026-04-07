@@ -131,7 +131,30 @@ All skills live in `skills/` and are symlinked to `.claude/skills/` for automati
 | `skills/playwright-generator.md` | Converting spec plans into runnable `e2e/*.spec.ts` files |
 | `skills/playwright-healer.md` | Repairing broken tests after UI changes |
 
-## E2E Testing
+## Testing
+
+`npm test` runs the full suite (unit + E2E). Both must pass before every commit and in CI.
+
+```bash
+npm run test:unit   # node:test unit tests — fast, no browser needed
+npm run test:e2e    # Playwright E2E tests — requires a browser
+npm test            # runs both in sequence
+```
+
+### Unit Tests (`test/`)
+
+Pure logic tests for calculation modules. Live in `test/`:
+
+```
+test/
+  party-calc.test.js   # scoring, greedy algorithm, computeSuggestions
+```
+
+**Strategy:** load browser source files as-is via `node:vm` — tests run the literal browser code, no dual exports, no mocks of core logic.
+
+When adding a new pure-logic module, add a corresponding `test/<module>.test.js`.
+
+### E2E Tests (`e2e/`)
 
 Tests use [Playwright](https://playwright.dev). All test-related files live in `e2e/`:
 
@@ -147,7 +170,6 @@ e2e/
 1. When adding a feature, add a plan to `e2e/specs/` (or use the `playwright-planner` skill)
 2. Generate tests with the `playwright-generator` skill
 3. If tests break after a change, use the `playwright-healer` skill to repair them
-4. Run `npm test` before every commit — all tests must pass
 
 **Selector convention — accessible locators only:**
 Tests must behave like a real user, not a machine inspecting the DOM.

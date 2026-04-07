@@ -23,9 +23,10 @@ function loadStore(){
     const raw = localStorage.getItem('se_v1');
     if(raw) store = JSON.parse(raw);
   } catch(e){}
-  // Migrate playthroughs with legacy gameId 'frlg' → 'frlg-fr'
+  // Migrate playthroughs with legacy gameId 'frlg' → 'frlg-fr', add pc:[] if missing
   if(store.playthroughs) store.playthroughs.forEach(pt=>{
     if(!pt.gameId || pt.gameId==='frlg') pt.gameId='frlg-fr';
+    if(!pt.pc) pt.pc = [];
   });
   if(store.playthroughs && store.playthroughs.length){
     if(!store.activePtId || !store.playthroughs.find(p=>p.id===store.activePtId)){
@@ -41,7 +42,7 @@ function saveStore(){
 }
 
 function makePt(name, gameId){
-  return { id: crypto.randomUUID(), name, gameId: gameId||'frlg-fr', party: [], recents: [], rivalStarter: 'bulbasaur' };
+  return { id: crypto.randomUUID(), name, gameId: gameId||'frlg-fr', party: [], pc: [], recents: [], rivalStarter: 'bulbasaur' };
 }
 
 function activePt(){
