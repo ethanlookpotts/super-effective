@@ -1,12 +1,37 @@
-# Super Effective — Pokémon Playthrough Aide
+# Super Effective — Pokémon FireRed & LeafGreen Companion
 
-A Pokémon playthrough and battle companion.
+Your complete companion for FireRed & LeafGreen.
 
-## What it does
+**[Check it out →](https://ethanlookpotts.github.io/super-effective/)**
 
-- **Search** any Kanto Pokémon → type chart, party match-up scores, obtain method
-- **Party** tracker with type coverage gap bar (tap gaps to browse coverage options)
-- **Gyms & Elite Four** quick-reference with full teams and tactical tips
-- **Where Am I** — browse encounters by location, tap any Pokémon to look it up
-- **Add to Party** from the Search tab — instant add or swap out if party is full
-- **Multiple playthroughs** — isolate party/recents per run (Nuzlocke, randomizer, etc.)
+---
+
+### Build the perfect party
+
+Catch Pokémon to your PC Box, get smart suggestions that maximise type coverage, and see at a glance exactly which party members to use against any opponent.
+
+![Party matchup showing Venusaur and Gengar rated GREAT against Starmie](screenshots/search-party-matchup.png)
+
+---
+
+### Look up any Pokémon instantly
+
+Type matchups, base stats, ability, obtain method, and evolution chain — everything you need before the next turn.
+
+![Gengar detail card showing type chart, base stats, and obtain method](screenshots/search-gengar-detail.png)
+
+---
+
+### Scout every boss before you walk in
+
+Full teams with levels, types, and tactical tips for every gym leader, rival encounter, and Elite Four member.
+
+![Gyms page with Misty expanded showing Staryu and Starmie](screenshots/gyms-misty-expanded.png)
+
+---
+
+### Find what's in your area
+
+Browse wild encounters by location. Tap any Pokémon to look it up.
+
+![Where Am I page showing Safari Zone encounters by zone](screenshots/where-am-i-safari.png)

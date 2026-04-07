@@ -5,5 +5,5 @@ playwright-report/
 .playwright/
 .playwright-mcp/
 blob-report/
-screenshots/
+notes/
 .DS_Store
