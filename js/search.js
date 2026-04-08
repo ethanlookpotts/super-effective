@@ -265,7 +265,7 @@ function renderPokeDetail(){
             const defStat = estimateEnemyStat(enemyBase[phys?2:4], enemyLevel);
             const defHP = estimateEnemyHP(enemyBase[0], enemyLevel);
             const rng = damageRangePct(atkLevel, atkStat, defStat, defHP, mv.pow, mv.eff);
-            if(rng) dmgHtml = `<span class="mv-dmg${s.atkStats.precise?'':' mv-dmg-est'}">${s.atkStats.precise?'':'~'}${rng[0]}–${rng[1]}%</span>`;
+            if(rng) dmgHtml = `<span class="mv-dmg mv-dmg-est">~${rng[0]}–${rng[1]}%</span>`;
           }
           // Move metadata sub-line
           let mvSub = '';

@@ -46,6 +46,9 @@
         <button class="drawer-item" data-page="tms" onclick="showPage('tms')">
           <span class="di-icon">📀</span><span class="di-label">TMs &amp; HMs</span>
         </button>
+        <button class="drawer-item" data-page="settings" onclick="showPage('settings')">
+          <span class="di-icon">⚙️</span><span class="di-label">SETTINGS</span>
+        </button>
       </nav>
     </div>
   </div>
@@ -123,6 +126,16 @@
         autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
     </div>
     <div class="scroll" id="loc-scroll"></div>
+  </div>
+
+  <!-- ══ SETTINGS PAGE ══ -->
+  <div id="page-settings" class="page">
+    <div class="settings-ph">
+      <div class="settings-ph-title">⚙ SETTINGS</div>
+    </div>
+    <div class="scroll" id="settings-scroll">
+      <div id="settings-body"></div>
+    </div>
   </div>
 
   <!-- ══ TMs & HMs PAGE ══ -->
@@ -218,6 +231,7 @@
 
 </div><!-- .app -->
 
+<script src="js/ocr.js"></script>
 <script src="js/data-types.js"></script>
 <script src="js/data-stats.js"></script>
 <script src="js/data-abilities.js"></script>
@@ -234,6 +248,7 @@
 <script src="js/gyms.js"></script>
 <script src="js/pages.js"></script>
 <script src="js/playthroughs.js"></script>
+<script src="js/settings.js"></script>
 <script src="js/init.js"></script>
 </body>
 </html>

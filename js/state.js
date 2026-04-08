@@ -56,11 +56,21 @@ let activePoke = null;
 let activeTypeFilter = null;
 
 // Modal state
-let mSlot = -1, mPoke = null, mMoves = [], mTypeFilter = null, mMoveQ = '', mLv = '';
+let mSlot = -1, mPoke = null, mMoves = [], mTypeFilter = null, mMoveQ = '', mLv = '', mNature = '';
 let mHPPicking = false; // true while the Hidden Power type selector is open
-let mAdvStats = {ivAtk:'', ivSpa:'', ivSpe:'', evAtk:'', evSpa:'', evSpe:'', nature:''};
 let mMovesOpen = false; // moves section collapsed by default
-let mAdvOpen = false;   // advanced stats section collapsed by default
+let mInfoOpen = false;  // info section (ability/item/gender/stats) collapsed by default
+let mAbility = '';
+let mItem = '';
+let mGender = '';       // 'M' | 'F' | ''
+let mStats = null;      // { hp, atk, def, spatk, spdef, spe } — actual in-game max stats
+let mShiny = false;
+let mOtName = '';
+let mOtId = '';
+let mPokeball = '';
+let mTrainerMemo = '';
+let mScanResult = null; // last scan result — persists across renderModal() calls
+let mMode = 'party';   // 'party' | 'pc' — determines where saveModal() writes
 
 // ═══════════════════════════════
 // RIVAL STARTER — stored per playthrough

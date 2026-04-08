@@ -8,6 +8,7 @@ function showPage(id){
   const di = document.querySelector(`.drawer-item[data-page="${id}"]`);
   if(di) di.classList.add('active');
   if(id==='party') renderParty();
+  if(id==='settings') renderSettings();
   closeDrawer();
 }
 function openDrawer(){ document.getElementById('drawer-overlay').classList.add('open'); }
