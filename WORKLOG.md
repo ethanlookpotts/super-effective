@@ -12,9 +12,9 @@ Evolving into a multi-game companion app with playthrough support.
 ### High Priority
 
 ### Medium Priority
-- [ ] PC screenshot ingestion — use a photo/screenshot of the in-game PC box to ingest or update party Pokémon stats (IVs/EVs/nature/level) via image recognition
 - [ ] Search by move name → show all Pokémon that can learn it
 - [ ] Audit and replace E2E locators that use CSS id/class selectors (e.g. #move-section) with accessible role/heading/label alternatives so tests behave like real users — add appropriate aria labels to HTML where needed to enable this
+- [ ] IV/EV input — add back once accessible in-game (Gen III has no in-game IV/EV display; consider IV range calculator from scanned stats + nature + level, or EV tracking from battle history)
 
 ### Future Games
 - [ ] Red / Blue / Yellow (Gen I)
@@ -30,6 +30,27 @@ Evolving into a multi-game companion app with playthrough support.
 ---
 
 ## Progress
+
+### Session 22 — Claude Vision Scan + Full Static Info
+
+**Completed**
+- [x] Replaced Tesseract.js with Claude Vision API (`claude-haiku-4-5-20251001`, browser-direct) — `js/ocr.js` rewritten; `readGameScreen(file)` returns structured JSON; key stored in `localStorage` under `se_claude_key`
+- [x] Settings page (`js/settings.js`, `page-settings` in index.html) — API key input, TEST button, KEY ACTIVE / NO KEY SET badge, FORGET KEY; scan button redirects to Settings if key is missing; 6 E2E tests (`e2e/settings.spec.ts`)
+- [x] PC Box redesign — ADD NEW tile as first slot (same size as Pokémon slots); all PC slots clickable → opens edit modal; scan available inside PC modal via shared `mMode='pc'` state
+- [x] Scan captures all static info from all 3 FRLG screens (INFO / SKILLS / MOVES): name, level, dex, nature, ability, item, gender, moves, max stats; + trainer memo, OT name, OT ID, Poké Ball, shiny detection
+- [x] Scan result box in modal — persists across re-renders, accumulates across multiple scans (scan one screen then another); shows all parsed fields + token count + cost estimate + usage link; `↺ RESET TO SCAN` button re-applies scan data to form
+- [x] INFO collapsible section in edit modal — ability, item, gender, shiny toggle (✦, shows gold highlight + shiny sprite in PC), ball, OT name/ID, trainer memo, 6-stat grid; populated from scan and manually editable; all saved to party/PC entry
+- [x] Shiny state — toggle in INFO section; ✦ shown in party slots and PC slots; PC uses shiny sprite URL when shiny=true
+- [x] Robust JSON parsing — extracts first `{…}` block so trailing Claude notes don't break parse; improved prompt names all 3 FRLG screen types; `max_tokens: 256`
+- [x] 59 tests passing
+
+### Session 21 — Photo Ingestion (Stats / Memo / Moves Screens)
+
+**Completed**
+- [x] [OCR-1] OCR foundation — Tesseract.js v5 loaded from jsDelivr CDN; `js/ocr.js` with `runOCR(file)` helper (cached worker, progress + error toasts); handles Switch screenshots and phone-camera photos of TV (docked Switch 2)
+- [x] [OCR-2] Stats + memo screen ingestion — `parseLevel()` (handles "Lv.XX" and "Level XX"), `parseNature()` (prioritises "[Nature] nature" MEMO pattern, falls back to lone nature word); auto-fills level and nature fields
+- [x] [OCR-3] Moves screen ingestion — `parseMovesFromOCR()` with `fuzzyMatchMove()` (OCR substitution normalisation: 0→o, 1/l→i); strips PP counters from lines; auto-fills up to 4 moves
+- [x] UI — single "📷 SCAN GAME SCREENS" button in party edit modal (visible when Pokémon selected); accepts multiple images; opens ADVANCED STATS / MOVES sections after fill; toast summarises what was found; 53 tests still passing
 
 ### Session 20 — Advanced Stats Entry + Damage Range
 

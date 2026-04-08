@@ -52,7 +52,7 @@ function renderParty(){
       : `<div class="ps-mv" style="color:var(--text3);font-style:italic;font-size:9px;">no moves set</div>`;
     const lvTxt = pm.level ? `<span class="ps-lv">Lv.${pm.level}</span>` : '';
     html += `<div class="pslot filled" role="button" aria-label="Edit ${pm.name}" onclick="openModal(${i})">
-      <div class="ps-num">#${String(pm.n).padStart(3,'0')}</div>
+      <div class="ps-num">#${String(pm.n).padStart(3,'0')}${pm.shiny?' <span style="color:#FFD700">✦</span>':''}</div>
       <div class="ps-head"><span class="ps-name">${pm.name}</span>${lvTxt}</div>
       <div class="ps-types">${tb}</div>
       <div class="ps-moves">${mv}</div>
@@ -85,33 +85,56 @@ function renderCoverage(){
 // ═══════════════════════════════
 // PARTY EDIT MODAL
 // ═══════════════════════════════
-function openModal(idx){
-  const pt = activePt();
-  mSlot = idx;
-  mHPPicking = false;
-  mMovesOpen = false;
-  mAdvOpen = false;
-  if(idx>=0 && idx<pt.party.length){
-    const pm = pt.party[idx];
-    mPoke = {n:pm.n, name:pm.name, types:pm.types};
-    mMoves = [...(pm.moves||[])];
-    mLv = pm.level||'';
-    const adv = pm.advStats || {};
-    mAdvStats = {ivAtk:adv.ivAtk||'', ivSpa:adv.ivSpa||'', ivSpe:adv.ivSpe||'', evAtk:adv.evAtk||'', evSpa:adv.evSpa||'', evSpe:adv.evSpe||'', nature:adv.nature||''};
-  } else {
-    mPoke = null; mMoves = []; mLv = '';
-    mAdvStats = {ivAtk:'', ivSpa:'', ivSpe:'', evAtk:'', evSpa:'', evSpe:'', nature:''};
-  }
-  mTypeFilter = null; mMoveQ = '';
-  document.getElementById('modal-ttl').textContent = (idx>=0 && idx<pt.party.length) ? 'EDIT POKEMON' : 'ADD POKEMON';
+function _loadModalMember(pm){
+  mPoke = {n:pm.n, name:pm.name, types:pm.types};
+  mMoves = [...(pm.moves||[])];
+  mLv = pm.level||'';
+  mNature = pm.nature || pm.advStats?.nature || '';
+  mAbility      = pm.ability||'';
+  mItem         = pm.item != null ? pm.item : '';
+  mGender       = pm.gender||'';
+  mStats        = pm.stats ? {...pm.stats} : null;
+  mShiny        = pm.shiny || false;
+  mOtName       = pm.otName||'';
+  mOtId         = pm.otId||'';
+  mPokeball     = pm.pokeball||'';
+  mTrainerMemo  = pm.trainerMemo||'';
+}
+function _clearModalMember(){
+  mPoke = null; mMoves = []; mLv = ''; mNature = '';
+  mAbility = ''; mItem = ''; mGender = ''; mStats = null;
+  mShiny = false; mOtName = ''; mOtId = ''; mPokeball = ''; mTrainerMemo = '';
+}
+function _openModal(){
+  mHPPicking = false; mMovesOpen = false; mInfoOpen = false;
+  mTypeFilter = null; mMoveQ = ''; mScanResult = null;
   renderModal();
   document.getElementById('overlay').classList.add('open');
 }
+
+function openModal(idx){
+  const pt = activePt();
+  mMode = 'party'; mSlot = idx;
+  if(idx>=0 && idx<pt.party.length) _loadModalMember(pt.party[idx]);
+  else _clearModalMember();
+  document.getElementById('modal-ttl').textContent = (idx>=0 && idx<pt.party.length) ? 'EDIT POKÉMON' : 'ADD POKÉMON';
+  _openModal();
+}
+
+function openPCModal(idx){
+  const pt = activePt();
+  mMode = 'pc'; mSlot = idx;
+  if(idx>=0 && idx<pt.pc.length) _loadModalMember(pt.pc[idx]);
+  else _clearModalMember();
+  document.getElementById('modal-ttl').textContent = (idx>=0 && idx<pt.pc.length) ? 'EDIT PC POKÉMON' : 'ADD TO PC';
+  _openModal();
+}
 function closeModal(){
   document.getElementById('overlay').classList.remove('open');
-  mPoke = null; mMoves = [];
-  mAdvStats = {ivAtk:'', ivSpa:'', ivSpe:'', evAtk:'', evSpa:'', evSpe:'', nature:''};
-  mMovesOpen = false; mAdvOpen = false;
+  mPoke = null; mMoves = []; mLv = ''; mNature = '';
+  mAbility = ''; mItem = ''; mGender = ''; mStats = null;
+  mShiny = false; mOtName = ''; mOtId = ''; mPokeball = ''; mTrainerMemo = '';
+  mMovesOpen = false; mInfoOpen = false; mScanResult = null;
 }
 function oClick(e){ if(e.target===document.getElementById('overlay')) closeModal(); }
 
@@ -127,6 +150,9 @@ function renderModal(){
     <button class="xcl" id="ms-cl" onclick="clearMP()" style="display:${mPoke?'block':'none'}">✕</button>
   </div>
   <div id="ms-drop" class="pdrop" style="display:none;margin:0;border-radius:var(--r);border-top:1.5px solid var(--border2);margin-bottom:8px;"></div>`;
+
+  html += `<button class="ocr-scan-btn" onclick="_triggerOCRScan()" aria-label="Scan game screens">📷 SCAN GAME SCREENS</button>`;
+  html += _renderScanResultBox();
 
   if(mPoke){
     const tb = mPoke.types.map(t=>`<span class="tb t-${t}">${t}</span>`).join(' ');
@@ -150,90 +176,180 @@ function renderModal(){
     <div id="move-section"></div>
   </div>`;
 
-  // Advanced stats section (collapsible)
-  const hasAdv = Object.values(mAdvStats).some(v => v !== '' && v != null);
-  let advSummary = '';
-  if(mPoke && hasAdv){
-    const parts = [];
-    if(mLv) parts.push(`Lv.${mLv}`);
-    if(mAdvStats.nature) parts.push(mAdvStats.nature);
-    advSummary = parts.join(' · ');
-  }
-  const advDisabled = !mPoke;
-  html += `<div class="modal-sec-hd${advDisabled?' sec-disabled':''}" ${mPoke?`onclick="toggleAdvSection()" role="button" aria-expanded="${mAdvOpen}"`:''} aria-label="Advanced stats section">
-    <span class="modal-sec-ttl">ADVANCED STATS</span>
-    <span class="modal-sec-info">${advSummary}</span>
-    <span class="modal-sec-arr">${mAdvOpen?'▾':'▶'}</span>
+  // Info section — ability / item / gender / full stats / shiny / OT / memo (collapsible)
+  const hasInfo = mAbility || mItem !== '' || mGender || mStats || mShiny || mOtName || mPokeball || mTrainerMemo;
+  const infoDisabled = !mPoke;
+  const infoSummary = mPoke && hasInfo
+    ? [mAbility, mItem!==''?(mItem||'no item'):'', mGender==='M'?'♂':mGender==='F'?'♀':'', mShiny?'✦ SHINY':''].filter(Boolean).join(' · ')
+    : '';
+  const statKeys = ['hp','atk','def','spatk','spdef','spe'];
+  const statLabels = {hp:'HP',atk:'ATK',def:'DEF',spatk:'SpA',spdef:'SpD',spe:'SPE'};
+  const statsInputs = statKeys.map(k =>
+    `<div style="display:flex;flex-direction:column;gap:3px;">
+      <div class="adv-row-hd" style="text-align:center;">${statLabels[k]}</div>
+      <input class="adv-in" type="number" min="1" max="999" placeholder="—"
+        value="${mStats&&mStats[k]!=null?mStats[k]:''}"
+        oninput="if(!mStats)mStats={};mStats['${k}']=this.value?parseInt(this.value):null"
+        inputmode="numeric" aria-label="${statLabels[k]} stat" style="text-align:center;">
+    </div>`
+  ).join('');
+  html += `<div class="modal-sec-hd${infoDisabled?' sec-disabled':''}" ${mPoke?`onclick="toggleInfoSection()" role="button" aria-expanded="${mInfoOpen}"`:''} aria-label="Info section">
+    <span class="modal-sec-ttl">INFO</span>
+    <span class="modal-sec-info">${infoSummary}</span>
+    <span class="modal-sec-arr">${mInfoOpen?'▾':'▶'}</span>
   </div>
-  <div class="modal-sec-body" style="display:${mAdvOpen&&mPoke?'block':'none'}">
-    ${renderAdvStatsBody()}
+  <div class="modal-sec-body" style="display:${mInfoOpen&&mPoke?'block':'none'}">
+    <div style="display:flex;flex-direction:column;gap:7px;padding-bottom:4px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <label class="adv-row-hd" for="info-ability" style="width:52px;flex-shrink:0;">ABILITY</label>
+        <input class="adv-in" id="info-ability" type="text" placeholder="e.g. Torrent"
+          value="${mAbility}" oninput="mAbility=this.value" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="Ability" style="flex:1;min-width:0;">
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <label class="adv-row-hd" for="info-item" style="width:52px;flex-shrink:0;">ITEM</label>
+        <input class="adv-in" id="info-item" type="text" placeholder="none"
+          value="${mItem}" oninput="mItem=this.value" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="Held item" style="flex:1;min-width:0;">
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <label class="adv-row-hd" for="info-gender" style="width:52px;flex-shrink:0;">GENDER</label>
+        <select class="adv-in" id="info-gender" onchange="mGender=this.value" aria-label="Gender" style="flex:1;min-width:0;">
+          <option value="" ${!mGender?'selected':''}>—</option>
+          <option value="M" ${mGender==='M'?'selected':''}>♂ Male</option>
+          <option value="F" ${mGender==='F'?'selected':''}>♀ Female</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <label class="adv-row-hd" for="info-shiny" style="width:52px;flex-shrink:0;">SHINY</label>
+        <button id="info-shiny" class="shiny-toggle${mShiny?' shiny-on':''}" onclick="mShiny=!mShiny;renderModal()" aria-label="Shiny toggle" aria-pressed="${mShiny}">
+          ${mShiny?'✦ YES':'◇ NO'}
+        </button>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <label class="adv-row-hd" for="info-ball" style="width:52px;flex-shrink:0;">BALL</label>
+        <input class="adv-in" id="info-ball" type="text" placeholder="Poké Ball"
+          value="${mPokeball}" oninput="mPokeball=this.value" autocomplete="off" spellcheck="false" aria-label="Poké Ball" style="flex:1;min-width:0;">
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <label class="adv-row-hd" for="info-ot" style="width:52px;flex-shrink:0;">OT</label>
+        <input class="adv-in" id="info-ot" type="text" placeholder="Trainer name"
+          value="${mOtName}" oninput="mOtName=this.value" autocomplete="off" spellcheck="false" aria-label="Original Trainer name" style="flex:1.5;min-width:0;">
+        <input class="adv-in" type="number" placeholder="ID" min="0" max="65535"
+          value="${mOtId}" oninput="mOtId=this.value" inputmode="numeric" aria-label="Trainer ID" style="width:64px;flex-shrink:0;">
+      </div>
+      <div>
+        <div class="adv-row-hd" style="margin-bottom:5px;">TRAINER MEMO</div>
+        <textarea class="adv-in" rows="2" placeholder="e.g. Bold nature. Met at Lv. 5. Route 1."
+          oninput="mTrainerMemo=this.value" aria-label="Trainer memo" style="width:100%;resize:none;box-sizing:border-box;">${mTrainerMemo}</textarea>
+      </div>
+      <div>
+        <div class="adv-row-hd" style="margin-bottom:5px;">STATS</div>
+        <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;">${statsInputs}</div>
+      </div>
+    </div>
   </div>`;
 
-  html += `<button class="save-btn" onclick="saveModal()" ${mPoke?'':'disabled'}>${mSlot>=0&&mSlot<pt.party.length?'💾 SAVE CHANGES':'➕ ADD TO PARTY'}</button>`;
-  if(mSlot>=0 && mSlot<pt.party.length) html+=`<button class="rm-btn" onclick="rmParty(${mSlot})">✕ REMOVE FROM PARTY</button>`;
+  // Level + Nature inline (always visible when Pokémon selected)
+  if(mPoke){
+    const natOpts = `<option value="">— neutral</option>` +
+      NATURE_NAMES.map(n=>`<option value="${n}"${mNature===n?' selected':''}>${n}</option>`).join('');
+    const natNote = mNature ? `<div class="adv-nat-note">${natureSummary(mNature)}</div>` : '';
+    const atkStats = computeAttackerStats({n:mPoke.n, level:mLv, nature:mNature});
+    const computed = atkStats ? `~ATK\u00a0${atkStats.atk}\u00a0·\u00a0SpA\u00a0${atkStats.spa}\u00a0·\u00a0Spe\u00a0${atkStats.spe}` : '';
+    html += `<div class="adv-top-row">
+      <div>
+        <div class="field-lbl">LEVEL</div>
+        <input class="field-in" id="f-lv" type="number" min="1" max="100" placeholder="50"
+          value="${mLv}" oninput="mLv=this.value;_refreshComputed()" style="width:72px;" inputmode="numeric" aria-label="Level">
+      </div>
+      <div style="flex:1;">
+        <div class="field-lbl">NATURE</div>
+        <select class="field-in adv-nature-sel" id="f-nature" onchange="mNature=this.value;_refreshComputed()" aria-label="Nature">${natOpts}</select>
+      </div>
+    </div>
+    ${natNote}
+    <div class="adv-computed" id="adv-computed">${computed}</div>`;
+  }
+
+  const isEditing = mMode==='pc' ? (mSlot>=0&&mSlot<pt.pc.length) : (mSlot>=0&&mSlot<pt.party.length);
+  const saveLabel = isEditing ? '💾 SAVE CHANGES' : (mMode==='pc' ? '➕ ADD TO PC' : '➕ ADD TO PARTY');
+  const rmLabel = mMode==='pc' ? '✕ REMOVE FROM PC' : '✕ REMOVE FROM PARTY';
+  html += `<button class="save-btn" onclick="saveModal()" ${mPoke?'':'disabled'}>${saveLabel}</button>`;
+  if(isEditing) html+=`<button class="rm-btn" onclick="rmParty(${mSlot})">${rmLabel}</button>`;
 
   const sp = body.scrollTop; body.innerHTML = html; body.scrollTop = sp;
   renderMoveSection();
 }
 
-function renderAdvStatsBody(){
-  if(!mPoke) return '';
-  const natOpts = `<option value="">— neutral</option>` +
-    NATURE_NAMES.map(n=>`<option value="${n}"${mAdvStats.nature===n?' selected':''}>${n}</option>`).join('');
-  const natNote = mAdvStats.nature ? `<div class="adv-nat-note">${natureSummary(mAdvStats.nature)}</div>` : '';
-  const computed = _advComputedLine();
-  return `<div class="adv-top-row">
-    <div>
-      <div class="field-lbl">LEVEL</div>
-      <input class="field-in" id="f-lv" type="number" min="1" max="100" placeholder="50"
-        value="${mLv}" oninput="mLv=this.value;_refreshAdvComputed()" style="width:72px;" inputmode="numeric">
-    </div>
-    <div style="flex:1;">
-      <div class="field-lbl">NATURE</div>
-      <select class="field-in adv-nature-sel" id="f-nature"
-        onchange="mAdvStats.nature=this.value;_refreshAdvComputed()">${natOpts}</select>
-    </div>
-  </div>
-  ${natNote}
-  <div class="adv-stat-grid">
-    <div class="adv-head-row">
-      <div class="adv-corner"></div>
-      <div class="adv-col-hd">ATK</div>
-      <div class="adv-col-hd">Sp.Atk</div>
-      <div class="adv-col-hd">SPE</div>
-    </div>
-    <div class="adv-data-row">
-      <div class="adv-row-hd">IV</div>
-      <input class="adv-in" type="number" min="0" max="31" placeholder="15"
-        value="${mAdvStats.ivAtk}" oninput="mAdvStats.ivAtk=this.value;_refreshAdvComputed()" inputmode="numeric" aria-label="Attack IV">
-      <input class="adv-in" type="number" min="0" max="31" placeholder="15"
-        value="${mAdvStats.ivSpa}" oninput="mAdvStats.ivSpa=this.value;_refreshAdvComputed()" inputmode="numeric" aria-label="Special Attack IV">
-      <input class="adv-in" type="number" min="0" max="31" placeholder="15"
-        value="${mAdvStats.ivSpe}" oninput="mAdvStats.ivSpe=this.value;_refreshAdvComputed()" inputmode="numeric" aria-label="Speed IV">
-    </div>
-    <div class="adv-data-row">
-      <div class="adv-row-hd">EV</div>
-      <input class="adv-in" type="number" min="0" max="252" placeholder="0"
-        value="${mAdvStats.evAtk}" oninput="mAdvStats.evAtk=this.value;_refreshAdvComputed()" inputmode="numeric" aria-label="Attack EV">
-      <input class="adv-in" type="number" min="0" max="252" placeholder="0"
-        value="${mAdvStats.evSpa}" oninput="mAdvStats.evSpa=this.value;_refreshAdvComputed()" inputmode="numeric" aria-label="Special Attack EV">
-      <input class="adv-in" type="number" min="0" max="252" placeholder="0"
-        value="${mAdvStats.evSpe}" oninput="mAdvStats.evSpe=this.value;_refreshAdvComputed()" inputmode="numeric" aria-label="Speed EV">
-    </div>
-  </div>
-  <div class="adv-computed" id="adv-computed">${computed}</div>`;
-}
-
-function _advComputedLine(){
-  if(!mPoke) return '';
-  const s = computeAttackerStats({n:mPoke.n, level:mLv, advStats:mAdvStats});
-  if(!s) return '';
-  return `${s.precise?'':'~'}ATK\u00a0${s.atk}\u00a0·\u00a0SpA\u00a0${s.spa}\u00a0·\u00a0Spe\u00a0${s.spe}`;
-}
-
-function _refreshAdvComputed(){
+function _refreshComputed(){
+  if(!mPoke) return;
+  const s = computeAttackerStats({n:mPoke.n, level:mLv, nature:mNature});
   const el = document.getElementById('adv-computed');
-  if(el) el.textContent = _advComputedLine();
+  if(el && s) el.textContent = `~ATK\u00a0${s.atk}\u00a0·\u00a0SpA\u00a0${s.spa}\u00a0·\u00a0Spe\u00a0${s.spe}`;
+}
+
+function _applyFromScanResult(){
+  if(!mScanResult) return;
+  const { poke, level, nature, moves, ability, item, stats, gender, shiny, otName, otId, pokeball, trainerMemo } = mScanResult;
+  if(poke && !mPoke){
+    mPoke = {n:poke.n, name:poke.name, types:poke.types};
+    mMoves = []; mHPPicking = false; mNature = '';
+  }
+  if(level)        mLv     = level;
+  if(nature)       mNature = nature;
+  if(ability)      mAbility          = ability;
+  if(item != null) mItem             = item || '';
+  if(gender)       mGender           = gender;
+  if(stats)        mStats            = {...stats};
+  if(shiny != null) mShiny           = shiny;
+  if(otName)       mOtName           = otName;
+  if(otId)         mOtId             = String(otId);
+  if(pokeball)     mPokeball         = pokeball;
+  if(trainerMemo)  mTrainerMemo      = trainerMemo;
+  if(moves && moves.length){
+    mMoves = [];
+    moves.slice(0,4).forEach(m => mMoves.push(m));
+    mMovesOpen = true;
+  }
+  if(ability || item != null || gender || stats || shiny != null || otName || pokeball) mInfoOpen = true;
+  if(level || nature || ability || item != null || gender || stats || shiny != null || otName || pokeball) mInfoOpen = true;
+  renderModal();
+}
+
+function _renderScanResultBox(){
+  if(!mScanResult) return '';
+  const { poke, level, nature, moves, ability, item, stats, gender, shiny, otName, otId, pokeball, trainerMemo, totalInputTokens, totalOutputTokens } = mScanResult;
+  const rows = [];
+  const nameStr = poke ? poke.name + (gender ? ` (${gender==='M'?'♂':'♀'})` : '') + (shiny ? ' ✦' : '') : null;
+  if(nameStr)      rows.push(['NAME',    nameStr]);
+  if(level)        rows.push(['LEVEL',   level]);
+  if(nature)       rows.push(['NATURE',  nature]);
+  if(ability)      rows.push(['ABILITY', ability]);
+  if(item != null) rows.push(['ITEM',    item || 'none']);
+  if(pokeball)     rows.push(['BALL',    pokeball]);
+  if(otName || otId != null) rows.push(['OT', [otName, otId != null ? `#${otId}` : null].filter(Boolean).join(' ')]);
+  if(stats){
+    const statLine = ['hp','atk','def','spatk','spdef','spe']
+      .filter(k => stats[k] != null)
+      .map(k => `${k.toUpperCase()}\u00a0${stats[k]}`)
+      .join(' · ');
+    if(statLine) rows.push(['STATS', statLine]);
+  }
+  if(moves && moves.length) rows.push(['MOVES', moves.map(m=>m.name).join(', ')]);
+  if(trainerMemo)  rows.push(['MEMO',   trainerMemo]);
+  const gridHtml = rows.length
+    ? rows.map(([k,v])=>`<span class="srb-lbl">${k}</span><span class="srb-val">${v}</span>`).join('')
+    : `<span class="srb-lbl"></span><span class="srb-val" style="color:var(--text3)">Nothing recognized</span>`;
+  const tok = totalInputTokens + totalOutputTokens;
+  const cost = totalInputTokens * 0.000001 + totalOutputTokens * 0.000005;
+  const costStr = cost < 0.0001 ? '<$0.0001' : '~$' + cost.toFixed(4);
+  return `<div class="scan-result-box">
+    <div class="srb-hd-row">
+      <span class="srb-hd">📷 SCAN RESULT</span>
+      <button class="srb-reset-btn" onclick="_applyFromScanResult()" aria-label="Reset form to scan values">↺ RESET TO SCAN</button>
+    </div>
+    <div class="srb-grid">${gridHtml}</div>
+    <div class="srb-usage">${tok} tok · ${costStr} · <a class="srb-link" href="https://console.anthropic.com/settings/usage" target="_blank" rel="noopener">exact usage ↗</a></div>
+  </div>`;
 }
 
 function toggleMovesSection(){
@@ -241,10 +357,129 @@ function toggleMovesSection(){
   renderModal();
 }
 
-function toggleAdvSection(){
-  mAdvOpen = !mAdvOpen;
+function toggleInfoSection(){
+  mInfoOpen = !mInfoOpen;
   renderModal();
 }
+
+// ─── OCR scan ──────────────────
+
+// Send image Files to Claude Vision and return extracted data.
+// Returns null if the key modal was opened (caller should abort).
+async function _processOCRFiles(files) {
+  let foundPoke = null, foundLevel = null, foundNature = null, foundMoves = [];
+  let foundAbility = null, foundItem = null, foundStats = null, foundGender = null;
+  let foundShiny = null, foundOtName = null, foundOtId = null, foundPokeball = null, foundTrainerMemo = null;
+  let totalInputTokens = 0, totalOutputTokens = 0;
+  for(const file of files){
+    let result;
+    try {
+      showToast('Reading screen…');
+      result = await readGameScreen(file);
+    } catch(e){
+      if(e.code === 'no_key' || e.code === 'bad_key'){
+        showPage('settings');
+        return null;
+      }
+      showToast(e.detail || 'Could not read image', 'red');
+      continue;
+    }
+    totalInputTokens  += result._inputTokens  || 0;
+    totalOutputTokens += result._outputTokens || 0;
+    // Identify Pokémon by name first, dex number as fallback
+    if(!foundPoke){
+      if(result.name){
+        const n = result.name.toLowerCase().replace(/[^a-z]/g,'');
+        foundPoke = POKEMON.find(p => p.name.toLowerCase().replace(/[^a-z]/g,'') === n) || null;
+      }
+      if(!foundPoke && result.dex){
+        foundPoke = POKEMON.find(p => p.n === result.dex) || null;
+      }
+    }
+    if(!foundLevel  && result.level)   foundLevel  = String(result.level);
+    if(!foundNature && result.nature)  foundNature = NATURE_NAMES.find(n => n.toLowerCase() === result.nature.toLowerCase()) || null;
+    if(!foundAbility     && result.ability)      foundAbility     = result.ability;
+    if(foundItem == null && result.item != null) foundItem        = result.item || null;
+    if(!foundStats       && result.stats && Object.keys(result.stats).length) foundStats = result.stats;
+    if(!foundGender      && result.gender)       foundGender      = result.gender;
+    if(foundShiny == null && result.shiny != null) foundShiny     = result.shiny;
+    if(!foundOtName      && result.ot_name)      foundOtName      = result.ot_name;
+    if(!foundOtId        && result.ot_id)        foundOtId        = result.ot_id;
+    if(!foundPokeball    && result.pokeball)     foundPokeball    = result.pokeball;
+    if(!foundTrainerMemo && result.trainer_memo) foundTrainerMemo = result.trainer_memo;
+    if(result.moves){
+      result.moves.forEach(name => {
+        const m = fuzzyMatchMove(name);
+        if(m && !foundMoves.some(fm => fm.name === m.name)) foundMoves.push(m);
+      });
+    }
+  }
+  return { foundPoke, foundLevel, foundNature, foundMoves, foundAbility, foundItem, foundStats, foundGender, foundShiny, foundOtName, foundOtId, foundPokeball, foundTrainerMemo, totalInputTokens, totalOutputTokens };
+}
+
+// Open multi-image picker, run OCR, and fill the party edit modal.
+// If no Pokémon is selected yet, auto-identifies from the stats screen.
+function _triggerOCRScan(){
+  if(!getClaudeKey()){ closeModal(); showPage('settings'); return; }
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.multiple = true;
+  input.onchange = async () => {
+    const files = Array.from(input.files);
+    if(!files.length) return;
+    const result = await _processOCRFiles(files);
+    if(!result) return;
+    const { foundPoke, foundLevel, foundNature, foundMoves, foundAbility, foundItem, foundStats, foundGender, foundShiny, foundOtName, foundOtId, foundPokeball, foundTrainerMemo, totalInputTokens, totalOutputTokens } = result;
+    if(!mPoke && foundPoke){
+      mPoke = {n:foundPoke.n, name:foundPoke.name, types:foundPoke.types};
+      mMoves = []; mHPPicking = false; mNature = '';
+    }
+    if(foundLevel)        mLv = foundLevel;
+    if(foundNature)       mNature = foundNature;
+    if(foundAbility)      mAbility = foundAbility;
+    if(foundItem != null) mItem = foundItem || '';
+    if(foundGender)       mGender = foundGender;
+    if(foundStats)        mStats = {...foundStats};
+    if(foundShiny != null) mShiny = foundShiny;
+    if(foundOtName)       mOtName = foundOtName;
+    if(foundOtId)         mOtId   = String(foundOtId);
+    if(foundPokeball)     mPokeball = foundPokeball;
+    if(foundTrainerMemo)  mTrainerMemo = foundTrainerMemo;
+    foundMoves.slice(0,4).forEach(m => {
+      if(mMoves.length < 4 && !mMoves.some(mv => mv.name === m.name)) mMoves.push(m);
+    });
+    // Accumulate into existing mScanResult so multi-screen scans build up
+    const prev = mScanResult || { moves: [], totalInputTokens: 0, totalOutputTokens: 0 };
+    const prevMoves = prev.moves || [];
+    const mergedMoves = [...prevMoves];
+    foundMoves.forEach(m => { if(!mergedMoves.some(p => p.name === m.name)) mergedMoves.push(m); });
+    mScanResult = {
+      poke:         mPoke,
+      level:        foundLevel        || prev.level,
+      nature:       foundNature       || prev.nature,
+      ability:      foundAbility      || prev.ability,
+      item:         foundItem != null  ? foundItem        : prev.item,
+      stats:        foundStats        || prev.stats,
+      gender:       foundGender       || prev.gender,
+      shiny:        foundShiny != null ? foundShiny       : prev.shiny,
+      otName:       foundOtName       || prev.otName,
+      otId:         foundOtId         || prev.otId,
+      pokeball:     foundPokeball     || prev.pokeball,
+      trainerMemo:  foundTrainerMemo  || prev.trainerMemo,
+      moves:        mergedMoves.slice(0, 4),
+      totalInputTokens:  (prev.totalInputTokens  || 0) + totalInputTokens,
+      totalOutputTokens: (prev.totalOutputTokens || 0) + totalOutputTokens,
+    };
+    if(!mPoke) { showToast("Couldn't identify Pokémon", 'red'); renderModal(); return; }
+    if(foundLevel || foundNature)                                      {} // level/nature now always visible
+    if(foundMoves.length)                                              mMovesOpen = true;
+    if(foundAbility || foundItem != null || foundGender || foundStats) mInfoOpen  = true;
+    renderModal();
+  };
+  input.click();
+}
+
 
 function renderMoveSection(){
   const container = document.getElementById('move-section');
@@ -322,8 +557,8 @@ function onMS(v){
   const list = POKEMON.filter(p=>p.name.toLowerCase().includes(v.toLowerCase())).slice(0,8);
   renderPDrop('ms-drop', list, 'pickMP');
 }
-function pickMP(n){ mPoke=POKEMON.find(p=>p.n===n); mMoves=[]; mHPPicking=false; mAdvStats={ivAtk:'',ivSpa:'',ivSpe:'',evAtk:'',evSpa:'',evSpe:'',nature:''}; document.getElementById('ms-drop').style.display='none'; renderModal(); document.getElementById('ms-in').value=mPoke.name; }
-function clearMP(){ mPoke=null; mMoves=[]; mLv=''; mHPPicking=false; mAdvStats={ivAtk:'',ivSpa:'',ivSpe:'',evAtk:'',evSpa:'',evSpe:'',nature:''}; renderModal(); }
+function pickMP(n){ mPoke=POKEMON.find(p=>p.n===n); mMoves=[]; mHPPicking=false; mNature=''; mAbility=''; mItem=''; mGender=''; mStats=null; mShiny=false; mOtName=''; mOtId=''; mPokeball=''; mTrainerMemo=''; document.getElementById('ms-drop').style.display='none'; renderModal(); document.getElementById('ms-in').value=mPoke.name; }
+function clearMP(){ mPoke=null; mMoves=[]; mLv=''; mNature=''; mHPPicking=false; mAbility=''; mItem=''; mGender=''; mStats=null; mShiny=false; mOtName=''; mOtId=''; mPokeball=''; mTrainerMemo=''; renderModal(); }
 function pickHPType(){ mHPPicking=!mHPPicking; renderMoveSection(); }
 function selectHPType(t){ mMoves.push({name:'Hidden Power',type:t}); mHPPicking=false; renderMoveSection(); }
 function onMQ(v){ mMoveQ=v; renderMoveSection(); }
@@ -334,22 +569,42 @@ function rmMv(i){ mMoves.splice(i,1); renderMoveSection(); }
 function saveModal(){
   if(!mPoke) return;
   const pt = activePt();
-  const hasAdv = Object.values(mAdvStats).some(v => v !== '' && v != null);
+  const hasStats = mStats && Object.values(mStats).some(v => v != null && v !== '');
   const entry = {
     n:mPoke.n, name:mPoke.name, types:mPoke.types, moves:[...mMoves], level:mLv,
-    advStats: hasAdv ? {...mAdvStats} : null,
+    nature: mNature || null,
+    ability:      mAbility || null,
+    item:         mItem !== '' ? mItem : null,
+    gender:       mGender || null,
+    stats:        hasStats ? {...mStats} : null,
+    shiny:        mShiny || false,
+    otName:       mOtName || null,
+    otId:         mOtId || null,
+    pokeball:     mPokeball || null,
+    trainerMemo:  mTrainerMemo || null,
   };
-  if(mSlot>=0 && mSlot<pt.party.length) pt.party[mSlot]=entry;
-  else { if(pt.party.length>=6) return; pt.party.push(entry); }
-  saveStore(); closeModal(); renderParty();
-  if(activePoke) renderPokeDetail();
+  if(mMode === 'pc'){
+    if(mSlot>=0 && mSlot<pt.pc.length) pt.pc[mSlot]=entry;
+    else pt.pc.push(entry);
+    saveStore(); closeModal(); renderSuggestBtn(); renderPC();
+  } else {
+    if(mSlot>=0 && mSlot<pt.party.length) pt.party[mSlot]=entry;
+    else { if(pt.party.length>=6) return; pt.party.push(entry); }
+    saveStore(); closeModal(); renderParty();
+    if(activePoke) renderPokeDetail();
+  }
 }
 
 function rmParty(i){
   const pt = activePt();
-  pt.party.splice(i,1);
-  saveStore(); closeModal(); renderParty();
-  if(activePoke) renderPokeDetail();
+  if(mMode === 'pc'){
+    if(i>=0) pt.pc.splice(i,1);
+    saveStore(); closeModal(); renderSuggestBtn(); renderPC();
+  } else {
+    pt.party.splice(i,1);
+    saveStore(); closeModal(); renderParty();
+    if(activePoke) renderPokeDetail();
+  }
 }
 
 // ═══════════════════════════════
@@ -508,35 +763,38 @@ function renderPC(){
     <span class="pc-hd-arrow">${arrow}</span>
   </div>`;
   if(!pcCollapsed){
-    if(!pc.length){
-      html += `<div class="pc-empty">Pokémon you catch but aren't in your active party live here. Add from the Search page.</div>`;
-    } else {
-      html += `<div class="pc-grid">`;
-      pc.forEach((pm,idx)=>{
-        if(pcConfirmIdx === idx){
-          html += `<div class="pc-slot confirming">
-            <div class="pcs-confirm-msg">REMOVE?</div>
-            <div class="pcs-confirm-btns">
-              <button class="pcs-confirm-yes" onclick="removeFromPC(${idx})">YES</button>
-              <button class="pcs-confirm-no" onclick="cancelRemovePC()">NO</button>
-            </div>
-          </div>`;
-        } else {
-          const shortName = pm.name.length > 9 ? pm.name.slice(0,8)+'…' : pm.name;
-          html += `<div class="pc-slot">
-            <img class="pcs-sprite" src="${spriteUrl(pm.n)}" onerror="this.style.display='none'">
-            <div class="pcs-num">#${String(pm.n).padStart(3,'0')}</div>
-            <div class="pcs-name">${shortName}</div>
-            <div class="pcs-types">${pm.types.map(t=>`<span class="tb sm t-${t}">${t}</span>`).join('')}</div>
-            <div class="pcs-actions">
-              <button class="pcs-move-btn" aria-label="Move ${pm.name} to party" onclick="moveToPartyFromPC(${idx})">→ PARTY</button>
-              <button class="pcs-rm-btn" aria-label="Remove ${pm.name} from PC" onclick="confirmRemovePC(${idx})">✕</button>
-            </div>
-          </div>`;
-        }
-      });
-      html += `</div>`;
-    }
+    html += `<div class="pc-grid">
+      <div class="pc-slot pc-slot-add" role="button" aria-label="Add new Pokémon to PC" onclick="openPCModal(-1)">
+        <div class="pcs-add-icon">＋</div>
+        <div class="pcs-add-label">ADD NEW</div>
+      </div>`;
+    pc.forEach((pm,idx)=>{
+      if(pcConfirmIdx === idx){
+        html += `<div class="pc-slot confirming">
+          <div class="pcs-confirm-msg">REMOVE?</div>
+          <div class="pcs-confirm-btns">
+            <button class="pcs-confirm-yes" onclick="removeFromPC(${idx})">YES</button>
+            <button class="pcs-confirm-no" onclick="cancelRemovePC()">NO</button>
+          </div>
+        </div>`;
+      } else {
+        const shortName = pm.name.length > 9 ? pm.name.slice(0,8)+'…' : pm.name;
+        const pcSprite = pm.shiny
+          ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/${pm.n}.png`
+          : spriteUrl(pm.n);
+        html += `<div class="pc-slot" role="button" aria-label="Edit ${pm.name}" onclick="openPCModal(${idx})">
+          <img class="pcs-sprite" src="${pcSprite}" onerror="this.style.display='none'">
+          <div class="pcs-num">#${String(pm.n).padStart(3,'0')}${pm.shiny?' <span style="color:#FFD700">✦</span>':''}</div>
+          <div class="pcs-name">${shortName}</div>
+          <div class="pcs-types">${pm.types.map(t=>`<span class="tb sm t-${t}">${t}</span>`).join('')}</div>
+          <div class="pcs-actions">
+            <button class="pcs-move-btn" aria-label="Move ${pm.name} to party" onclick="event.stopPropagation();moveToPartyFromPC(${idx})">→ PARTY</button>
+            <button class="pcs-rm-btn" aria-label="Remove ${pm.name} from PC" onclick="event.stopPropagation();confirmRemovePC(${idx})">✕</button>
+          </div>
+        </div>`;
+      }
+    });
+    html += `</div>`;
   }
   section.innerHTML = html;
 }

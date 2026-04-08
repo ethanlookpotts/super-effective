@@ -48,29 +48,18 @@ function computeHP(base, iv, ev, level){
   return Math.floor((2*base + iv + Math.floor(ev/4)) * level/100 + level + 10);
 }
 
-// Compute Atk, SpA, Spe for a party member using advStats if available.
-// Returns {atk, spa, spe, precise} — precise=true when actual stats were entered.
+// Compute Atk, SpA, Spe for a party member.
+// Uses nature if provided; assumes 15 IVs / 0 EVs (in-game values not accessible).
+// Returns {atk, spa, spe} — all estimates, shown with ~ in the UI.
 function computeAttackerStats(pm){
   const base = STATS[pm.n];
   if(!base) return null;
   const lv = parseInt(pm.level) || 50;
-  const adv = pm.advStats;
-  const hasAdv = adv && Object.values(adv).some(v => v !== '' && v != null);
-  if(hasAdv){
-    const nat = adv.nature || null;
-    return {
-      atk: computeStat(base[1], parseInt(adv.ivAtk)||0, parseInt(adv.evAtk)||0, lv, natureMult(nat,'atk')),
-      spa: computeStat(base[3], parseInt(adv.ivSpa)||0, parseInt(adv.evSpa)||0, lv, natureMult(nat,'spa')),
-      spe: computeStat(base[5], parseInt(adv.ivSpe)||0, parseInt(adv.evSpe)||0, lv, natureMult(nat,'spe')),
-      precise: true,
-    };
-  }
-  // Default: base stats with representative IVs (15), no EVs, neutral nature
+  const nat = pm.nature || pm.advStats?.nature || null;
   return {
-    atk: computeStat(base[1], 15, 0, lv, 1),
-    spa: computeStat(base[3], 15, 0, lv, 1),
-    spe: computeStat(base[5], 15, 0, lv, 1),
-    precise: false,
+    atk: computeStat(base[1], 15, 0, lv, natureMult(nat,'atk')),
+    spa: computeStat(base[3], 15, 0, lv, natureMult(nat,'spa')),
+    spe: computeStat(base[5], 15, 0, lv, natureMult(nat,'spe')),
   };
 }
 

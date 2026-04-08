@@ -41,53 +41,44 @@ test('edit modal sections are collapsed and disabled until Pokémon selected', a
   await page.getByRole('button', { name: 'MY PARTY' }).click();
   await page.getByText('ADD POKEMON').first().click();
 
-  // Section headers visible but not interactive (no button role) before Pokémon picked
+  // Moves section header visible but not interactive before Pokémon picked
   await expect(page.getByRole('button', { name: 'Moves section' })).not.toBeVisible();
-  await expect(page.getByRole('button', { name: 'Advanced stats section' })).not.toBeVisible();
   await expect(page.getByLabel('Moves section')).toBeVisible();
-  await expect(page.getByLabel('Advanced stats section')).toBeVisible();
 
-  // Select a Pokémon — sections become interactive
+  // Level / Nature not rendered before Pokémon picked
+  await expect(page.getByLabel('Level')).not.toBeVisible();
+
+  // Select a Pokémon — moves section becomes interactive, level/nature appear
   await page.getByRole('textbox', { name: 'Search Pokémon...' }).fill('Pikachu');
   await page.getByRole('option', { name: 'Pikachu' }).click();
   await expect(page.getByRole('button', { name: 'Moves section' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Advanced stats section' })).toBeVisible();
+  await expect(page.getByLabel('Level')).toBeVisible();
+  await expect(page.getByLabel('Nature')).toBeVisible();
 
   // Expand Moves — move search input appears
   await page.getByRole('button', { name: 'Moves section' }).click();
   await expect(page.getByRole('textbox', { name: 'Search moves...' })).toBeVisible();
-
-  // Expand Advanced Stats — IV inputs appear
-  await page.getByRole('button', { name: 'Advanced stats section' }).click();
-  await expect(page.getByLabel('Attack IV', { exact: true })).toBeVisible();
 });
 
-test('advanced stats entry computes and saves stats', async ({ page }) => {
+test('level and nature entry computes and saves', async ({ page }) => {
   await page.getByRole('button', { name: 'Open menu' }).click();
   await page.getByRole('button', { name: 'MY PARTY' }).click();
   await page.getByText('ADD POKEMON').first().click();
   await page.getByRole('textbox', { name: 'Search Pokémon...' }).fill('Pikachu');
   await page.getByRole('option', { name: 'Pikachu' }).click();
-  await page.getByRole('button', { name: 'Advanced stats section' }).click();
 
-  // Fill level, nature, and one IV
-  await page.locator('#f-lv').fill('50');
-  await page.locator('#f-nature').selectOption('Timid');
-  await page.getByLabel('Attack IV', { exact: true }).fill('31');
+  // Fill level and nature
+  await page.getByLabel('Level').fill('50');
+  await page.getByLabel('Nature').selectOption('Timid');
 
-  // Computed stats line shows precise values (no ~ prefix)
-  await expect(page.locator('#adv-computed')).toContainText('ATK');
-  await expect(page.locator('#adv-computed')).not.toContainText('~');
+  // Computed stats line appears with ~ prefix (always estimated)
+  await expect(page.locator('#adv-computed')).toContainText('~ATK');
 
-  // Save and reopen
+  // Save and reopen — values persist
   await page.getByRole('button', { name: /ADD TO PARTY/ }).click();
   await page.getByRole('button', { name: 'Edit Pikachu' }).click();
-  await page.getByRole('button', { name: 'Advanced stats section' }).click();
-
-  // Saved values persist
-  await expect(page.locator('#f-lv')).toHaveValue('50');
-  await expect(page.locator('#f-nature')).toHaveValue('Timid');
-  await expect(page.getByLabel('Attack IV', { exact: true })).toHaveValue('31');
+  await expect(page.getByLabel('Level')).toHaveValue('50');
+  await expect(page.getByLabel('Nature')).toHaveValue('Timid');
 });
 
 test('Hidden Power type selection', async ({ page }) => {
