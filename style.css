@@ -446,6 +446,39 @@ border-radius:9px;color:var(--blue);font-family:var(--fp);font-size:7px;cursor:p
 color:var(--text3);font-family:var(--fp);font-size:5.5px;cursor:pointer;margin-top:7px;}
 .rm-btn:active{border-color:var(--red);color:var(--red);}
 
+/* ── Collapsible modal sections ── */
+.modal-sec-hd{display:flex;align-items:center;gap:6px;padding:9px 0 9px;cursor:pointer;
+border-top:1px solid var(--border);margin-top:10px;user-select:none;}
+.modal-sec-hd:active{opacity:.7;}
+.modal-sec-hd.sec-disabled{cursor:default;opacity:.35;pointer-events:none;}
+.modal-sec-ttl{font-family:var(--fp);font-size:6px;color:var(--text3);flex:1;line-height:1.5;}
+.modal-sec-info{font-family:var(--fp);font-size:5.5px;color:var(--gold);opacity:.8;}
+.modal-sec-arr{font-size:11px;color:var(--text3);transition:transform .15s;}
+.modal-sec-body{padding-bottom:6px;}
+
+/* ── Advanced stats grid ── */
+.adv-top-row{display:flex;gap:10px;margin-bottom:8px;}
+.adv-top-row>div{display:flex;flex-direction:column;}
+.adv-nature-sel{padding:7px 8px;font-size:13px;appearance:none;-webkit-appearance:none;
+background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E");
+background-repeat:no-repeat;background-position:right 8px center;padding-right:24px;}
+.adv-nat-note{font-family:var(--fp);font-size:5px;color:var(--gold);opacity:.75;margin:-4px 0 8px;}
+.adv-stat-grid{display:grid;grid-template-rows:auto auto auto;gap:5px;margin-bottom:8px;}
+.adv-head-row,.adv-data-row{display:grid;grid-template-columns:40px 1fr 1fr 1fr;gap:5px;align-items:center;}
+.adv-corner{}.adv-col-hd{font-family:var(--fp);font-size:5px;color:var(--text3);text-align:center;}
+.adv-row-hd{font-family:var(--fp);font-size:5px;color:var(--text3);}
+.adv-in{background:var(--card2);border:1.5px solid var(--border2);border-radius:7px;
+padding:7px 6px;color:var(--text);font-family:var(--fb);font-size:14px;font-weight:500;
+outline:none;transition:border-color .2s;text-align:center;width:100%;}
+.adv-in:focus{border-color:var(--gold);}
+.adv-in::placeholder{color:var(--text3);font-size:12px;}
+.adv-computed{font-family:var(--fp);font-size:5.5px;color:var(--gold);opacity:.85;
+padding:7px 10px;background:var(--card2);border-radius:7px;text-align:center;min-height:28px;line-height:2;}
+
+/* ── Damage range in move rows ── */
+.mv-dmg{font-family:var(--fp);font-size:5px;color:var(--green);letter-spacing:.02em;}
+.mv-dmg.mv-dmg-est{color:var(--text3);}
+
 /* PC Swap modal row */
 .swap-row{display:flex;align-items:center;gap:10px;padding:9px 11px;cursor:pointer;
 background:var(--card2);border-radius:8px;margin-bottom:6px;transition:background .1s;}

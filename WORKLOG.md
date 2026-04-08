@@ -12,7 +12,7 @@ Evolving into a multi-game companion app with playthrough support.
 ### High Priority
 
 ### Medium Priority
-- [ ] Per-Pokémon actual stat entry (IVs/EVs/nature/level → compute real Atk/SpA/Spe) and exact damage formula display — show calculated damage range per move in party matchup cards; replaces base-stat heuristics with precise battle math
+- [ ] PC screenshot ingestion — use a photo/screenshot of the in-game PC box to ingest or update party Pokémon stats (IVs/EVs/nature/level) via image recognition
 - [ ] Search by move name → show all Pokémon that can learn it
 - [ ] Audit and replace E2E locators that use CSS id/class selectors (e.g. #move-section) with accessible role/heading/label alternatives so tests behave like real users — add appropriate aria labels to HTML where needed to enable this
 
@@ -30,6 +30,15 @@ Evolving into a multi-game companion app with playthrough support.
 ---
 
 ## Progress
+
+### Session 20 — Advanced Stats Entry + Damage Range
+
+**Completed**
+- [x] Party edit modal redesigned: Pokémon search always visible; MOVES and ADVANCED STATS sections are collapsible (collapsed by default, disabled until a Pokémon is selected); switching Pokémon mid-entry resets advStats and moves
+- [x] Advanced Stats section: Level + Nature (25-option dropdown with effect hint), IV/EV grid (Atk/SpA/Spe only), computed stats line updates live (shows precise values without ~ when any stat entered, ~ estimated when using defaults)
+- [x] Gen III stat/damage helpers in `js/data-stats.js`: `NATURES`, `computeStat`, `computeHP`, `computeAttackerStats`, `estimateEnemyStat/HP`, `damageRangePct`; `natureSummary` shows +/− effect on nature select
+- [x] Damage range in party matchup move rows: `~94–111%` (estimated, muted) or `94–111%` (precise, green) HP damage vs estimated enemy stats at attacker level; only shown for damaging moves vs non-immune targets; enemy stats estimated from STATS base + attacker's level (normalised comparison)
+- [x] 2 new E2E tests (53 total passing): collapsible sections disabled/enabled flow; advanced stats persist across save/reopen
 
 ### Session 19 — Party Suggestion Overhaul + Unit Tests
 

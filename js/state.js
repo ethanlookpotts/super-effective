@@ -58,6 +58,9 @@ let activeTypeFilter = null;
 // Modal state
 let mSlot = -1, mPoke = null, mMoves = [], mTypeFilter = null, mMoveQ = '', mLv = '';
 let mHPPicking = false; // true while the Hidden Power type selector is open
+let mAdvStats = {ivAtk:'', ivSpa:'', ivSpe:'', evAtk:'', evSpa:'', evSpe:'', nature:''};
+let mMovesOpen = false; // moves section collapsed by default
+let mAdvOpen = false;   // advanced stats section collapsed by default
 
 // ═══════════════════════════════
 // RIVAL STARTER — stored per playthrough

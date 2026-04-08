@@ -89,13 +89,18 @@ function openModal(idx){
   const pt = activePt();
   mSlot = idx;
   mHPPicking = false;
+  mMovesOpen = false;
+  mAdvOpen = false;
   if(idx>=0 && idx<pt.party.length){
     const pm = pt.party[idx];
     mPoke = {n:pm.n, name:pm.name, types:pm.types};
     mMoves = [...(pm.moves||[])];
     mLv = pm.level||'';
+    const adv = pm.advStats || {};
+    mAdvStats = {ivAtk:adv.ivAtk||'', ivSpa:adv.ivSpa||'', ivSpe:adv.ivSpe||'', evAtk:adv.evAtk||'', evSpa:adv.evSpa||'', evSpe:adv.evSpe||'', nature:adv.nature||''};
   } else {
     mPoke = null; mMoves = []; mLv = '';
+    mAdvStats = {ivAtk:'', ivSpa:'', ivSpe:'', evAtk:'', evSpa:'', evSpe:'', nature:''};
   }
   mTypeFilter = null; mMoveQ = '';
   document.getElementById('modal-ttl').textContent = (idx>=0 && idx<pt.party.length) ? 'EDIT POKEMON' : 'ADD POKEMON';
@@ -105,13 +110,17 @@ function openModal(idx){
 function closeModal(){
   document.getElementById('overlay').classList.remove('open');
   mPoke = null; mMoves = [];
+  mAdvStats = {ivAtk:'', ivSpa:'', ivSpe:'', evAtk:'', evSpa:'', evSpe:'', nature:''};
+  mMovesOpen = false; mAdvOpen = false;
 }
 function oClick(e){ if(e.target===document.getElementById('overlay')) closeModal(); }
 
 function renderModal(){
   const body = document.getElementById('modal-body');
   const pt = activePt();
-  let html = `<div class="mlbl">STEP 1 — CHOOSE POKEMON</div>
+
+  // Pokémon search
+  let html = `<div class="mlbl">POKÉMON</div>
   <div class="sbox" style="margin-bottom:8px;">
     <input class="si" id="ms-in" placeholder="Search Pokémon..." oninput="onMS(this.value)"
       autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="${mPoke?mPoke.name:''}">
@@ -125,21 +134,116 @@ function renderModal(){
       <div style="font-size:10px;color:var(--text3);margin-bottom:2px;">#${String(mPoke.n).padStart(3,'0')}</div>
       <div style="font-family:var(--fp);font-size:8.5px;color:var(--gold);margin-bottom:5px;">${mPoke.name}</div>
       <div>${tb}</div>
-    </div>
-    <div style="margin-bottom:12px;">
-      <div class="field-lbl">LEVEL (OPTIONAL)</div>
-      <input class="field-in" id="f-lv" type="number" min="1" max="100" placeholder="—" value="${mLv}" oninput="mLv=this.value" style="width:90px;">
     </div>`;
   }
 
-  html += `<div class="mlbl" style="margin-top:12px;">STEP 2 — MOVES (OPTIONAL, MAX 4)</div>
-  <div id="move-section"></div>`;
+  // Moves section (collapsible)
+  const moveCount = mMoves.length;
+  const moveSummary = mPoke ? `${moveCount}/4 SET` : '';
+  const movesDisabled = !mPoke;
+  html += `<div class="modal-sec-hd${movesDisabled?' sec-disabled':''}" ${mPoke?`onclick="toggleMovesSection()" role="button" aria-expanded="${mMovesOpen}"`:''} aria-label="Moves section">
+    <span class="modal-sec-ttl">MOVES</span>
+    <span class="modal-sec-info">${moveSummary}</span>
+    <span class="modal-sec-arr">${mMovesOpen?'▾':'▶'}</span>
+  </div>
+  <div class="modal-sec-body" style="display:${mMovesOpen&&mPoke?'block':'none'}">
+    <div id="move-section"></div>
+  </div>`;
+
+  // Advanced stats section (collapsible)
+  const hasAdv = Object.values(mAdvStats).some(v => v !== '' && v != null);
+  let advSummary = '';
+  if(mPoke && hasAdv){
+    const parts = [];
+    if(mLv) parts.push(`Lv.${mLv}`);
+    if(mAdvStats.nature) parts.push(mAdvStats.nature);
+    advSummary = parts.join(' · ');
+  }
+  const advDisabled = !mPoke;
+  html += `<div class="modal-sec-hd${advDisabled?' sec-disabled':''}" ${mPoke?`onclick="toggleAdvSection()" role="button" aria-expanded="${mAdvOpen}"`:''} aria-label="Advanced stats section">
+    <span class="modal-sec-ttl">ADVANCED STATS</span>
+    <span class="modal-sec-info">${advSummary}</span>
+    <span class="modal-sec-arr">${mAdvOpen?'▾':'▶'}</span>
+  </div>
+  <div class="modal-sec-body" style="display:${mAdvOpen&&mPoke?'block':'none'}">
+    ${renderAdvStatsBody()}
+  </div>`;
 
   html += `<button class="save-btn" onclick="saveModal()" ${mPoke?'':'disabled'}>${mSlot>=0&&mSlot<pt.party.length?'💾 SAVE CHANGES':'➕ ADD TO PARTY'}</button>`;
   if(mSlot>=0 && mSlot<pt.party.length) html+=`<button class="rm-btn" onclick="rmParty(${mSlot})">✕ REMOVE FROM PARTY</button>`;
 
   const sp = body.scrollTop; body.innerHTML = html; body.scrollTop = sp;
   renderMoveSection();
+}
+
+function renderAdvStatsBody(){
+  if(!mPoke) return '';
+  const natOpts = `<option value="">— neutral</option>` +
+    NATURE_NAMES.map(n=>`<option value="${n}"${mAdvStats.nature===n?' selected':''}>${n}</option>`).join('');
+  const natNote = mAdvStats.nature ? `<div class="adv-nat-note">${natureSummary(mAdvStats.nature)}</div>` : '';
+  const computed = _advComputedLine();
+  return `<div class="adv-top-row">
+    <div>
+      <div class="field-lbl">LEVEL</div>
+      <input class="field-in" id="f-lv" type="number" min="1" max="100" placeholder="50"
+        value="${mLv}" oninput="mLv=this.value;_refreshAdvComputed()" style="width:72px;" inputmode="numeric">
+    </div>
+    <div style="flex:1;">
+      <div class="field-lbl">NATURE</div>
+      <select class="field-in adv-nature-sel" id="f-nature"
+        onchange="mAdvStats.nature=this.value;_refreshAdvComputed()">${natOpts}</select>
+    </div>
+  </div>
+  ${natNote}
+  <div class="adv-stat-grid">
+    <div class="adv-head-row">
+      <div class="adv-corner"></div>
+      <div class="adv-col-hd">ATK</div>
+      <div class="adv-col-hd">Sp.Atk</div>
+      <div class="adv-col-hd">SPE</div>
+    </div>
+    <div class="adv-data-row">
+      <div class="adv-row-hd">IV</div>
+      <input class="adv-in" type="number" min="0" max="31" placeholder="15"
+        value="${mAdvStats.ivAtk}" oninput="mAdvStats.ivAtk=this.value;_refreshAdvComputed()" inputmode="numeric" aria-label="Attack IV">
+      <input class="adv-in" type="number" min="0" max="31" placeholder="15"
+        value="${mAdvStats.ivSpa}" oninput="mAdvStats.ivSpa=this.value;_refreshAdvComputed()" inputmode="numeric" aria-label="Special Attack IV">
+      <input class="adv-in" type="number" min="0" max="31" placeholder="15"
+        value="${mAdvStats.ivSpe}" oninput="mAdvStats.ivSpe=this.value;_refreshAdvComputed()" inputmode="numeric" aria-label="Speed IV">
+    </div>
+    <div class="adv-data-row">
+      <div class="adv-row-hd">EV</div>
+      <input class="adv-in" type="number" min="0" max="252" placeholder="0"
+        value="${mAdvStats.evAtk}" oninput="mAdvStats.evAtk=this.value;_refreshAdvComputed()" inputmode="numeric" aria-label="Attack EV">
+      <input class="adv-in" type="number" min="0" max="252" placeholder="0"
+        value="${mAdvStats.evSpa}" oninput="mAdvStats.evSpa=this.value;_refreshAdvComputed()" inputmode="numeric" aria-label="Special Attack EV">
+      <input class="adv-in" type="number" min="0" max="252" placeholder="0"
+        value="${mAdvStats.evSpe}" oninput="mAdvStats.evSpe=this.value;_refreshAdvComputed()" inputmode="numeric" aria-label="Speed EV">
+    </div>
+  </div>
+  <div class="adv-computed" id="adv-computed">${computed}</div>`;
+}
+
+function _advComputedLine(){
+  if(!mPoke) return '';
+  const s = computeAttackerStats({n:mPoke.n, level:mLv, advStats:mAdvStats});
+  if(!s) return '';
+  return `${s.precise?'':'~'}ATK\u00a0${s.atk}\u00a0·\u00a0SpA\u00a0${s.spa}\u00a0·\u00a0Spe\u00a0${s.spe}`;
+}
+
+function _refreshAdvComputed(){
+  const el = document.getElementById('adv-computed');
+  if(el) el.textContent = _advComputedLine();
+}
+
+function toggleMovesSection(){
+  mMovesOpen = !mMovesOpen;
+  renderModal();
+}
+
+function toggleAdvSection(){
+  mAdvOpen = !mAdvOpen;
+  renderModal();
 }
 
 function renderMoveSection(){
@@ -218,8 +322,8 @@ function onMS(v){
   const list = POKEMON.filter(p=>p.name.toLowerCase().includes(v.toLowerCase())).slice(0,8);
   renderPDrop('ms-drop', list, 'pickMP');
 }
-function pickMP(n){ mPoke=POKEMON.find(p=>p.n===n); mMoves=[]; mHPPicking=false; document.getElementById('ms-drop').style.display='none'; renderModal(); document.getElementById('ms-in').value=mPoke.name; }
-function clearMP(){ mPoke=null; mMoves=[]; mLv=''; mHPPicking=false; renderModal(); }
+function pickMP(n){ mPoke=POKEMON.find(p=>p.n===n); mMoves=[]; mHPPicking=false; mAdvStats={ivAtk:'',ivSpa:'',ivSpe:'',evAtk:'',evSpa:'',evSpe:'',nature:''}; document.getElementById('ms-drop').style.display='none'; renderModal(); document.getElementById('ms-in').value=mPoke.name; }
+function clearMP(){ mPoke=null; mMoves=[]; mLv=''; mHPPicking=false; mAdvStats={ivAtk:'',ivSpa:'',ivSpe:'',evAtk:'',evSpa:'',evSpe:'',nature:''}; renderModal(); }
 function pickHPType(){ mHPPicking=!mHPPicking; renderMoveSection(); }
 function selectHPType(t){ mMoves.push({name:'Hidden Power',type:t}); mHPPicking=false; renderMoveSection(); }
 function onMQ(v){ mMoveQ=v; renderMoveSection(); }
@@ -230,8 +334,11 @@ function rmMv(i){ mMoves.splice(i,1); renderMoveSection(); }
 function saveModal(){
   if(!mPoke) return;
   const pt = activePt();
-  const lv = document.getElementById('f-lv');
-  const entry = {n:mPoke.n, name:mPoke.name, types:mPoke.types, moves:[...mMoves], level:lv?lv.value:''};
+  const hasAdv = Object.values(mAdvStats).some(v => v !== '' && v != null);
+  const entry = {
+    n:mPoke.n, name:mPoke.name, types:mPoke.types, moves:[...mMoves], level:mLv,
+    advStats: hasAdv ? {...mAdvStats} : null,
+  };
   if(mSlot>=0 && mSlot<pt.party.length) pt.party[mSlot]=entry;
   else { if(pt.party.length>=6) return; pt.party.push(entry); }
   saveStore(); closeModal(); renderParty();
