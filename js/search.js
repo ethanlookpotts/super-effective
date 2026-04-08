@@ -229,7 +229,8 @@ function renderPokeDetail(){
       const pmSt = STATS[pm.n];
       const statNote = pmSt ? (pmSt[1]>pmSt[3]?`phy`:pmSt[1]<pmSt[3]?`spe`:`even`) : null;
       const statLabel = pmSt ? (pmSt[1]>pmSt[3]?`PHY · Atk ${pmSt[1]}`:pmSt[1]<pmSt[3]?`SPE · SpA ${pmSt[3]}`:`ATK = SpA ${pmSt[1]}`) : null;
-      return{pm,bestOff,bestAtkType,sm,defRisk,defBestType,pmImm,statNote,statLabel,score:bestOff*3-defRisk};
+      const atkStats = computeAttackerStats(pm);
+      return{pm,bestOff,bestAtkType,sm,defRisk,defBestType,pmImm,statNote,statLabel,atkStats,score:bestOff*3-defRisk};
     }).sort((a,b)=>b.score-a.score);
 
     scored.forEach((s,i)=>{
@@ -243,6 +244,9 @@ function renderPokeDetail(){
       else if(s.bestOff<1){bc='bb';bt='✗ WEAK';}
 
       // Offense section
+      const atkLevel = parseInt(pm.level) || 50;
+      const enemyBase = STATS[p.n];
+      const enemyLevel = atkLevel;
       let atkHtml = '';
       if(s.sm.length){
         atkHtml = '<div class="sc-moves">';
@@ -254,12 +258,22 @@ function renderPokeDetail(){
           else if(mv.raw===0) tags+=`<span class="mtag m0x">0×</span>`;
           if(mv.stab) tags+=`<span class="mtag mstab">STAB</span>`;
           tags+=`<span class="mtag ${phys?'mphy':'mspe'}">${phys?'PHY':'SPE'}</span>`;
+          // Damage range
+          let dmgHtml = '';
+          if(s.atkStats && enemyBase && mv.pow > 0 && mv.eff > 0){
+            const atkStat = phys ? s.atkStats.atk : s.atkStats.spa;
+            const defStat = estimateEnemyStat(enemyBase[phys?2:4], enemyLevel);
+            const defHP = estimateEnemyHP(enemyBase[0], enemyLevel);
+            const rng = damageRangePct(atkLevel, atkStat, defStat, defHP, mv.pow, mv.eff);
+            if(rng) dmgHtml = `<span class="mv-dmg${s.atkStats.precise?'':' mv-dmg-est'}">${s.atkStats.precise?'':'~'}${rng[0]}–${rng[1]}%</span>`;
+          }
           // Move metadata sub-line
           let mvSub = '';
-          if(mv.pow != null || mv.effNote){
+          {
             let parts = [];
             if(mv.pow > 0) parts.push(`<span class="mv-pow">${mv.pow}bp</span>`);
             else if(mv.pow === 0 && mv.effNote) parts.push(`<span class="mv-pow">status</span>`);
+            if(dmgHtml) parts.push(dmgHtml);
             if(mv.acc > 0 && mv.acc < 100) parts.push(`<span class="mv-acc">${mv.acc}%</span>`);
             else if(mv.acc === 0 && mv.pow > 0) parts.push(`<span class="mv-acc">∞ acc</span>`);
             if(mv.effNote){

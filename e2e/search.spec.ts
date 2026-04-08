@@ -102,6 +102,7 @@ test('party matchup shows stat category note and move power/effect', async ({ pa
   await page.getByRole('button', { name: 'Open menu' }).click();
   await page.getByRole('button', { name: 'MY PARTY' }).click();
   await page.getByRole('button', { name: 'Edit Charizard' }).click();
+  await page.getByRole('button', { name: 'Moves section' }).click();
   await page.getByRole('textbox', { name: 'Search moves...' }).fill('Flamethrower');
   await page.locator('#move-section').getByText('Flamethrower').click();
   await page.getByRole('button', { name: /SAVE/ }).click();
