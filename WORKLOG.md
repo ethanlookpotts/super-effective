@@ -10,8 +10,6 @@ Evolving into a multi-game companion app with playthrough support.
 ## Backlog
 
 ### High Priority
-- [ ] **TM/HM Planner** — inventory + teach suggestions + HM Carrier + scoring upgrade
-  - Sub-tasks tracked as Active Todos for Session 26 (see below)
 
 ### Medium Priority
 - [ ] Search by move name → show all Pokémon that can learn it
@@ -31,27 +29,20 @@ Evolving into a multi-game companion app with playthrough support.
 
 ---
 
-## Active Todos — Session 26 (TM/HM Planner)
-
-- [ ] **Data foundation** — add `MOVE_TUTORS` (FRLG) with name/move/type/cat/loc/oneTime; add `buyable` + `tmType` flags to existing `TM_HM` entries; add `tmInventory: { [num]: count }` to playthrough model with migration (default all 0)
-- [ ] **Scoring engine upgrade** — extend `js/party-calc.js`:
-  - `unresistedCoverage(members)` — number of the 18 types hit neutral-or-better
-  - Damage-aware scoring using `computeAttackerStats` + `MOVE_DATA` base power + STAB + type effectiveness (so higher-level / stronger Pokémon with the same moves rank higher)
-  - `computeTeachImpact(team, memberIdx, newMove)` — returns `{ scoreDelta, coverageDelta, bestReplace, coverageLost }`
-  - `computeHMCarrierCandidates(pool, ownedHMs)` — ranks mons by HMs-learnable ÷ battle-score cost
-  - Rework `computeSuggestions` + `scoreTeam` to use unresisted coverage + damage model; keep BST tiebreaker
-- [ ] **Unit tests** — expand `test/party-calc.test.js` to cover new helpers; adjust existing tests to new scoring
-- [ ] **TMs & HMs page overhaul**
-  - Inventory stepper (`−` / count / `+`) on each TM card (HMs toggle 0/1)
-  - Filter bar: All / Owned / Missing
-  - Expandable "Who can learn" per card (your party + PC, grouped)
-  - Move Tutors section (below TMs/HMs)
-  - HM Carrier suggestions card near top of page (politically-neutral term — not "HM slave")
-- [ ] **Party page integration** — "📀 TM SUGGESTIONS" section listing owned TMs ranked by best teach target, each row shows: target mon → TM move, replace which existing move, `+cov` gained, `−cov` lost
-- [ ] **OCR TM Case scan** — extend `js/ocr.js` with `readTMCase(file)` returning `{ tms: [{ num, count }] }`; scan button on TMs page merges into `tmInventory`
-- [ ] **E2E + Playwright verification** — new `e2e/tms-planner.spec.ts`; mobile 390×844 + desktop ≥1024 layout screenshots
-
 ## Progress
+
+### Session 26 — TM/HM Planner, Scoring Upgrade, HM Carrier
+
+**Completed**
+- [x] **Data foundation** — new `js/data-tutors.js` with `MOVE_TUTORS` (18 FRLG tutors) and `UTILITY_NPCS` (Move Reminder + Move Deleter); move list compiled directly from PokéAPI's `pokemon_moves.csv` filtered by `version_group_id=7` / `method=tutor`; NPC locations cross-checked with `pret/pokefirered` decompilation scripts (`data/scripts/move_tutors.inc`). `TM_HM` entries now auto-tagged with `tmType` (`tm`|`hm`) and `buyable` (derived from loc string matching Dept Store / Game Corner).
+- [x] **Playthrough model** — new `tmInventory: { [num]: count }` field; migration via `DataManager.load` and `_applyRemoteStore` (defaults to `{}`). TM counts decrement on teach in-game; HMs binary; tutors treated as one-time teach flags.
+- [x] **Scoring engine upgrade** (`js/party-calc.js`) — opt-in `MOVE_DATA`/`PHYS`/`computeAttackerStats`/`damageRangePct` injected via `makePartyCalc(..., opts)`. New primitives: `unresistedCov(members)` (neutral-or-better coverage, 0–18), `bestDamageAgainst(pm, defType)` (% damage vs a Lv50 baseline defender — fixed level so higher-level attackers score higher), `avgAtkPower(members)`. Rewritten `scoreTeam = 3·unresisted + 2·superEff − stackedWeakness + avgAtkPower/40 + avgBST/600`. New `computeTeachImpact(team, memberIdx, move)` returns best replace-slot with `{ scoreDelta, unresistedDelta, superDelta, coverageLost }`. New `rankTeachTargets(team, move, canLearnSet)` and `computeHMCarriers(pool, ownedHmMoves, canLearn)` used by the TMs page.
+- [x] **TMs & HMs page overhaul** — `js/pages.js` fully rewritten; single scroll with filter bar (`ALL` / `OWNED` / `MISSING`), HM Carrier card at top, TMs / HMs / Tutors sections with headers, Utility NPCs footer. Each card has an inventory control (stepper for TMs; toggle for HMs/tutors) and a `WHO CAN LEARN` expansion that groups party + PC mons who can learn the move. Tapping a learner opens their edit modal with the move pre-queued for review. Owned cards get a green-tinted background; taught tutors fade. All new CSS scoped to `.tm-*`/`.tmsg-*`/`.hmc-*`/`.tms-*` classes.
+- [x] **HM Carrier card** — uses the politically-neutral term "HM CARRIER" rather than "HM slave". Shown at the top of the TMs page when ≥2 HMs are owned. Ranks top 3 carriers by HMs-learnable − battle-utility cost. Missing HMs are shown struck through next to green chips for carry-able ones.
+- [x] **Party page TM Suggestions** — new `renderTmSuggestions()` renders a `📀 TM SUGGESTIONS — BEST MOVES TO TEACH NOW` section under Party Suggestions. Each row: target mon, replaced-move → TM move, coverage delta (`+N cov` / `−N cov`), score delta, and tap to open the teach modal with the move pre-queued.
+- [x] **OCR TM Case scan** — new `readTMCase(file)` in `js/ocr.js` sends a TM Case screenshot to Claude Vision (haiku-4-5); response is parsed, validated against the TM/HM num regex, and merged into `tmInventory` by taking the max per num (so multi-shot scans of a paginated TM Case aggregate correctly). New `📷 SCAN` button in the TMs page header.
+- [x] **Tests** — 72 unit tests (+29 new across `party-calc.test.js` and new `data-tutors.test.js`: unresisted coverage, damage-aware scoring with level scaling, `computeTeachImpact`, `rankTeachTargets`, `computeHMCarriers`, and full data integrity for `MOVE_TUTORS` / `UTILITY_NPCS` / `TM_HM` runtime flags). 92 E2E tests (+13 new `tms-planner.spec.ts`: filter bar, stepper, HM toggle, `WHO CAN LEARN` expansion, HM Carrier show/hide thresholds, Move Tutors rendering, Utility NPCs, MISSING filter, scan button, TM Suggestions + teach modal pre-queue). All 164 tests pass.
+- [x] **Docs** — AGENTS.md file map updated with `js/data-tutors.js`. Session entry written.
 
 ### Session 25 — URL Routing
 

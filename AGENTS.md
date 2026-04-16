@@ -28,7 +28,8 @@ js/data-types.js        Gen III type chart, PHYS set, gm()/dmult() helpers
 js/data-abilities.js    ABILITY_MODS, getAbilityMod()
 js/data-pokemon.js      POKEMON (151), HOW obtain data, getObtain()
 js/data-locations.js    LOCATIONS encounter data (Where Am I)
-js/data-moves.js        ALL_MOVES, TM_HM
+js/data-moves.js        ALL_MOVES, TM_HM (each entry tagged tmType + buyable)
+js/data-tutors.js       MOVE_TUTORS (18 FRLG tutors) + UTILITY_NPCS (Move Reminder / Deleter)
 js/data-bosses.js       BOSSES, RIVALS, tc() color helper
 js/breakdown.js         Sprite helpers, applyAbilityMod, breakdown overlay
 js/data-manager.js      DataManager — persistence gateway, GitHub Gist sync, conflict resolution
