@@ -43,7 +43,7 @@ var DataManager = (function(){
     const body = {
       description: 'Super Effective — sync data (do not edit manually)',
       public: false,
-      files: { [GIST_FILENAME]: { content: JSON.stringify(data) } },
+      files: { [GIST_FILENAME]: { content: JSON.stringify(data, null, 2) } },
     };
     const resp = await fetch(GIST_API, { method: 'POST', headers: _headers(), body: JSON.stringify(body) });
     if(!resp.ok) throw new Error('Failed to create gist: ' + resp.status);
@@ -56,7 +56,7 @@ var DataManager = (function(){
     const gistId = _getGistId();
     if(!gistId) return _createGist(data);
     const body = {
-      files: { [GIST_FILENAME]: { content: JSON.stringify(data) } },
+      files: { [GIST_FILENAME]: { content: JSON.stringify(data, null, 2) } },
     };
     const resp = await fetch(GIST_API + '/' + gistId, { method: 'PATCH', headers: _headers(), body: JSON.stringify(body) });
     if(resp.status === 404){
