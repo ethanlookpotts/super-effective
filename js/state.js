@@ -19,7 +19,7 @@ const GAMES = [
 ];
 
 function makePt(name, gameId){
-  return { id: crypto.randomUUID(), name, gameId: gameId||'frlg-fr', party: [], pc: [], recents: [], rivalStarter: 'bulbasaur' };
+  return { id: crypto.randomUUID(), name, gameId: gameId||'frlg-fr', party: [], pc: [], recents: [], rivalStarter: 'bulbasaur', tmInventory: {} };
 }
 
 function activePt(){

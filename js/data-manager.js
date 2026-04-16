@@ -111,6 +111,7 @@ var DataManager = (function(){
     if(store.playthroughs) store.playthroughs.forEach(function(pt){
       if(!pt.gameId || pt.gameId==='frlg') pt.gameId='frlg-fr';
       if(!pt.pc) pt.pc = [];
+      if(!pt.tmInventory) pt.tmInventory = {};
     });
     if(store.playthroughs.length){
       if(!store.activePtId || !store.playthroughs.find(function(p){ return p.id===store.activePtId; })){
