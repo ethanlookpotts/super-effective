@@ -804,7 +804,10 @@ function renderPC(){
 // ═══════════════════════════════
 // PARTY SUGGESTION ENGINE — delegates to party-calc.js
 // ═══════════════════════════════
-const _calc = makePartyCalc(TYPES, STATS, gm, dmult);
+const _calc = makePartyCalc(TYPES, STATS, gm, dmult, {
+  MOVE_DATA, PHYS, LEARNSETS,
+  computeAttackerStats, damageRangePct,
+});
 
 function _computeSuggestions(){
   const pt = activePt();

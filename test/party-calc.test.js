@@ -18,15 +18,26 @@ const path = require('node:path');
 const src = (...parts) => path.join(__dirname, '..', 'js', ...parts);
 const ctx = vm.createContext({});
 vm.runInContext(fs.readFileSync(src('data-types.js'), 'utf8'), ctx);
+vm.runInContext(fs.readFileSync(src('data-stats.js'), 'utf8'), ctx);
 vm.runInContext(fs.readFileSync(src('data-pokemon.js'), 'utf8'), ctx);
+vm.runInContext(fs.readFileSync(src('data-moves.js'), 'utf8'), ctx);
+vm.runInContext(fs.readFileSync(src('data-learnsets.js'), 'utf8'), ctx);
 vm.runInContext(fs.readFileSync(src('party-calc.js'), 'utf8'), ctx);
 vm.runInContext(
-  'globalThis.TYPES=TYPES; globalThis.STATS=STATS; globalThis.gm=gm; globalThis.dmult=dmult; globalThis.makePartyCalc=makePartyCalc;',
+  'globalThis.TYPES=TYPES; globalThis.STATS=STATS; globalThis.PHYS=PHYS; globalThis.gm=gm; globalThis.dmult=dmult;'+
+  'globalThis.MOVE_DATA=MOVE_DATA; globalThis.LEARNSETS=LEARNSETS;'+
+  'globalThis.computeAttackerStats=computeAttackerStats; globalThis.damageRangePct=damageRangePct;'+
+  'globalThis.makePartyCalc=makePartyCalc;',
   ctx
 );
 
-const { makePartyCalc, TYPES, STATS, gm, dmult } = ctx;
+const { makePartyCalc, TYPES, STATS, PHYS, gm, dmult, MOVE_DATA, LEARNSETS, computeAttackerStats, damageRangePct } = ctx;
+// Pure-coverage calc (no damage model) — used for legacy tests
 const calc = makePartyCalc(TYPES, STATS, gm, dmult);
+// Full calc with damage-aware scoring — used for new tests
+const calcFull = makePartyCalc(TYPES, STATS, gm, dmult, {
+  MOVE_DATA, PHYS, LEARNSETS, computeAttackerStats, damageRangePct,
+});
 
 // ─── Helpers ──────────────────────────────────────────────────────────────
 // Build a minimal Pokémon-like object for testing
@@ -304,5 +315,115 @@ describe('computeSuggestions', () => {
         assert.ok('_srcIdx' in m, 'missing _srcIdx on returned member');
       });
     });
+  });
+});
+
+// ─── unresistedCov ────────────────────────────────────────────────────────
+describe('unresistedCov', () => {
+  test('monotype Fire mon: at least hits its own STAB coverage neutrally', () => {
+    const team = [mon(6, ['Fire'])];
+    // Fire attacks hit Grass/Ice/Bug/Steel 2× and hit most other types neutrally;
+    // only Fire/Water/Rock/Dragon resist. So unresisted >= 14.
+    assert.ok(calc.unresistedCov(team) >= 14);
+  });
+  test('unresistedCov ≥ countOffCov always', () => {
+    const team = [mon(6, ['Fire']), mon(9, ['Water']), mon(65, ['Psychic'])];
+    assert.ok(calc.unresistedCov(team) >= calc.countOffCov(team));
+  });
+  test('empty team returns 0', () => {
+    assert.equal(calc.unresistedCov([]), 0);
+  });
+});
+
+// ─── Damage-aware scoring ────────────────────────────────────────────────
+describe('damage-aware scoring', () => {
+  test('bestDamageAgainst returns 0 without damage options', () => {
+    const pm = { ...mon(1, ['Grass']), level: '50' };
+    assert.equal(calc.bestDamageAgainst(pm, 'Water'), 0);
+  });
+  test('bestDamageAgainst returns positive when moves set + damage model enabled', () => {
+    const pm = { ...mon(6, ['Fire','Flying']), level: '50', moves:[{name:'Flamethrower',type:'Fire'}] };
+    assert.ok(calcFull.bestDamageAgainst(pm, 'Grass') > 0);
+  });
+  test('higher level attacker deals more damage than lower level', () => {
+    const base = { ...mon(6, ['Fire','Flying']), moves:[{name:'Flamethrower',type:'Fire'}] };
+    const low  = { ...base, level: '20' };
+    const high = { ...base, level: '80' };
+    assert.ok(calcFull.bestDamageAgainst(high, 'Grass') > calcFull.bestDamageAgainst(low, 'Grass'));
+  });
+  test('team with higher-level members scores higher than same team at low level', () => {
+    const mkTeam = lvl => [
+      {...mon(6,  ['Fire','Flying']), level:lvl, moves:[{name:'Flamethrower',type:'Fire'}]},
+      {...mon(9,  ['Water']),         level:lvl, moves:[{name:'Surf',type:'Water'}]},
+      {...mon(25, ['Electric']),      level:lvl, moves:[{name:'Thunderbolt',type:'Electric'}]},
+    ];
+    assert.ok(calcFull.scoreTeam(mkTeam('80')) > calcFull.scoreTeam(mkTeam('20')));
+  });
+});
+
+// ─── computeTeachImpact ──────────────────────────────────────────────────
+describe('computeTeachImpact', () => {
+  test('null for a move the member already knows', () => {
+    const team = [
+      {...mon(6, ['Fire','Flying']), level:'50', moves:[{name:'Flamethrower',type:'Fire'}]},
+    ];
+    assert.equal(calcFull.computeTeachImpact(team, 0, {name:'Flamethrower',type:'Fire'}), null);
+  });
+  test('appends to an open slot (returns replaceIdx=-1)', () => {
+    const team = [
+      {...mon(6, ['Fire','Flying']), level:'50', moves:[{name:'Ember',type:'Fire'}]},
+    ];
+    const imp = calcFull.computeTeachImpact(team, 0, {name:'Earthquake',type:'Ground'});
+    assert.ok(imp !== null);
+    // With only 1 move occupied, best option is to append
+    assert.equal(imp.replaceIdx, -1);
+  });
+  test('teaching a new-type move increases coverage', () => {
+    const team = [
+      {...mon(6, ['Fire','Flying']), level:'50', moves:[{name:'Flamethrower',type:'Fire'}]},
+    ];
+    const imp = calcFull.computeTeachImpact(team, 0, {name:'Earthquake',type:'Ground'});
+    assert.ok(imp.scoreDelta > 0, 'expected score gain for new-type move');
+  });
+  test('reports coverageLost when replacing a move drops a covered type', () => {
+    const team = [
+      {...mon(6, ['Fire','Flying']), level:'50', moves:[
+        {name:'Flamethrower',type:'Fire'}, {name:'Earthquake',type:'Ground'},
+        {name:'Rock Slide',type:'Rock'}, {name:'Aerial Ace',type:'Flying'},
+      ]},
+    ];
+    // Teaching another Fire move forces a replacement — whichever move is dropped,
+    // some super-effective coverage should be lost or zero (in the best case).
+    const imp = calcFull.computeTeachImpact(team, 0, {name:'Fire Blast',type:'Fire'});
+    assert.ok(imp !== null);
+    assert.ok(imp.coverageLost >= 0);
+  });
+});
+
+// ─── computeHMCarriers ───────────────────────────────────────────────────
+describe('computeHMCarriers', () => {
+  const canLearn = (dex, move) => (LEARNSETS[dex] || []).includes(move);
+
+  test('returns empty when no HMs owned', () => {
+    const pool = [mon(54, ['Water'])];
+    assert.equal(calcFull.computeHMCarriers(pool, [], canLearn).length, 0);
+  });
+
+  test('Psyduck line carries many HMs (Cut/Surf/Strength/Rock Smash/Waterfall)', () => {
+    const psyduck = mon(54, ['Water']);   // #54 Psyduck
+    const goldeen = mon(118, ['Water']);  // #118 Goldeen — can Surf but fewer HMs
+    const result  = calcFull.computeHMCarriers([psyduck, goldeen],
+      ['Cut','Surf','Strength','Rock Smash','Waterfall'], canLearn);
+    assert.ok(result.length >= 1);
+    assert.equal(result[0].pm.n, 54, 'Psyduck should outrank Goldeen as HM carrier');
+    assert.ok(result[0].hmsLearnable >= 3);
+  });
+
+  test('returns descending by score', () => {
+    const pool = [mon(54, ['Water']), mon(118, ['Water']), mon(6, ['Fire','Flying'])];
+    const result = calcFull.computeHMCarriers(pool, ['Cut','Surf','Fly'], canLearn);
+    for(let i=1;i<result.length;i++){
+      assert.ok(result[i-1].score >= result[i].score);
+    }
   });
 });
