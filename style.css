@@ -596,6 +596,8 @@ padding:5px 9px;font-size:13px;font-weight:500;cursor:pointer;transition:all .1s
 .settings-sync-btn{flex:1;padding:11px;background:rgba(255,201,60,.08);border:1.5px solid rgba(255,201,60,.22);border-radius:9px;color:var(--gold);font-family:var(--fp);font-size:6px;cursor:pointer;}
 .settings-sync-btn:active{background:rgba(255,201,60,.18);}
 .settings-sync-time{font-family:var(--fp);font-size:5px;color:var(--text3);margin-top:8px;line-height:1.8;}
+.settings-link{color:var(--gold);text-decoration:none;}
+.settings-link:hover{text-decoration:underline;}
 /* ── Sync status indicator ── */
 .sync-status{font-family:var(--fp);font-size:4.5px;letter-spacing:.2px;min-height:12px;line-height:1;}
 .sync-status.ok{color:var(--green);}

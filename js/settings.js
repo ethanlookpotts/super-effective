@@ -54,16 +54,16 @@ function renderSettings() {
         <span class="settings-sec-ttl">GITHUB SYNC</span>
         ${syncBadge}
       </div>
-      <p class="settings-desc">Sync your playthroughs across devices via a private GitHub Gist. Requires a personal access token with <strong>gist</strong> scope.</p>
+      <p class="settings-desc">Sync your playthroughs across devices via a private GitHub Gist. Requires a fine-grained personal access token with <strong>Gists</strong> read &amp; write permission.</p>
       <div class="settings-steps">
-        <div class="settings-step">1. Go to <strong>github.com/settings/tokens</strong></div>
-        <div class="settings-step">2. Generate new token (classic)</div>
-        <div class="settings-step">3. Check the <strong>gist</strong> scope only</div>
-        <div class="settings-step">4. Copy the token — starts with <code>ghp_</code></div>
+        <div class="settings-step">1. Go to <strong><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener" class="settings-link">github.com → Settings → Tokens</a></strong></div>
+        <div class="settings-step">2. Choose <strong>Fine-grained token</strong></div>
+        <div class="settings-step">3. Under <strong>Account permissions</strong>, set <strong>Gists</strong> → <strong>Read and write</strong></div>
+        <div class="settings-step">4. Copy the token — starts with <code>github_pat_</code></div>
       </div>
       <label class="mlbl" for="settings-gh-token" style="display:block;margin-top:16px;">GITHUB TOKEN</label>
       <input class="field-in" id="settings-gh-token" type="password"
-        placeholder="${hasToken ? 'Token saved — enter new token to replace' : 'ghp_…'}"
+        placeholder="${hasToken ? 'Token saved — enter new token to replace' : 'github_pat_…'}"
         autocomplete="off" autocorrect="off" spellcheck="false"
         aria-label="GitHub personal access token">
       <div class="settings-btn-row">
@@ -73,6 +73,7 @@ function renderSettings() {
       <div id="settings-gh-test-status" class="settings-test-status" role="status"></div>
       ${hasToken ? `
         ${lastSynced}
+        ${syncStatus.gistId ? `<div class="settings-sync-time"><a href="https://gist.github.com/${syncStatus.gistId}" target="_blank" rel="noopener" class="settings-link" aria-label="View gist">View synced gist ↗</a></div>` : ''}
         ${syncError}
         <div class="settings-btn-row" style="margin-top:10px;">
           <button class="settings-sync-btn" onclick="triggerSyncNow()" aria-label="Sync now">SYNC NOW</button>

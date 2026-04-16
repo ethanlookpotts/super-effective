@@ -332,12 +332,31 @@ var DataManager = (function(){
         'Authorization': 'Bearer ' + token,
         'Accept': 'application/vnd.github+json',
       };
+      // List gists to verify read access
       var resp = await fetch(GIST_API + '?per_page=1', { headers: testHeaders });
       if(!resp.ok) throw new Error('Invalid token (HTTP ' + resp.status + ')');
-      // Check scopes header
-      var scopes = resp.headers.get('x-oauth-scopes') || '';
-      if(scopes.indexOf('gist') === -1){
+      // Classic tokens expose x-oauth-scopes; fine-grained tokens don't.
+      // For classic tokens, verify gist scope is present.
+      var scopes = resp.headers.get('x-oauth-scopes');
+      if(scopes !== null && scopes.indexOf('gist') === -1){
         throw new Error('Token missing "gist" scope. Current scopes: ' + (scopes || 'none'));
+      }
+      // For fine-grained tokens, verify write access by creating + deleting a test gist
+      if(scopes === null){
+        var testBody = {
+          description: 'Super Effective — token test (safe to delete)',
+          public: false,
+          files: { 'test.txt': { content: 'token validation' } },
+        };
+        var createResp = await fetch(GIST_API, {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
+          body: JSON.stringify(testBody),
+        });
+        if(!createResp.ok) throw new Error('Token cannot create gists — ensure Gists permission is set to Read and write');
+        var testGist = await createResp.json();
+        // Clean up the test gist
+        fetch(GIST_API + '/' + testGist.id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json' } }).catch(function(){});
       }
       return true;
     },
