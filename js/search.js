@@ -23,6 +23,7 @@ function setTypeFilter(t){
   }
   buildTypePills();
   renderSearch();
+  setRoute('search', activeTypeFilter ? {type:activeTypeFilter} : {});
 }
 
 function _resetSearchInput(){
@@ -35,11 +36,13 @@ function _resetSearchInput(){
 
 // Jump to Search with a specific type pill active (used by coverage dots + other tabs)
 function setTypeAndSearch(type){
-  showPage('search');
   activeTypeFilter = type;
+  activePoke = null;
   _resetSearchInput();
+  showPage('search');
   buildTypePills();
   renderSearch();
+  setRoute('search', {type});
 }
 
 function onSearch(v){
@@ -60,6 +63,7 @@ function clearSearch(){
   document.getElementById('s-drop').style.display = 'none';
   activePoke = null;
   renderSearch();
+  setRoute('search');
 }
 
 function pickPoke(n){
@@ -71,6 +75,7 @@ function pickPoke(n){
   buildTypePills();
   addRecent(activePoke);
   renderSearch();
+  setRoute('search', {n});
 }
 
 // Default search state: recents + type browse

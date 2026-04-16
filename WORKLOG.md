@@ -31,6 +31,11 @@ Evolving into a multi-game companion app with playthrough support.
 
 ## Progress
 
+### Session 25 — URL Routing
+
+**Completed**
+- [x] URL routing — hash-based router (`js/router.js`) so reloading restores the current view; routes cover all 6 pages plus `#/search?n=<dex>` (selected Pokémon) and `#/search?type=<Type>` (active type filter); nav actions (`showPage`, `pickPoke`, `setTypeFilter`, `setTypeAndSearch`, `clearSearch`) push state via `history.pushState`; `popstate` listener applies route on back/forward; `applyRoute()` called once in `initApp`; playthrough switch calls `replaceRoute('search')` to reset stale URL; 14 unit tests (`test/router.test.js` — pure parse/build helpers) + 10 E2E tests (`e2e/routing.spec.ts`); package.json `test:unit` glob now picks up all `test/*.test.js`; 43 unit + 79 E2E = 122 tests passing
+
 ### Session 24 — Readability Overhaul, Light Theme, CI Fix
 
 **Completed**

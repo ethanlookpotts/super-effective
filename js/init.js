@@ -29,4 +29,5 @@ function initApp(){
   renderTMs(TM_HM);
   renderGyms();
   renderParty();
+  applyRoute();
 }

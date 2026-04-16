@@ -10,6 +10,12 @@ function showPage(id){
   if(id==='party') renderParty();
   if(id==='settings') renderSettings();
   closeDrawer();
+  if(id==='search'){
+    const params = activePoke ? {n:activePoke.n} : (activeTypeFilter ? {type:activeTypeFilter} : {});
+    setRoute('search', params);
+  } else {
+    setRoute(id);
+  }
 }
 function openDrawer(){ document.getElementById('drawer-overlay').classList.add('open'); }
 function closeDrawer(){ document.getElementById('drawer-overlay').classList.remove('open'); }

@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "test:unit": "node --test test/party-calc.test.js",
+    "test:unit": "node --test test/*.test.js",
     "test:e2e": "playwright test",
     "test": "npm run test:unit && npm run test:e2e"
   },

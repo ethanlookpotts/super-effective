@@ -58,6 +58,7 @@ function _refreshUI(){
   buildTypePills();
   renderSearch();
   renderParty();
+  replaceRoute('search');
 }
 
 // ═══════════════════════════════
