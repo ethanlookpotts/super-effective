@@ -83,7 +83,11 @@ test('test token shows error for missing gist scope', async ({ page }) => {
     route.fulfill({
       status: 200,
       contentType: 'application/json',
-      headers: { 'x-oauth-scopes': 'repo' },
+      headers: {
+        'x-oauth-scopes': 'repo',
+        'access-control-expose-headers': 'x-oauth-scopes',
+        'access-control-allow-origin': '*',
+      },
       body: JSON.stringify([]),
     });
   });

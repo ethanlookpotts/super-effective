@@ -13,6 +13,7 @@ function showToast(msg, color){
 // ═══════════════════════════════
 // INIT
 // ═══════════════════════════════
+initTheme();
 DataManager.load();
 if(!store.playthroughs.length){
   showGameGate();

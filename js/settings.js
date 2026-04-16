@@ -24,7 +24,20 @@ function renderSettings() {
     ? `<div class="settings-test-status error">${syncStatus.error}</div>`
     : '';
 
+  const savedTheme = localStorage.getItem('se_theme') || 'system';
+
   body.innerHTML = `
+    <div class="settings-section">
+      <div class="settings-sec-hd">
+        <span class="settings-sec-ttl">THEME</span>
+      </div>
+      <p class="settings-desc">Choose light, dark, or match your device setting.</p>
+      <div class="theme-toggle-row">
+        <button class="theme-btn${savedTheme==='light'?' active':''}" onclick="setTheme('light')" aria-label="Light theme">☀️ LIGHT</button>
+        <button class="theme-btn${savedTheme==='system'?' active':''}" onclick="setTheme('system')" aria-label="System theme">💻 SYSTEM</button>
+        <button class="theme-btn${savedTheme==='dark'?' active':''}" onclick="setTheme('dark')" aria-label="Dark theme">🌙 DARK</button>
+      </div>
+    </div>
     <div class="settings-section">
       <div class="settings-sec-hd">
         <span class="settings-sec-ttl">CLAUDE API KEY</span>
@@ -81,6 +94,31 @@ function renderSettings() {
         <button class="rm-btn" onclick="forgetGithubToken()" aria-label="Forget GitHub token" style="margin-top:8px;">✕ FORGET TOKEN</button>
       ` : ''}
     </div>`;
+}
+
+// ── Theme toggle ──
+function _applyTheme(mode) {
+  const isDark = mode === 'dark' ||
+    (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  if (isDark) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+  }
+}
+function setTheme(t) {
+  localStorage.setItem('se_theme', t);
+  _applyTheme(t);
+  renderSettings();
+}
+function initTheme() {
+  const saved = localStorage.getItem('se_theme') || 'system';
+  _applyTheme(saved);
+  // Listen for system theme changes
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    const cur = localStorage.getItem('se_theme') || 'system';
+    if (cur === 'system') _applyTheme('system');
+  });
 }
 
 function saveSettingsKey() {
