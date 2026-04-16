@@ -142,11 +142,14 @@ async function testGithubToken() {
 async function triggerSyncNow() {
   showToast('Syncing\u2026');
   await DataManager.pull();
-  await DataManager.push();
+  // Only push if pull didn't open a conflict modal
+  if (!DataManager._pendingRemote) {
+    await DataManager.push();
+  }
   const status = DataManager.getSyncStatus();
   if (status.error) {
     showToast('Sync failed: ' + status.error, 'red');
-  } else {
+  } else if (!DataManager._pendingRemote) {
     showToast('Sync complete');
   }
   renderSettings();
