@@ -129,7 +129,7 @@ var DataManager = (function(){
     if(typeof renderParty === 'function') renderParty();
     if(typeof renderGyms === 'function') renderGyms();
     if(typeof renderLocs === 'function' && typeof LOCATIONS !== 'undefined') renderLocs(LOCATIONS);
-    if(typeof renderTMs === 'function' && typeof TM_HM !== 'undefined') renderTMs(TM_HM);
+    if(typeof renderTMs === 'function') renderTMs();
   }
 
   function _showConflictModal(remoteData){

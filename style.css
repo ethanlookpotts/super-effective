@@ -666,11 +666,78 @@ padding:11px 14px 10px;border-bottom:1px solid var(--border);}
 text-shadow:0 0 18px rgba(77,171,247,.3);margin-bottom:9px;}
 .tm-card{background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:9px 11px;margin-bottom:7px;}
 .tm-card:last-child{margin-bottom:0;}
+.tm-card.tm-owned{border-color:rgba(61,220,132,.38);background:linear-gradient(90deg,rgba(61,220,132,.06),var(--card2) 60%);}
+.tm-card.tm-faded{opacity:.55;}
 .tm-card-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:4px;}
 .tm-card-num{font-family:var(--fp);font-size:8px;color:var(--text2);min-width:34px;}
 .tm-card-move{font-family:var(--fp);font-size:9px;color:var(--text);flex:1;}
 .tm-card-loc{font-size:15px;color:var(--text2);line-height:1.5;}
-.tm-section-lbl{font-family:var(--fp);font-size:8px;color:var(--green);margin:10px 0 7px;letter-spacing:.3px;}
+.tm-section-lbl{font-family:var(--fp);font-size:8px;color:var(--green);margin:14px 0 7px;letter-spacing:.3px;}
+.tm-section-n{color:var(--text3);font-weight:normal;margin-left:4px;}
+
+/* Ownership filter bar */
+.tms-filter{display:flex;gap:5px;margin:4px 0 10px;}
+.tms-fbtn{flex:1;min-height:44px;padding:8px 6px;background:var(--card);border:1px solid var(--border2);border-radius:7px;
+  font-family:var(--fp);font-size:8px;color:var(--text2);cursor:pointer;letter-spacing:.3px;
+  display:flex;align-items:center;justify-content:center;gap:5px;}
+.tms-fbtn:active{transform:scale(.97);}
+.tms-fbtn.active{color:var(--gold);border-color:rgba(255,199,78,.45);background:rgba(255,199,78,.08);}
+.tms-fbtn-n{font-family:var(--fm);font-size:11px;color:var(--text3);}
+.tms-fbtn.active .tms-fbtn-n{color:var(--gold);}
+
+/* Inventory controls — stepper + toggle */
+.tm-inv{display:flex;align-items:center;gap:4px;margin-left:auto;}
+.tm-inv-btn{min-width:30px;min-height:30px;padding:0;background:var(--card);border:1px solid var(--border2);border-radius:5px;
+  color:var(--text);font-family:var(--fm);font-size:16px;line-height:1;cursor:pointer;}
+.tm-inv-btn:active{background:var(--card2);}
+.tm-inv-btn:disabled{opacity:.35;cursor:not-allowed;}
+.tm-inv-count{min-width:22px;text-align:center;font-family:var(--fp);font-size:10px;color:var(--text3);}
+.tm-inv-count.owned{color:var(--green);}
+.tm-own-toggle{min-height:30px;margin-left:auto;padding:6px 10px;background:var(--card);border:1px solid var(--border2);border-radius:5px;
+  font-family:var(--fp);font-size:8px;color:var(--text3);cursor:pointer;letter-spacing:.3px;}
+.tm-own-toggle:active{transform:scale(.95);}
+.tm-own-toggle.owned{color:var(--green);border-color:rgba(61,220,132,.4);background:rgba(61,220,132,.08);}
+
+/* Expand learners row */
+.tm-expand{margin-top:7px;width:100%;min-height:32px;padding:6px 9px;background:transparent;border:1px dashed var(--border2);border-radius:5px;
+  font-family:var(--fp);font-size:7.5px;color:var(--text3);cursor:pointer;text-align:left;letter-spacing:.3px;}
+.tm-expand:active{background:var(--card2);}
+.tm-expand-count{margin-left:6px;color:var(--blue);}
+.tm-learners{margin-top:7px;padding-top:7px;border-top:1px dashed var(--border2);}
+.tm-learn-lbl{font-family:var(--fp);font-size:7px;color:var(--text3);margin:4px 0 4px;letter-spacing:.3px;}
+.tm-learn-list{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px;}
+.tm-learn-empty{font-size:13px;color:var(--text3);padding:4px 0 2px;font-style:italic;}
+.tm-learner{display:flex;align-items:center;gap:4px;min-height:36px;padding:4px 7px 4px 4px;background:var(--card);border:1px solid var(--border2);border-radius:18px;cursor:pointer;}
+.tm-learner:active{background:var(--card2);}
+.tm-learner-sprite{width:28px;height:28px;object-fit:contain;}
+.tm-learner-name{font-family:var(--fm);font-size:12px;color:var(--text);white-space:nowrap;}
+.tm-learner-types{display:flex;gap:2px;margin-left:2px;}
+
+/* HM Carrier card */
+.hmc-card{background:var(--card);border:1px solid rgba(77,171,247,.28);border-radius:9px;padding:10px 12px;margin:6px 0 14px;}
+.hmc-hd{font-family:var(--fp);font-size:8.5px;color:var(--blue);margin-bottom:4px;letter-spacing:.3px;}
+.hmc-sub{font-size:12px;color:var(--text3);margin-bottom:8px;line-height:1.5;}
+.hmc-row{display:flex;align-items:flex-start;gap:9px;padding:7px 0;border-top:1px dashed var(--border2);}
+.hmc-row:first-of-type{border-top:none;}
+.hmc-rank{font-family:var(--fp);font-size:7.5px;color:var(--text3);min-width:18px;padding-top:9px;}
+.hmc-sprite{width:40px;height:40px;object-fit:contain;flex-shrink:0;}
+.hmc-info{flex:1;min-width:0;}
+.hmc-name{font-family:var(--fp);font-size:8.5px;color:var(--text);display:flex;align-items:center;gap:6px;margin-bottom:2px;}
+.hmc-src{font-family:var(--fp);font-size:6.5px;padding:2px 5px;border-radius:3px;letter-spacing:.3px;}
+.hmc-src-party{background:rgba(61,220,132,.12);color:var(--green);}
+.hmc-src-pc{background:rgba(77,171,247,.12);color:var(--blue);}
+.hmc-score{font-size:11px;color:var(--text2);margin-bottom:4px;}
+.hmc-chips{display:flex;flex-wrap:wrap;gap:3px;}
+.hmc-chip{font-size:11px;padding:2px 6px;border-radius:3px;}
+.hmc-chip.hmc-can{background:rgba(61,220,132,.1);color:var(--green);}
+.hmc-chip.hmc-cant{background:rgba(255,61,90,.08);color:var(--red);text-decoration:line-through;opacity:.75;}
+
+/* Utility NPC cards */
+.tm-util-card{background:var(--card2);border:1px solid var(--border2);border-radius:7px;padding:8px 11px;margin-bottom:6px;}
+.tm-util-hd{font-family:var(--fp);font-size:8px;color:var(--gold);margin-bottom:3px;}
+.tm-util-loc{font-size:13px;color:var(--text2);line-height:1.4;}
+.tm-util-meta{font-size:12px;color:var(--text3);margin-top:3px;}
+.tm-util-cost{color:var(--blue);}
 
 /* ══════════════════════════════════
 TOAST

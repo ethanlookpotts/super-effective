@@ -26,7 +26,7 @@ function initApp(){
   buildTypePills();
   renderSearch();
   renderLocs(LOCATIONS);
-  renderTMs(TM_HM);
+  renderTMs();
   renderGyms();
   renderParty();
   applyRoute();
