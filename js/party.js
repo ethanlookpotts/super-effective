@@ -41,6 +41,59 @@ function addToParty(n){
 // ═══════════════════════════════
 // PARTY PAGE
 // ═══════════════════════════════
+function renderTmSuggestions(){
+  const wrap = document.getElementById('tm-sugg-wrap');
+  if(!wrap) return;
+  const pt = activePt();
+  if(!pt.party.length){ wrap.innerHTML = ''; return; }
+  const inv = pt.tmInventory || {};
+  // Every owned TM / HM / tutor move — deduped by move name
+  const owned = [];
+  const seen = new Set();
+  [...TM_HM, ...MOVE_TUTORS].forEach(t => {
+    if((inv[t.num]||0) <= 0) return;
+    if(seen.has(t.move)) return;
+    seen.add(t.move);
+    // Skip status moves — they don't impact offensive coverage scoring meaningfully
+    if(t.cat === 'sta' && t.tmType !== 'hm') return;
+    owned.push(t);
+  });
+  if(!owned.length){ wrap.innerHTML = ''; return; }
+
+  // For each owned move: find the single party member whose teach-impact score delta is highest.
+  // Skip zero/negative deltas. Sort all suggestions by delta descending. Show top 6.
+  const canLearn = (dex, move) => (LEARNSETS[dex]||[]).includes(move);
+  const suggestions = [];
+  owned.forEach(t => {
+    const move = { name: t.move, type: t.type };
+    const ranked = _calc.rankTeachTargets(pt.party, move, new Set(pt.party.filter(pm=>canLearn(pm.n, t.move)).map(pm=>pm.n)));
+    if(!ranked.length) return;
+    const best = ranked[0];
+    if(best.impact.scoreDelta <= 0.01) return;  // no meaningful improvement
+    suggestions.push({ tm: t, target: pt.party[best.memberIdx], targetIdx: best.memberIdx, impact: best.impact });
+  });
+  suggestions.sort((a,b) => b.impact.scoreDelta - a.impact.scoreDelta);
+  const shown = suggestions.slice(0, 6);
+  if(!shown.length){ wrap.innerHTML = ''; return; }
+
+  const rows = shown.map(s => {
+    const replacedName = s.impact.replaceIdx >= 0 ? (s.target.moves[s.impact.replaceIdx]?.name || '—') : null;
+    const replace = replacedName ? `<span class="tmsg-rep-from">${replacedName}</span> <span class="tmsg-arrow">→</span>` : `<span class="tmsg-add-lbl">+</span>`;
+    const covGain = s.impact.superDelta > 0 ? `<span class="tmsg-cov-gain">+${s.impact.superDelta} cov</span>` : '';
+    const covLost = s.impact.coverageLost > 0 ? `<span class="tmsg-cov-lost">−${s.impact.coverageLost} cov</span>` : '';
+    return `<button class="tmsg-row" onclick="openTeachModal(${s.target.n},'${s.tm.move.replace(/'/g,"\\'")}','party',${s.targetIdx})" aria-label="Teach ${s.tm.move} to ${s.target.name}">
+      <img class="tmsg-sprite" src="${spriteUrl(s.target.n)}" onerror="this.style.display='none'">
+      <div class="tmsg-body">
+        <div class="tmsg-line1">${s.target.name} · ${replace} <span class="tb sm t-${s.tm.type}">${s.tm.type}</span> <span class="tmsg-mvname">${s.tm.move}</span></div>
+        <div class="tmsg-line2">${covGain}${covLost}<span class="tmsg-score">+${s.impact.scoreDelta.toFixed(1)} score</span></div>
+      </div>
+      <span class="tmsg-arrow-r">▶</span>
+    </button>`;
+  }).join('');
+
+  wrap.innerHTML = `<div class="tmsg-hd">📀 TM SUGGESTIONS — BEST MOVES TO TEACH NOW</div>${rows}`;
+}
+
 function renderParty(){
   const pt = activePt();
   const g = document.getElementById('party-grid');
@@ -65,6 +118,7 @@ function renderParty(){
   document.getElementById('party-ct').textContent = pt.party.length ? `${pt.party.length} / 6 IN PARTY` : '';
   renderCoverage();
   renderSuggestBtn();
+  renderTmSuggestions();
   renderPC();
 }
 
