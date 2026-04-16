@@ -4,6 +4,14 @@
 function buildTypePills(){
   const row = document.getElementById('type-filter-row');
   row.innerHTML = TYPES.map(t=>`<div class="tpill t-${t}${activeTypeFilter===t?' active':''}" role="button" onclick="setTypeFilter('${t}')">${t}</div>`).join('');
+  row.addEventListener('scroll', _onPillScroll, {passive:true});
+  _onPillScroll();
+}
+function _onPillScroll(){
+  const row = document.getElementById('type-filter-row');
+  if(!row) return;
+  const atEnd = row.scrollLeft + row.clientWidth >= row.scrollWidth - 4;
+  row.classList.toggle('scrolled-end', atEnd);
 }
 
 function setTypeFilter(t){
@@ -76,7 +84,11 @@ function renderSearch(){
 
   if(pt.recents.length){
     html += `<div class="section-label">RECENT</div>
-    <div class="recent-chips">${pt.recents.map(r=>`<div class="rchip" onclick="pickPoke(${r.n})">${r.name}</div>`).join('')}</div>`;
+    <div class="recent-chips">${pt.recents.map(r=>{
+      const n = r.n || r;
+      const name = r.name || (POKEMON.find(p=>p.n===n)||{}).name || '#'+n;
+      return `<div class="rchip" onclick="pickPoke(${n})">${name}</div>`;
+    }).join('')}</div>`;
   }
 
   if(activeTypeFilter){
