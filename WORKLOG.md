@@ -10,6 +10,8 @@ Evolving into a multi-game companion app with playthrough support.
 ## Backlog
 
 ### High Priority
+- [ ] **TM/HM Planner** — inventory + teach suggestions + HM Carrier + scoring upgrade
+  - Sub-tasks tracked as Active Todos for Session 26 (see below)
 
 ### Medium Priority
 - [ ] Search by move name → show all Pokémon that can learn it
@@ -28,6 +30,26 @@ Evolving into a multi-game companion app with playthrough support.
 - [ ] Shared type chart per generation (Gen I differs from Gen II+)
 
 ---
+
+## Active Todos — Session 26 (TM/HM Planner)
+
+- [ ] **Data foundation** — add `MOVE_TUTORS` (FRLG) with name/move/type/cat/loc/oneTime; add `buyable` + `tmType` flags to existing `TM_HM` entries; add `tmInventory: { [num]: count }` to playthrough model with migration (default all 0)
+- [ ] **Scoring engine upgrade** — extend `js/party-calc.js`:
+  - `unresistedCoverage(members)` — number of the 18 types hit neutral-or-better
+  - Damage-aware scoring using `computeAttackerStats` + `MOVE_DATA` base power + STAB + type effectiveness (so higher-level / stronger Pokémon with the same moves rank higher)
+  - `computeTeachImpact(team, memberIdx, newMove)` — returns `{ scoreDelta, coverageDelta, bestReplace, coverageLost }`
+  - `computeHMCarrierCandidates(pool, ownedHMs)` — ranks mons by HMs-learnable ÷ battle-score cost
+  - Rework `computeSuggestions` + `scoreTeam` to use unresisted coverage + damage model; keep BST tiebreaker
+- [ ] **Unit tests** — expand `test/party-calc.test.js` to cover new helpers; adjust existing tests to new scoring
+- [ ] **TMs & HMs page overhaul**
+  - Inventory stepper (`−` / count / `+`) on each TM card (HMs toggle 0/1)
+  - Filter bar: All / Owned / Missing
+  - Expandable "Who can learn" per card (your party + PC, grouped)
+  - Move Tutors section (below TMs/HMs)
+  - HM Carrier suggestions card near top of page (politically-neutral term — not "HM slave")
+- [ ] **Party page integration** — "📀 TM SUGGESTIONS" section listing owned TMs ranked by best teach target, each row shows: target mon → TM move, replace which existing move, `+cov` gained, `−cov` lost
+- [ ] **OCR TM Case scan** — extend `js/ocr.js` with `readTMCase(file)` returning `{ tms: [{ num, count }] }`; scan button on TMs page merges into `tmInventory`
+- [ ] **E2E + Playwright verification** — new `e2e/tms-planner.spec.ts`; mobile 390×844 + desktop ≥1024 layout screenshots
 
 ## Progress
 
