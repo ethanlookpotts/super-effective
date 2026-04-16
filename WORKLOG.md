@@ -31,6 +31,11 @@ Evolving into a multi-game companion app with playthrough support.
 
 ## Progress
 
+### Session 23 — GitHub Gist Sync
+
+**Completed**
+- [x] GitHub Gist sync — cross-device playthrough sync via private GitHub Gist; new `js/data-manager.js` persistence gateway wraps all localStorage operations and handles gist CRUD, debounced push (2s), periodic pull (60s), conflict detection with user-facing modal ("Keep Local" / "Use Cloud"); refactored all `saveStore()`/`loadStore()` calls across `state.js`, `party.js`, `playthroughs.js`, `init.js` to use `DataManager.save()`/`DataManager.load()`; Settings page gains GITHUB SYNC section with token input, TEST (validates gist scope), SAVE, SYNC NOW, and FORGET TOKEN; sync status indicator in sidebar; conflict modal shows playthrough names and last-modified timestamp; offline-resilient (graceful catch on all API calls); 10 new E2E tests (`e2e/sync.spec.ts`) using `page.route()` to mock the GitHub Gist API; 69 E2E + 29 unit = 98 tests passing
+
 ### Session 22 — Claude Vision Scan + Full Static Info
 
 **Completed**

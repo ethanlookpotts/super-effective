@@ -31,7 +31,8 @@ js/data-locations.js    LOCATIONS encounter data (Where Am I)
 js/data-moves.js        ALL_MOVES, TM_HM
 js/data-bosses.js       BOSSES, RIVALS, tc() color helper
 js/breakdown.js         Sprite helpers, applyAbilityMod, breakdown overlay
-js/state.js             Store (localStorage), playthrough state, learnset cache, addRecent
+js/data-manager.js      DataManager — persistence gateway, GitHub Gist sync, conflict resolution
+js/state.js             Store global, playthrough state helpers, learnset cache, addRecent
 js/search.js            Search page, type filter pills, renderPokeDetail, renderPDrop
 js/party.js             Party page, edit modal, PC swap modal
 js/gyms.js              Gyms & Elite Four page rendering

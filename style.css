@@ -593,6 +593,24 @@ padding:5px 9px;font-size:13px;font-weight:500;cursor:pointer;transition:all .1s
 .settings-test-status.ok{color:var(--green);}
 .settings-test-status.error{color:var(--red);}
 .settings-test-status.loading{color:var(--text3);}
+.settings-sync-btn{flex:1;padding:11px;background:rgba(255,201,60,.08);border:1.5px solid rgba(255,201,60,.22);border-radius:9px;color:var(--gold);font-family:var(--fp);font-size:6px;cursor:pointer;}
+.settings-sync-btn:active{background:rgba(255,201,60,.18);}
+.settings-sync-time{font-family:var(--fp);font-size:5px;color:var(--text3);margin-top:8px;line-height:1.8;}
+/* ── Sync status indicator ── */
+.sync-status{font-family:var(--fp);font-size:4.5px;letter-spacing:.2px;min-height:12px;line-height:1;}
+.sync-status.ok{color:var(--green);}
+.sync-status.syncing{color:var(--gold);}
+.sync-status.error{color:var(--red);}
+/* ── Sync conflict modal ── */
+.sync-conflict-msg{font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:16px;}
+.sync-conflict-option{background:var(--card2);border:1px solid var(--border2);border-radius:9px;padding:12px 14px;margin-bottom:10px;}
+.sync-conflict-label{font-family:var(--fp);font-size:7px;color:var(--gold);margin-bottom:4px;}
+.sync-conflict-detail{font-size:11px;color:var(--text3);line-height:1.6;margin-bottom:10px;}
+.sync-conflict-btn{width:100%;padding:11px;border-radius:9px;font-family:var(--fp);font-size:6px;cursor:pointer;border:1.5px solid;transition:background .1s;}
+.sync-conflict-local{background:rgba(77,171,247,.08);border-color:rgba(77,171,247,.22);color:var(--blue);}
+.sync-conflict-local:active{background:rgba(77,171,247,.18);}
+.sync-conflict-remote{background:rgba(61,220,132,.08);border-color:rgba(61,220,132,.22);color:var(--green);}
+.sync-conflict-remote:active{background:rgba(61,220,132,.18);}
 
 .tms-ph{flex-shrink:0;background:linear-gradient(160deg,#0a0d1a,#0e1228);
 padding:11px 14px 10px;border-bottom:1px solid var(--border);}

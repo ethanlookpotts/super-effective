@@ -1,6 +1,6 @@
 // ═══════════════════════════════
 // STATE — multi-playthrough
-// localStorage key: 'se_v1'
+// Persistence handled by DataManager (js/data-manager.js)
 // ═══════════════════════════════
 // store = { playthroughs: [...], activePtId: '...' }
 // playthrough = { id, name, gameId, party[], recents[] }
@@ -17,29 +17,6 @@ const GAMES = [
     { id: 'frlg-lg', name: 'LeafGreen', icon: '🟢' },
   ]},
 ];
-
-function loadStore(){
-  try {
-    const raw = localStorage.getItem('se_v1');
-    if(raw) store = JSON.parse(raw);
-  } catch(e){}
-  // Migrate playthroughs with legacy gameId 'frlg' → 'frlg-fr', add pc:[] if missing
-  if(store.playthroughs) store.playthroughs.forEach(pt=>{
-    if(!pt.gameId || pt.gameId==='frlg') pt.gameId='frlg-fr';
-    if(!pt.pc) pt.pc = [];
-  });
-  if(store.playthroughs && store.playthroughs.length){
-    if(!store.activePtId || !store.playthroughs.find(p=>p.id===store.activePtId)){
-      store.activePtId = store.playthroughs[0].id;
-    }
-    saveStore();
-  }
-  // If no playthroughs: leave empty — init.js will show the game gate
-}
-
-function saveStore(){
-  localStorage.setItem('se_v1', JSON.stringify(store));
-}
 
 function makePt(name, gameId){
   return { id: crypto.randomUUID(), name, gameId: gameId||'frlg-fr', party: [], pc: [], recents: [], rivalStarter: 'bulbasaur' };
@@ -78,7 +55,7 @@ let mMode = 'party';   // 'party' | 'pc' — determines where saveModal() writes
 // ═══════════════════════════════
 function setRivalStarter(s){
   activePt().rivalStarter = s;
-  saveStore();
+  DataManager.save();
   renderGyms();
 }
 
@@ -95,5 +72,5 @@ function addRecent(p){
   pt.recents = pt.recents.filter(r=>r.n!==p.n);
   pt.recents.unshift({n:p.n,name:p.name,types:p.types});
   if(pt.recents.length>6) pt.recents.pop();
-  saveStore();
+  DataManager.save();
 }

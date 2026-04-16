@@ -6,7 +6,7 @@
     "test": "npm run test:unit && npm run test:e2e"
   },
   "devDependencies": {
-    "@playwright/test": "^1.44.0",
+    "@playwright/test": "^1.56.1",
     "serve": "^14.2.3"
   }
 }

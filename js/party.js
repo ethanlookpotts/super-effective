@@ -11,7 +11,7 @@ function evolvePartyMember(fromN, toN){
   member.n = toN;
   member.name = toPoke.name;
   member.types = [...toPoke.types];
-  saveStore();
+  DataManager.save();
   activePoke = toPoke;
   document.getElementById('s-in').value = toPoke.name;
   addRecent(toPoke);
@@ -31,7 +31,7 @@ function addToParty(n){
     openSwapModal(n);
   } else {
     pt.party.push({n:poke.n, name:poke.name, types:poke.types, moves:[], level:''});
-    saveStore();
+    DataManager.save();
     showToast('Added to party');
     if(activePoke && activePoke.n===n) renderPokeDetail();
     renderParty();
@@ -586,11 +586,11 @@ function saveModal(){
   if(mMode === 'pc'){
     if(mSlot>=0 && mSlot<pt.pc.length) pt.pc[mSlot]=entry;
     else pt.pc.push(entry);
-    saveStore(); closeModal(); renderSuggestBtn(); renderPC();
+    DataManager.save(); closeModal(); renderSuggestBtn(); renderPC();
   } else {
     if(mSlot>=0 && mSlot<pt.party.length) pt.party[mSlot]=entry;
     else { if(pt.party.length>=6) return; pt.party.push(entry); }
-    saveStore(); closeModal(); renderParty();
+    DataManager.save(); closeModal(); renderParty();
     if(activePoke) renderPokeDetail();
   }
 }
@@ -599,10 +599,10 @@ function rmParty(i){
   const pt = activePt();
   if(mMode === 'pc'){
     if(i>=0) pt.pc.splice(i,1);
-    saveStore(); closeModal(); renderSuggestBtn(); renderPC();
+    DataManager.save(); closeModal(); renderSuggestBtn(); renderPC();
   } else {
     pt.party.splice(i,1);
-    saveStore(); closeModal(); renderParty();
+    DataManager.save(); closeModal(); renderParty();
     if(activePoke) renderPokeDetail();
   }
 }
@@ -636,7 +636,7 @@ function swapIn(slotIdx){
   const poke = POKEMON.find(p=>p.n===swapTargetN);
   if(!poke) return;
   pt.party[slotIdx] = {n:poke.n, name:poke.name, types:poke.types, moves:[], level:''};
-  saveStore();
+  DataManager.save();
   closeSwapModal();
   showToast('Swapped in '+poke.name);
   renderParty();
@@ -654,7 +654,7 @@ function addToPC(n){
   const poke = POKEMON.find(p=>p.n===n);
   if(!poke) return;
   pt.pc.push({n:poke.n, name:poke.name, types:[...poke.types], moves:[], level:''});
-  saveStore();
+  DataManager.save();
   showToast('Sent to PC Box');
   if(activePoke && activePoke.n===n) renderPokeDetail();
   renderSuggestBtn();
@@ -673,7 +673,7 @@ function removeFromPC(idx){
   const pt = activePt();
   pt.pc.splice(idx, 1);
   pcConfirmIdx = -1;
-  saveStore();
+  DataManager.save();
   renderSuggestBtn();
   renderPC();
 }
@@ -696,7 +696,7 @@ function moveToPartyFromPC(idx){
   } else {
     pt.party.push({...pm});
     pt.pc.splice(idx, 1);
-    saveStore();
+    DataManager.save();
     renderParty();
     showToast('Moved to party');
   }
@@ -712,7 +712,7 @@ function swapInFromPC(slotIdx){
   pt.pc.splice(swapSourcePcIdx, 1);
   pt.pc.push(displaced);
   swapSourcePcIdx = -1;
-  saveStore();
+  DataManager.save();
   closeSwapModal();
   showToast('Moved to party');
   renderParty();
@@ -885,7 +885,7 @@ function applySuggestion(idx){
   ];
   // New party = the suggested team, stripped of internal tracking props
   pt.party = s.members.map(({_src,_srcIdx,...pm})=>({...pm}));
-  saveStore();
+  DataManager.save();
   closeSuggestModal();
   renderParty();
   showToast(`PARTY UPDATED — ${s.coverage}/18 TYPES COVERED`);

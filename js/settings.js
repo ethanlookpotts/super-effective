@@ -11,6 +11,19 @@ function renderSettings() {
     ? `<span class="settings-key-status ok" aria-label="API key status: active">KEY ACTIVE</span>`
     : `<span class="settings-key-status none" aria-label="API key status: not set">NO KEY SET</span>`;
 
+  // GitHub Sync section
+  const syncStatus = DataManager.getSyncStatus();
+  const hasToken = syncStatus.hasToken;
+  const syncBadge = hasToken
+    ? `<span class="settings-key-status ok" aria-label="Sync status: connected">CONNECTED</span>`
+    : `<span class="settings-key-status none" aria-label="Sync status: not set">NOT SET UP</span>`;
+  const lastSynced = syncStatus.lastSynced
+    ? `<div class="settings-sync-time">Last synced: ${new Date(syncStatus.lastSynced).toLocaleString()}</div>`
+    : '';
+  const syncError = syncStatus.error
+    ? `<div class="settings-test-status error">${syncStatus.error}</div>`
+    : '';
+
   body.innerHTML = `
     <div class="settings-section">
       <div class="settings-sec-hd">
@@ -35,6 +48,37 @@ function renderSettings() {
       </div>
       <div id="settings-test-status" class="settings-test-status" role="status"></div>
       ${hasKey ? `<button class="rm-btn" onclick="forgetSettingsKey()" aria-label="Forget API key" style="margin-top:8px;">✕ FORGET KEY</button>` : ''}
+    </div>
+    <div class="settings-section">
+      <div class="settings-sec-hd">
+        <span class="settings-sec-ttl">GITHUB SYNC</span>
+        ${syncBadge}
+      </div>
+      <p class="settings-desc">Sync your playthroughs across devices via a private GitHub Gist. Requires a personal access token with <strong>gist</strong> scope.</p>
+      <div class="settings-steps">
+        <div class="settings-step">1. Go to <strong>github.com/settings/tokens</strong></div>
+        <div class="settings-step">2. Generate new token (classic)</div>
+        <div class="settings-step">3. Check the <strong>gist</strong> scope only</div>
+        <div class="settings-step">4. Copy the token — starts with <code>ghp_</code></div>
+      </div>
+      <label class="mlbl" for="settings-gh-token" style="display:block;margin-top:16px;">GITHUB TOKEN</label>
+      <input class="field-in" id="settings-gh-token" type="password"
+        placeholder="${hasToken ? 'Token saved — enter new token to replace' : 'ghp_…'}"
+        autocomplete="off" autocorrect="off" spellcheck="false"
+        aria-label="GitHub personal access token">
+      <div class="settings-btn-row">
+        <button class="settings-test-btn" onclick="testGithubToken()" aria-label="Test GitHub token">🧪 TEST</button>
+        <button class="settings-save-btn" onclick="saveGithubToken()" aria-label="Save GitHub token">💾 SAVE</button>
+      </div>
+      <div id="settings-gh-test-status" class="settings-test-status" role="status"></div>
+      ${hasToken ? `
+        ${lastSynced}
+        ${syncError}
+        <div class="settings-btn-row" style="margin-top:10px;">
+          <button class="settings-sync-btn" onclick="triggerSyncNow()" aria-label="Sync now">SYNC NOW</button>
+        </div>
+        <button class="rm-btn" onclick="forgetGithubToken()" aria-label="Forget GitHub token" style="margin-top:8px;">✕ FORGET TOKEN</button>
+      ` : ''}
     </div>`;
 }
 
@@ -50,6 +94,60 @@ function forgetSettingsKey() {
   saveClaudeKey('');
   renderSettings();
   showToast('API key removed');
+}
+
+// ═══════════════════════════════
+// GITHUB SYNC SETTINGS
+// ═══════════════════════════════
+
+function saveGithubToken() {
+  const val = document.getElementById('settings-gh-token').value.trim();
+  if (!val) { showToast('Enter a token first', 'red'); return; }
+  DataManager.saveToken(val);
+  DataManager.startPolling();
+  DataManager.push();
+  renderSettings();
+  showToast('GitHub token saved');
+}
+
+function forgetGithubToken() {
+  if (confirm('Remove GitHub token? Your synced data on GitHub will be kept unless you also delete the gist.')) {
+    DataManager.forgetToken(false);
+    renderSettings();
+    showToast('GitHub token removed');
+  }
+}
+
+async function testGithubToken() {
+  const inputVal = document.getElementById('settings-gh-token').value.trim();
+  const tokenToTest = inputVal || DataManager.getToken();
+  const statusEl = document.getElementById('settings-gh-test-status');
+
+  if (!tokenToTest) {
+    if (statusEl) { statusEl.textContent = 'Enter a token first'; statusEl.className = 'settings-test-status error'; }
+    return;
+  }
+
+  if (statusEl) { statusEl.textContent = 'TESTING\u2026'; statusEl.className = 'settings-test-status loading'; }
+
+  try {
+    await DataManager.testToken(tokenToTest);
+    if (statusEl) { statusEl.textContent = '\u2713 TOKEN VALID (gist scope confirmed)'; statusEl.className = 'settings-test-status ok'; }
+  } catch(e) {
+    if (statusEl) { statusEl.textContent = e.message || 'Token test failed'; statusEl.className = 'settings-test-status error'; }
+  }
+}
+
+async function triggerSyncNow() {
+  showToast('Syncing\u2026');
+  await DataManager.pull();
+  const status = DataManager.getSyncStatus();
+  if (status.error) {
+    showToast('Sync failed: ' + status.error, 'red');
+  } else {
+    showToast('Sync complete');
+  }
+  renderSettings();
 }
 
 async function testApiKey() {

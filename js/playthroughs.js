@@ -48,7 +48,7 @@ function renamePt(id, name){
   const pt = store.playthroughs.find(p=>p.id===id);
   if(!pt || pt.name===trimmed) return;
   pt.name = trimmed;
-  saveStore();
+  DataManager.save();
   updateMasthead();
 }
 
@@ -78,7 +78,7 @@ function confirmNewRun(gameId){
   const pt = makePt('RUN '+n, gameId);
   store.playthroughs.push(pt);
   store.activePtId = pt.id;
-  saveStore();
+  DataManager.save();
   updateMasthead();
   closePtMenu();
   _refreshUI();
@@ -87,7 +87,7 @@ function confirmNewRun(gameId){
 
 function switchPt(id){
   store.activePtId = id;
-  saveStore();
+  DataManager.save();
   updateMasthead();
   renderPtMenu();
   closePtMenu();
@@ -104,7 +104,7 @@ function deletePt(id){
   if(!confirm(`Delete "${pt.name}"? This cannot be undone.`)) return;
   store.playthroughs = store.playthroughs.filter(p=>p.id!==id);
   if(store.activePtId===id) store.activePtId = store.playthroughs[0].id;
-  saveStore();
+  DataManager.save();
   updateMasthead();
   renderPtMenu();
   _refreshUI();
@@ -123,7 +123,7 @@ function selectGameForGate(gameId){
   const pt = makePt('RUN 1', gameId);
   store.playthroughs = [pt];
   store.activePtId = pt.id;
-  saveStore();
+  DataManager.save();
   document.getElementById('game-gate').style.display = 'none';
   initApp();
 }
