@@ -6,5 +6,10 @@ playwright-report/
 .playwright-mcp/
 blob-report/
 notes/
-screenshots/
+# Ignore ad-hoc screenshots; README screenshots are tracked (regenerate with: node screenshot-readme.js)
+screenshots/*
+!screenshots/search-party-matchup.png
+!screenshots/search-gengar-detail.png
+!screenshots/gyms-misty-expanded.png
+!screenshots/where-am-i-safari.png
 .DS_Store

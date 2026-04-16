@@ -31,6 +31,21 @@ Evolving into a multi-game companion app with playthrough support.
 
 ## Progress
 
+### Session 24 — Readability Overhaul, Light Theme, CI Fix
+
+**Completed**
+- [x] Full readability audit — captured 33 screenshots across all pages (mobile + desktop), identified 11 issues ranked by severity
+- [x] Color contrast fix — bumped `--text2` (#9899b8 → #b4b5d0, ~7:1) and `--text3` (#4a4b6a → #6e6f94, ~4.5:1 WCAG AA); brightened all 18 type badge backgrounds for better white-on-color legibility
+- [x] Font size overhaul — raised pixel font (Press Start 2P) minimum from 5-6px to 8px across all components per Apple HIG / Material Design guidelines; bumped body text (DM Mono) from 11-13px to 13-15px; thickened stat bars (4px → 6px mobile / 8px desktop) and enlarged coverage dots
+- [x] Light theme — new default; light palette with warm off-white background (#f0f1f6), white cards, deep text (#1a1b2e); all hardcoded dark gradient backgrounds converted to CSS custom properties; dark theme preserved as `[data-theme="dark"]` override
+- [x] Theme toggle — Settings page gains Light / System / Dark toggle; persists to localStorage; System mode tracks `prefers-color-scheme` media query with live listener; defaults to system preference
+- [x] Type pill scroll fade — mask-image gradient on mobile type filter row fades the right edge to hint at more pills; removed when fully scrolled
+- [x] Fixed "undefined" in recent chips — defensive name lookup in search.js handles legacy plain-number recents format
+- [x] Desktop improvements — content max-width (800px) constrains detail views for readability; larger font overrides for stats, gyms, TMs, settings at ≥720px
+- [x] CI fix — added missing CORS headers (`access-control-expose-headers`, `access-control-allow-origin`) to e2e/sync.spec.ts mock so `x-oauth-scopes` header is exposed to fetch, fixing the gist scope check test
+- [x] README screenshots regenerated in light mode
+- [x] Git history rewritten — all commits authored by Ethan Look-Potts
+
 ### Session 23 — GitHub Gist Sync
 
 **Completed**

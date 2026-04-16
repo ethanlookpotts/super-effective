@@ -38,7 +38,9 @@ js/party.js             Party page, edit modal, PC swap modal
 js/gyms.js              Gyms & Elite Four page rendering
 js/pages.js             Nav/drawer, masthead, Where Am I page, TMs page, goSearch
 js/playthroughs.js      Playthrough menu (create/switch/delete/rename)
-js/init.js              showToast, app initialisation
+js/init.js              showToast, theme init, app initialisation
+js/settings.js          Settings page, theme toggle (light/system/dark)
+screenshot-readme.js    Playwright script to regenerate README screenshots
 skills/                 Flat skill files (any agent) — symlinked into .claude/skills/ for Claude Code
 AGENTS.md               Canonical build guide (this file)
 CLAUDE.md               Thin wrapper — @AGENTS.md include
@@ -100,13 +102,19 @@ Every push to that branch auto-redeploys. No Actions needed.
 
 ## Browser Screenshots
 
-When using MCP browser tools to take screenshots (smoke-testing, visual debugging, research), always save them to `screenshots/`:
+When using MCP browser tools to take screenshots (smoke-testing, visual debugging, research), always save them to `screenshots/`.
 
-```
-browser_take_screenshot filename="screenshots/my-description.png"
-```
+Ad-hoc screenshots are git-ignored. Only the 4 README screenshots are tracked:
+- `screenshots/search-party-matchup.png`
+- `screenshots/search-gengar-detail.png`
+- `screenshots/gyms-misty-expanded.png`
+- `screenshots/where-am-i-safari.png`
 
-The `screenshots/` folder is git-ignored. Never save screenshots to the repo root or any tracked path.
+To regenerate README screenshots in light mode, run:
+```bash
+node screenshot-readme.js
+```
+This Playwright script seeds a playthrough, navigates to each featured page, and overwrites the 4 tracked PNGs.
 
 ## Commit Style
 
