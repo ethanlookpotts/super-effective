@@ -9,6 +9,7 @@ function showPage(id){
   if(di) di.classList.add('active');
   if(id==='party') renderParty();
   if(id==='settings') renderSettings();
+  if(id==='tms') renderTMs();
   closeDrawer();
   if(id==='search'){
     const params = activePoke ? {n:activePoke.n} : (activeTypeFilter ? {type:activeTypeFilter} : {});

@@ -400,6 +400,38 @@ describe('computeTeachImpact', () => {
   });
 });
 
+// ─── rankTeachTargets ────────────────────────────────────────────────────
+describe('rankTeachTargets', () => {
+  test('filters out members that cannot learn the move', () => {
+    // #10 Caterpie has a tiny learnset; #6 Charizard can learn many TMs
+    const team = [
+      {...mon(10, ['Bug']),            level:'20', moves:[]},
+      {...mon(6,  ['Fire','Flying']),  level:'40', moves:[{name:'Flamethrower',type:'Fire'}]},
+    ];
+    const canLearn = new Set([6]);  // only Charizard
+    const ranked = calcFull.rankTeachTargets(team, {name:'Earthquake',type:'Ground'}, canLearn);
+    assert.equal(ranked.length, 1);
+    assert.equal(ranked[0].memberIdx, 1);
+  });
+  test('ordered by score delta descending when multiple members can learn', () => {
+    const team = [
+      {...mon(6,  ['Fire','Flying']),  level:'40', moves:[{name:'Flamethrower',type:'Fire'}]},
+      {...mon(9,  ['Water']),          level:'40', moves:[{name:'Surf',type:'Water'}]},
+    ];
+    const canLearn = new Set([6, 9]);
+    const ranked = calcFull.rankTeachTargets(team, {name:'Ice Beam',type:'Ice'}, canLearn);
+    assert.ok(ranked.length >= 1);
+    for(let i=1;i<ranked.length;i++){
+      assert.ok(ranked[i-1].impact.scoreDelta >= ranked[i].impact.scoreDelta);
+    }
+  });
+  test('returns empty when no member can learn', () => {
+    const team = [mon(10, ['Bug'])];
+    const ranked = calcFull.rankTeachTargets(team, {name:'Psychic',type:'Psychic'}, new Set());
+    assert.equal(ranked.length, 0);
+  });
+});
+
 // ─── computeHMCarriers ───────────────────────────────────────────────────
 describe('computeHMCarriers', () => {
   const canLearn = (dex, move) => (LEARNSETS[dex] || []).includes(move);
