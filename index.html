@@ -144,9 +144,12 @@
   <div id="page-tms" class="page">
     <div class="tms-ph">
       <div class="tms-ph-title">📀 TMs &amp; HMs</div>
-      <input class="si" id="tms-in" placeholder="Move name or TM number…"
-        oninput="filterTMs(this.value)"
-        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      <div class="tms-top-row">
+        <input class="si" id="tms-in" placeholder="Move name or TM number…"
+          oninput="filterTMs(this.value)"
+          autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        <button class="tms-scan-btn" onclick="scanTMCase()" aria-label="Scan TM Case">📷 SCAN</button>
+      </div>
     </div>
     <div class="scroll" id="tms-scroll"></div>
   </div>

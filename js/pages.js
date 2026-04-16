@@ -229,6 +229,42 @@ function _renderHmCarrierHtml(){
   </div>`;
 }
 
+// ─── OCR TM Case scan ─────────────────────────────
+async function scanTMCase(){
+  if(!getClaudeKey()){ showPage('settings'); return; }
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.multiple = true;
+  input.onchange = async () => {
+    const files = Array.from(input.files);
+    if(!files.length) return;
+    const pt = activePt();
+    if(!pt.tmInventory) pt.tmInventory = {};
+    let totalAdded = 0, totalTok = 0;
+    showToast('Reading TM Case…');
+    for(const file of files){
+      try {
+        const result = await readTMCase(file);
+        result.tms.forEach(r => {
+          // Merge by max — handles multi-shot scans of paginated TM Case
+          const prev = pt.tmInventory[r.num] || 0;
+          if(r.count > prev){ pt.tmInventory[r.num] = r.count; totalAdded++; }
+        });
+        totalTok += (result._inputTokens||0) + (result._outputTokens||0);
+      } catch(e){
+        if(e.code === 'no_key' || e.code === 'bad_key'){ showPage('settings'); return; }
+        showToast(e.detail || 'Could not read image', 'red');
+      }
+    }
+    DataManager.save();
+    renderTMs();
+    if(totalAdded) showToast(`Scanned: ${totalAdded} entries updated (${totalTok} tok)`);
+    else           showToast('No TMs recognised', 'red');
+  };
+  input.click();
+}
+
 function renderTMs(){
   const s = document.getElementById('tms-scroll');
   if(!s) return;

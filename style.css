@@ -664,6 +664,11 @@ transition:all .15s;}
 padding:11px 14px 10px;border-bottom:1px solid var(--border);}
 .tms-ph-title{font-family:var(--fp);font-size:9px;color:var(--blue);
 text-shadow:0 0 18px rgba(77,171,247,.3);margin-bottom:9px;}
+.tms-top-row{display:flex;gap:6px;align-items:center;}
+.tms-top-row .si{flex:1;min-width:0;}
+.tms-scan-btn{flex-shrink:0;min-height:44px;padding:8px 12px;background:var(--card);border:1px solid rgba(255,199,78,.35);border-radius:7px;
+  font-family:var(--fp);font-size:8px;color:var(--gold);cursor:pointer;letter-spacing:.3px;white-space:nowrap;}
+.tms-scan-btn:active{background:rgba(255,199,78,.08);transform:scale(.97);}
 .tm-card{background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:9px 11px;margin-bottom:7px;}
 .tm-card:last-child{margin-bottom:0;}
 .tm-card.tm-owned{border-color:rgba(61,220,132,.38);background:linear-gradient(90deg,rgba(61,220,132,.06),var(--card2) 60%);}
