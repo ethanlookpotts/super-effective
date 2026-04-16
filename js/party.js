@@ -601,9 +601,11 @@ function rmParty(i){
     if(i>=0) pt.pc.splice(i,1);
     DataManager.save(); closeModal(); renderSuggestBtn(); renderPC();
   } else {
-    pt.party.splice(i,1);
+    const removed = pt.party.splice(i,1)[0];
+    if(removed) pt.pc.push(removed);
     DataManager.save(); closeModal(); renderParty();
     if(activePoke) renderPokeDetail();
+    if(removed) showToast(removed.name + ' sent to PC');
   }
 }
 

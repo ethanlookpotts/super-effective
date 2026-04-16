@@ -142,6 +142,7 @@ async function testGithubToken() {
 async function triggerSyncNow() {
   showToast('Syncing\u2026');
   await DataManager.pull();
+  await DataManager.push();
   const status = DataManager.getSyncStatus();
   if (status.error) {
     showToast('Sync failed: ' + status.error, 'red');
