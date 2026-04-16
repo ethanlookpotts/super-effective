@@ -60,8 +60,6 @@ function renderTmSuggestions(){
   });
   if(!owned.length){ wrap.innerHTML = ''; return; }
 
-  // For each owned move: find the single party member whose teach-impact score delta is highest.
-  // Skip zero/negative deltas. Sort all suggestions by delta descending. Show top 6.
   const canLearn = (dex, move) => (LEARNSETS[dex]||[]).includes(move);
   const suggestions = [];
   owned.forEach(t => {
@@ -191,6 +189,21 @@ function closeModal(){
   mMovesOpen = false; mInfoOpen = false; mScanResult = null;
 }
 function oClick(e){ if(e.target===document.getElementById('overlay')) closeModal(); }
+
+function openTeachModal(dexN, moveName, src, srcIdx){
+  const pt = activePt();
+  const list = src === 'party' ? pt.party : pt.pc;
+  if(!list || srcIdx < 0 || srcIdx >= list.length) return;
+  if(src === 'party') openModal(srcIdx);
+  else                openPCModal(srcIdx);
+  const move = ALL_MOVES.find(m => m.name === moveName);
+  if(move && !mMoves.some(mv => mv.name === moveName) && mMoves.length < 4){
+    mMoves.push({name: move.name, type: move.type});
+  }
+  mMovesOpen = true;
+  mMoveQ = moveName;
+  renderModal();
+}
 
 function renderModal(){
   const body = document.getElementById('modal-body');
@@ -864,12 +877,7 @@ const _calc = makePartyCalc(TYPES, STATS, gm, dmult, {
 });
 
 function _computeSuggestions(){
-  const pt = activePt();
-  const pool = [
-    ...pt.party.map((pm,idx)=>({...pm, _src:'party', _srcIdx:idx})),
-    ...pt.pc.map((pm,idx)=>({...pm, _src:'pc', _srcIdx:idx})),
-  ];
-  return _calc.computeSuggestions(pool);
+  return _calc.computeSuggestions(taggedPool());
 }
 
 // ═══════════════════════════════

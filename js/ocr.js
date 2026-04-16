@@ -135,7 +135,6 @@ async function readTMCase(file) {
   } catch(e) {
     throw Object.assign(new Error('Could not parse response'), { code: 'parse_error' });
   }
-  // Sanitise: accept only valid TM/HM numbers
   const valid = (parsed.tms || []).filter(r => r && typeof r.num === 'string' && /^(TM(0[1-9]|[1-4][0-9]|50)|HM0[1-7])$/.test(r.num));
   return {
     tms: valid.map(r => ({ num: r.num, count: Math.max(1, parseInt(r.count) || 1) })),

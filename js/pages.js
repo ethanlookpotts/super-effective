@@ -107,12 +107,26 @@ function _matchesOwnership(t){
 }
 
 function _learnersOf(moveName){
-  const pt = activePt();
-  const inParty = (pt.party || []).map((pm,idx) => ({...pm, _src:'party', _srcIdx:idx}))
-    .filter(pm => (LEARNSETS[pm.n] || []).includes(moveName));
-  const inPC    = (pt.pc || []).map((pm,idx) => ({...pm, _src:'pc', _srcIdx:idx}))
-    .filter(pm => (LEARNSETS[pm.n] || []).includes(moveName));
-  return { inParty, inPC };
+  const pool = taggedPool(activePt());
+  const canLearn = pm => (LEARNSETS[pm.n] || []).includes(moveName);
+  return {
+    inParty: pool.filter(pm => pm._src === 'party' && canLearn(pm)),
+    inPC:    pool.filter(pm => pm._src === 'pc'    && canLearn(pm)),
+  };
+}
+
+const _TM_TOGGLE_LABEL = { hm: ['+ HAVE', '✓ HAVE', 'Need', 'Have'], tutor: ['○ TEACH', '✓ TAUGHT', 'Not taught', 'Taught'] };
+function _tmInvCtl(t, count, owned){
+  if(t.tmType === 'tm'){
+    return `<div class="tm-inv" role="group" aria-label="${t.num} inventory">
+      <button class="tm-inv-btn" aria-label="Decrease ${t.num}" onclick="event.stopPropagation();incTmCount('${t.num}',-1)" ${count===0?'disabled':''}>−</button>
+      <span class="tm-inv-count ${owned?'owned':''}" aria-label="Owned: ${count}">${count}</span>
+      <button class="tm-inv-btn" aria-label="Increase ${t.num}" onclick="event.stopPropagation();incTmCount('${t.num}',1)">+</button>
+    </div>`;
+  }
+  const [offLbl, onLbl, offAria, onAria] = _TM_TOGGLE_LABEL[t.tmType];
+  const labelFor = t.tmType === 'hm' ? t.num : `${t.move} tutor`;
+  return `<button class="tm-own-toggle ${owned?'owned':''}" aria-pressed="${owned}" aria-label="${owned?onAria:offAria} ${labelFor}" onclick="event.stopPropagation();toggleTmOwned('${t.num}')">${owned?onLbl:offLbl}</button>`;
 }
 
 function _tmCardHtml(t){
@@ -121,23 +135,8 @@ function _tmCardHtml(t){
   const count = _tmCount(t.num);
   const owned = count > 0;
   const isExpanded = tmsExpanded.has(t.num);
-  const learners = isExpanded ? _learnersOf(t.move) : null;
-  const learnersCount = ((activePt().party||[]).filter(pm=>(LEARNSETS[pm.n]||[]).includes(t.move)).length)
-                      + ((activePt().pc   ||[]).filter(pm=>(LEARNSETS[pm.n]||[]).includes(t.move)).length);
-
-  let invCtl = '';
-  if(t.tmType === 'tm'){
-    invCtl = `<div class="tm-inv" role="group" aria-label="${t.num} inventory">
-      <button class="tm-inv-btn" aria-label="Decrease ${t.num}" onclick="event.stopPropagation();incTmCount('${t.num}',-1)" ${count===0?'disabled':''}>−</button>
-      <span class="tm-inv-count ${owned?'owned':''}" aria-label="Owned: ${count}">${count}</span>
-      <button class="tm-inv-btn" aria-label="Increase ${t.num}" onclick="event.stopPropagation();incTmCount('${t.num}',1)">+</button>
-    </div>`;
-  } else if(t.tmType === 'hm'){
-    invCtl = `<button class="tm-own-toggle ${owned?'owned':''}" aria-pressed="${owned}" aria-label="${owned?'Have':'Need'} ${t.num}" onclick="event.stopPropagation();toggleTmOwned('${t.num}')">${owned?'✓ HAVE':'+ HAVE'}</button>`;
-  } else {
-    invCtl = `<button class="tm-own-toggle ${owned?'owned':''}" aria-pressed="${owned}" aria-label="${owned?'Taught':'Not taught'} ${t.move} tutor" onclick="event.stopPropagation();toggleTmOwned('${t.num}')">${owned?'✓ TAUGHT':'○ TEACH'}</button>`;
-  }
-
+  const learners = _learnersOf(t.move);
+  const learnersCount = learners.inParty.length + learners.inPC.length;
   const learnersHtml = isExpanded ? _renderLearnersHtml(t.move, learners) : '';
 
   return `<div class="tm-card${owned?' tm-owned':''}${t.tmType==='tutor'&&owned?' tm-faded':''}">
@@ -146,7 +145,7 @@ function _tmCardHtml(t){
       <span class="tm-card-move">${t.move}</span>
       <span class="tb sm t-${t.type}">${t.type}</span>
       <span class="mtag ${mc}">${cl}</span>
-      ${invCtl}
+      ${_tmInvCtl(t, count, owned)}
     </div>
     <div class="tm-card-loc">${t.loc}</div>
     <button class="tm-expand" aria-expanded="${isExpanded}" onclick="toggleTmExpand('${t.num}')">
@@ -170,25 +169,6 @@ function _renderLearnersHtml(moveName, { inParty, inPC }){
   return html;
 }
 
-// Open the party/pc edit modal for a member and preselect a move.
-// If a slot is free, the move is appended; otherwise the user lands on the moves picker.
-function openTeachModal(dexN, moveName, src, srcIdx){
-  const pt = activePt();
-  const list = src === 'party' ? pt.party : pt.pc;
-  if(!list || srcIdx < 0 || srcIdx >= list.length) return;
-  // Reuse the existing modal plumbing
-  if(src === 'party') openModal(srcIdx);
-  else                openPCModal(srcIdx);
-  // Pre-fill: add the move if it's not already set and there's a free slot
-  const move = ALL_MOVES.find(m => m.name === moveName);
-  if(move && !mMoves.some(mv => mv.name === moveName) && mMoves.length < 4){
-    mMoves.push({name: move.name, type: move.type});
-  }
-  mMovesOpen = true;
-  // Focus the move search to the tutor/TM move name for easy confirmation
-  mMoveQ = moveName;
-  renderModal();
-}
 
 // ─── HM Carrier suggestion ─────────────────────────────────
 function _ownedHmMoves(){
@@ -198,11 +178,7 @@ function _ownedHmMoves(){
 function _renderHmCarrierHtml(){
   const ownedHms = _ownedHmMoves();
   if(ownedHms.length < 2) return '';
-  const pt = activePt();
-  const pool = [
-    ...pt.party.map((pm,idx)=>({...pm, _src:'party', _srcIdx:idx})),
-    ...pt.pc   .map((pm,idx)=>({...pm, _src:'pc',    _srcIdx:idx})),
-  ];
+  const pool = taggedPool();
   if(!pool.length) return '';
   const canLearn = (dex, move) => (LEARNSETS[dex]||[]).includes(move);
   const ranked = _calc.computeHMCarriers(pool, ownedHms, canLearn).slice(0,3);

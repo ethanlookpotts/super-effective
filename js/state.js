@@ -64,6 +64,17 @@ function getLearnset(dexNum){
   return new Set(moves);
 }
 
+// Combined party + PC as a single pool tagged with _src and _srcIdx so callers
+// can later map suggestions / learners / carriers back to their origin slot.
+function taggedPool(pt){
+  pt = pt || activePt();
+  if(!pt) return [];
+  return [
+    ...(pt.party || []).map((pm,idx) => ({ ...pm, _src:'party', _srcIdx: idx })),
+    ...(pt.pc    || []).map((pm,idx) => ({ ...pm, _src:'pc',    _srcIdx: idx })),
+  ];
+}
+
 // ═══════════════════════════════
 // RECENT HELPERS
 // ═══════════════════════════════

@@ -187,8 +187,6 @@ const TM_HM=[
   {num:'HM07',move:'Waterfall',type:'Water',cat:'spe',loc:'Island 4 (Icefall Cave)'},
 ];
 
-// Tag each entry with tmType ('tm' | 'hm') and derive buyable=true for repurchaseable
-// Celadon Dept. Store / Game Corner TMs — avoids touching each row individually.
 TM_HM.forEach(t => {
   t.tmType = t.num.startsWith('HM') ? 'hm' : 'tm';
   t.buyable = t.tmType === 'tm' && /Dept\. Store|Game Corner/.test(t.loc);

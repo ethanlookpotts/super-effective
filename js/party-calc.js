@@ -55,45 +55,51 @@ function makePartyCalc(TYPES, STATS, gm, dmult, opts) {
     return covered.size;
   }
 
-  // ─── Damage rating ───────────────────────────────────────────────────────
-  // Best damage % a member can inflict on a generic defender of `defType`.
-  // Defender is normalised to a fixed Lv50 baseline (base 80 def, base 80 HP,
-  // 15 IVs, 0 EVs, neutral nature). Fixed level matters: a Lv80 attacker hits
-  // the baseline defender much harder than a Lv20 attacker, which is what
-  // rewards higher-level mons in scoring. Returns 0 for no usable move.
+  // Defender is normalised to Lv50 / base 80. Fixed level lets higher-level
+  // attackers post bigger % — that's the "stronger mons score higher" signal.
   const _BASELINE_LV = 50, _BASELINE_BASE = 80;
   const _BASELINE_DEF = Math.floor((2*_BASELINE_BASE + 15)*_BASELINE_LV/100 + 5);
   const _BASELINE_HP  = Math.floor((2*_BASELINE_BASE + 15)*_BASELINE_LV/100 + _BASELINE_LV + 10);
-  function bestDamageAgainst(pm, defType) {
-    if(!DAMAGE_READY) return 0;
-    const lv = parseInt(pm.level) || 50;
+
+  // Per-member profile: computed once then reused across all 18 defender types.
+  // Cached on the pm via a non-enumerable slot so one profile survives a full
+  // render pass even across scoreTeam → avgAtkPower → bestDamageAgainst calls.
+  const _PROFILE_KEY = Symbol('se_dmg_profile');
+  function _profile(pm) {
+    let p = pm[_PROFILE_KEY];
+    if(p) return p;
     const atk = computeAtk(pm);
-    if(!atk) return 0;
-    const defStat = _BASELINE_DEF;
-    const defHP   = _BASELINE_HP;
-    // Candidate moves: set moves OR an implicit STAB move at 60 bp if none set
+    if(!atk) return (pm[_PROFILE_KEY] = null);
     let candidates = (pm.moves || []).map(mv => {
       const md = MOVE_DATA[mv.name];
-      const pow = md ? md[0] : 0;
-      return { type: mv.type, pow };
-    });
+      return { type: mv.type, pow: md ? md[0] : 0 };
+    }).filter(c => c.pow > 0);
     if(!candidates.length) candidates = pm.types.map(t => ({ type: t, pow: 60 }));
+    const stabSet = new Set(pm.types);
+    const lv = parseInt(pm.level) || 50;
+    p = { lv, atk, candidates, stabSet, dmgByType: Object.create(null) };
+    Object.defineProperty(pm, _PROFILE_KEY, { value: p, configurable: true });
+    return p;
+  }
+
+  function bestDamageAgainst(pm, defType) {
+    if(!DAMAGE_READY) return 0;
+    const p = _profile(pm);
+    if(!p) return 0;
+    if(defType in p.dmgByType) return p.dmgByType[defType];
     let best = 0;
-    for(const c of candidates) {
-      if(!c.pow) continue;
-      const stab = pm.types.includes(c.type) ? 1.5 : 1;
-      const eff  = dmult(c.type, [defType]);
+    for(const c of p.candidates) {
+      const eff = dmult(c.type, [defType]);
       if(eff === 0) continue;
-      const isPhys = PHYS.has(c.type);
-      const atkStat = isPhys ? atk.atk : atk.spa;
-      const range = dmgRangePct(lv, atkStat, defStat, defHP, c.pow, stab*eff);
+      const stab = p.stabSet.has(c.type) ? 1.5 : 1;
+      const atkStat = PHYS.has(c.type) ? p.atk.atk : p.atk.spa;
+      const range = dmgRangePct(p.lv, atkStat, _BASELINE_DEF, _BASELINE_HP, c.pow, stab*eff);
       if(range && range[1] > best) best = range[1];
     }
+    p.dmgByType[defType] = best;
     return best;
   }
 
-  // Average best-damage-% across all 18 types for the team.
-  // Scales with level + stats + move power → higher-level mons score higher.
   function avgAtkPower(members) {
     if(!DAMAGE_READY || !members.length) return 0;
     let total = 0;
@@ -187,10 +193,8 @@ function makePartyCalc(TYPES, STATS, gm, dmult, opts) {
     return suggestions.sort((a,b) => b.score-a.score);
   }
 
-  // ─── Teach-a-move impact ─────────────────────────────────────────────────
-  // Simulate teaching `move` ({name, type}) to `team[memberIdx]`, testing every
-  // possible move slot to replace (or appending if <4 moves).
-  // Returns the best replacement by score delta plus coverage metrics.
+  // Simulate teaching `move` to team[memberIdx] across every replace slot
+  // (and appending if a slot is free). Returns the best swap by score delta.
   function computeTeachImpact(team, memberIdx, move) {
     const pm = team[memberIdx];
     if(!pm) return null;
@@ -198,13 +202,10 @@ function makePartyCalc(TYPES, STATS, gm, dmult, opts) {
     const baseUnres   = unresistedCov(team);
     const baseSup     = countOffCov(team);
     const existing    = pm.moves || [];
-    // Skip if already has this move
     if(existing.some(mv => mv.name === move.name)) return null;
 
     const candidates = [];
-    // Append (open slot)
     if(existing.length < 4) candidates.push({ replaceIdx: -1, replaced: null });
-    // Replace each slot
     existing.forEach((mv,i) => candidates.push({ replaceIdx: i, replaced: mv }));
 
     let best = null;
@@ -224,7 +225,6 @@ function makePartyCalc(TYPES, STATS, gm, dmult, opts) {
         superDelta: newSup - baseSup,
         coverageLost: 0,
       };
-      // Coverage-lost: types the team used to hit that it no longer hits after replace
       if(c.replaceIdx >= 0) {
         const oldCoveredSup = new Set();
         team.forEach(m => _atkTypes(m).forEach(at => TYPES.forEach(def => { if(gm(at,def)>=2) oldCoveredSup.add(def); })));
@@ -237,11 +237,8 @@ function makePartyCalc(TYPES, STATS, gm, dmult, opts) {
     return best;
   }
 
-  // Rank party+PC members by the best teach-impact for a given move.
-  // `poolMembers` is an ARRAY of party members (team context). For each member
-  // that CAN learn `move`, we compute the impact of teaching it as if the whole
-  // party were the team. Only considers members whose dex is in `learnableSet`.
-  // Returns sorted array of { memberIdx, impact, canLearn:true }.
+  // Rank team members by teach-impact for `move`. Members not in canLearnIds
+  // (Set of dex numbers) are filtered out.
   function rankTeachTargets(team, move, canLearnIds) {
     const ranked = [];
     team.forEach((pm,idx) => {
@@ -253,17 +250,13 @@ function makePartyCalc(TYPES, STATS, gm, dmult, opts) {
     return ranked;
   }
 
-  // ─── HM Carrier ranking ──────────────────────────────────────────────────
-  // Rank pool members by how many owned HMs they can learn ÷ battle cost.
-  // ownedHmMoves = array of move names (e.g. ['Cut','Surf']).
-  // canLearn(dexNum, moveName) → boolean (supplied by caller).
-  // Returns descending-score array of { pm, hmsLearnable, hmList, battleScore, score }.
+  // Rank pool members by HMs-learnable minus battle cost.
+  // canLearn(dexNum, moveName) is supplied by the caller (uses LEARNSETS).
   function computeHMCarriers(pool, ownedHmMoves, canLearn) {
     if(!pool.length || !ownedHmMoves.length) return [];
     return pool.map(pm => {
       const hmList = ownedHmMoves.filter(mv => canLearn(pm.n, mv));
       const battleScore = individualScore(pm);
-      // Prioritise HM coverage first, battle utility second (lower battle score = better carrier)
       const score = hmList.length * 10 - battleScore;
       return { pm, hmsLearnable: hmList.length, hmList, battleScore, score };
     })
