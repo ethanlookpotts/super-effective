@@ -1,0 +1,60 @@
+name: Pages Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: pages-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detect stack
+        id: stack
+        run: |
+          if [ -f package.json ] && grep -q '"vite"' package.json; then
+            echo "kind=vite" >> "$GITHUB_OUTPUT"
+          else
+            echo "kind=static" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-node@v4
+        if: steps.stack.outputs.kind == 'vite'
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Build Vite
+        if: steps.stack.outputs.kind == 'vite'
+        run: |
+          npm ci
+          npm run build
+          mv dist _site
+
+      - name: Stage vanilla static site
+        if: steps.stack.outputs.kind == 'static'
+        run: |
+          mkdir -p _site
+          cp index.html style.css _site/
+          cp -r js _site/
+          if [ -d screenshots ]; then cp -r screenshots _site/; fi
+
+      - name: Publish to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
+          publish_branch: gh-pages
+          keep_files: true
+          user_name: "github-actions[bot]"
+          user_email: "41898282+github-actions[bot]@users.noreply.github.com"
+          commit_message: "deploy: ${{ github.sha }}"
