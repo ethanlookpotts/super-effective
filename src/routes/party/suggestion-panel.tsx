@@ -60,9 +60,9 @@ export function SuggestionPanel({
     return (
       <section
         aria-label="Party suggestions"
-        className="rounded-[var(--radius-card)] border border-dashed border-[var(--color-border)] bg-[var(--color-card-2)] p-3 text-center"
+        className="rounded-card border border-dashed border-border bg-card-2 p-3 text-center"
       >
-        <p className="font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]">
+        <p className="font-pixel text-[10px] text-text-3">
           ADD POKÉMON TO YOUR PARTY OR PC
           <br />
           FOR PARTY SUGGESTIONS
@@ -75,9 +75,7 @@ export function SuggestionPanel({
 
   return (
     <section aria-label="Party suggestions" className="flex flex-col gap-2">
-      <h3 className="font-[var(--font-pixel)] text-xs text-[var(--color-gold)]">
-        ✨ SUGGESTED PARTIES
-      </h3>
+      <h3 className="font-pixel text-xs text-gold">✨ SUGGESTED PARTIES</h3>
       <ul className="flex flex-col gap-2">
         {suggestions.map((s, idx) => (
           <li key={s.members.map((m) => m.n).join("-")}>
@@ -110,11 +108,9 @@ function SuggestionCard({
       type="button"
       onClick={onOpen}
       aria-label={`Suggestion ${idx + 1}: ${suggestion.coverage} of 18 types covered`}
-      className="flex min-h-11 w-full items-center gap-2 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] p-2 text-left"
+      className="flex min-h-11 w-full items-center gap-2 rounded-card border border-border bg-card p-2 text-left"
     >
-      <span className="font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]">
-        #{idx + 1}
-      </span>
+      <span className="font-pixel text-[10px] text-text-3">#{idx + 1}</span>
       <span className="flex flex-1 items-center gap-1 overflow-hidden">
         {suggestion.members.map((pm) => (
           <img
@@ -128,10 +124,8 @@ function SuggestionCard({
           />
         ))}
       </span>
-      <span className="shrink-0 font-[var(--font-pixel)] text-[9px] text-[var(--color-gold)]">
-        {suggestion.coverage}/18
-      </span>
-      <span className="shrink-0 text-[var(--color-text-3)]">▶</span>
+      <span className="shrink-0 font-pixel text-[9px] text-gold">{suggestion.coverage}/18</span>
+      <span className="shrink-0 text-text-3">▶</span>
     </button>
   );
 }
@@ -192,17 +186,17 @@ function SuggestionModal({
         role="dialog"
         aria-label="Suggested party"
         aria-modal="true"
-        className="max-h-[90vh] w-full max-w-[420px] overflow-y-auto rounded-[var(--radius-card-lg)] bg-[var(--color-card)] p-4"
+        className="max-h-[90vh] w-full max-w-[420px] overflow-y-auto rounded-card-lg bg-card p-4"
       >
         <div className="flex items-center justify-between gap-2">
-          <h3 className="font-[var(--font-pixel)] text-xs text-[var(--color-gold)]">
+          <h3 className="font-pixel text-xs text-gold">
             OPTION {idx + 1} · {suggestion.coverage}/18 COVERED
           </h3>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close suggestion"
-            className="min-h-11 min-w-11 font-[var(--font-pixel)] text-xs text-[var(--color-text-3)]"
+            className="min-h-11 min-w-11 font-pixel text-xs text-text-3"
           >
             ✕
           </button>
@@ -214,7 +208,7 @@ function SuggestionModal({
             return (
               <li
                 key={`${pm._src}-${pm._srcIdx}-${pm.n}`}
-                className="flex flex-col items-center gap-1 rounded-[var(--radius-card)] bg-[var(--color-card-2)] p-2 text-center"
+                className="flex flex-col items-center gap-1 rounded-card bg-card-2 p-2 text-center"
               >
                 <img
                   src={spriteUrl(pm.n, { shiny: pm.shiny })}
@@ -224,16 +218,14 @@ function SuggestionModal({
                   }}
                   className="h-12 w-12 object-contain"
                 />
-                <span className="font-[var(--font-pixel)] text-[9px] text-[var(--color-text)]">
-                  {shortName}
-                </span>
+                <span className="font-pixel text-[9px] text-text">{shortName}</span>
                 <span className="flex flex-wrap justify-center gap-0.5">
                   {pm.types.map((t) => (
                     <TypeBadge key={t} type={t} size="sm" />
                   ))}
                 </span>
                 <span
-                  className="font-[var(--font-pixel)] text-[8px] tracking-wider"
+                  className="font-pixel text-[8px] tracking-wider"
                   style={{
                     color: pm._src === "party" ? "var(--color-gold)" : "var(--color-blue)",
                   }}
@@ -246,16 +238,14 @@ function SuggestionModal({
         </ul>
 
         <div className="mt-3">
-          <div className="font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]">
-            COVERS
-          </div>
+          <div className="font-pixel text-[10px] text-text-3">COVERS</div>
           <div className="mt-1 flex flex-wrap gap-1">
             {TYPES.map((t) => {
               const on = covered.has(t);
               return (
                 <span
                   key={t}
-                  className="rounded px-1.5 py-0.5 font-[var(--font-pixel)] text-[8px] tracking-wider"
+                  className="rounded px-1.5 py-0.5 font-pixel text-[8px] tracking-wider"
                   style={{
                     backgroundColor: on ? tc(t) : "transparent",
                     color: on ? "#fff" : "var(--color-text-3)",
@@ -272,9 +262,7 @@ function SuggestionModal({
 
         {exposed.size > 0 && (
           <div className="mt-3">
-            <div className="font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]">
-              WEAK TO
-            </div>
+            <div className="font-pixel text-[10px] text-text-3">WEAK TO</div>
             <div className="mt-1 flex flex-wrap gap-1">
               {[...exposed].map((t) => (
                 <TypeBadge key={t} type={t} size="sm" />
@@ -287,7 +275,7 @@ function SuggestionModal({
           type="button"
           onClick={apply}
           disabled={update.isPending}
-          className="mt-4 min-h-11 w-full rounded-[var(--radius-card)] bg-[var(--color-gold)] px-3 font-[var(--font-pixel)] text-xs text-black disabled:opacity-60"
+          className="mt-4 min-h-11 w-full rounded-card bg-gold px-3 font-pixel text-xs text-black disabled:opacity-60"
         >
           {update.isPending ? "APPLYING…" : "USE THIS PARTY"}
         </button>

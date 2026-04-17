@@ -73,14 +73,12 @@ export function TypeMatchup({
 
   return (
     <section className="flex flex-col gap-2">
-      <h3 className="font-[var(--font-pixel)] text-xs text-[var(--color-text)]">
-        📊 TYPE CHART — DEFENDING
-      </h3>
-      <div className="flex flex-col gap-1.5 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] p-3">
+      <h3 className="font-pixel text-xs text-text">📊 TYPE CHART — DEFENDING</h3>
+      <div className="flex flex-col gap-1.5 rounded-card border border-border bg-card p-3">
         {groups.map((row) => (
           <div key={row.cls} className="flex items-start gap-2">
             <div
-              className="w-16 shrink-0 font-[var(--font-pixel)] text-[10px]"
+              className="w-16 shrink-0 font-pixel text-[10px]"
               style={{ color: labelColor(row.cls) }}
             >
               {row.icon} {row.label}

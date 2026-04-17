@@ -332,15 +332,15 @@ export function EditModal({
         role="dialog"
         aria-label={title}
         aria-modal="true"
-        className="flex max-h-[95vh] w-full max-w-[480px] flex-col rounded-t-[var(--radius-card-lg)] border border-[var(--color-border)] bg-[var(--color-card)] sm:rounded-[var(--radius-card-lg)]"
+        className="flex max-h-[95vh] w-full max-w-[480px] flex-col rounded-t-card-lg border border-border bg-card sm:rounded-card-lg"
       >
-        <header className="flex items-center justify-between gap-2 border-b border-[var(--color-border)] p-3">
-          <h3 className="font-[var(--font-pixel)] text-xs text-[var(--color-gold)]">{title}</h3>
+        <header className="flex items-center justify-between gap-2 border-b border-border p-3">
+          <h3 className="font-pixel text-xs text-gold">{title}</h3>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="min-h-11 min-w-11 font-[var(--font-pixel)] text-xs text-[var(--color-text-3)]"
+            className="min-h-11 min-w-11 font-pixel text-xs text-text-3"
           >
             ✕
           </button>
@@ -383,12 +383,12 @@ export function EditModal({
           )}
         </div>
 
-        <footer className="flex flex-col gap-2 border-t border-[var(--color-border)] p-3">
+        <footer className="flex flex-col gap-2 border-t border-border p-3">
           <button
             type="button"
             onClick={save}
             disabled={!draft.poke || update.isPending}
-            className="min-h-11 w-full rounded-[var(--radius-card)] bg-[var(--color-gold)] px-3 font-[var(--font-pixel)] text-xs text-black disabled:opacity-50"
+            className="min-h-11 w-full rounded-card bg-gold px-3 font-pixel text-xs text-black disabled:opacity-50"
           >
             {update.isPending ? "SAVING…" : saveLabel}
           </button>
@@ -397,7 +397,7 @@ export function EditModal({
               type="button"
               onClick={remove}
               disabled={update.isPending}
-              className="min-h-11 w-full rounded-[var(--radius-card)] border border-[var(--color-red)] bg-transparent px-3 font-[var(--font-pixel)] text-[10px] text-[var(--color-red)] disabled:opacity-50"
+              className="min-h-11 w-full rounded-card border border-red bg-transparent px-3 font-pixel text-[10px] text-red disabled:opacity-50"
             >
               {removeLabel}
             </button>
@@ -421,7 +421,7 @@ function CollapsibleSection({
 }) {
   const [open, setOpen] = useState(defaultOpen ?? false);
   return (
-    <div className="flex flex-col gap-2 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card-2)] p-2">
+    <div className="flex flex-col gap-2 rounded-card border border-border bg-card-2 p-2">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
@@ -429,15 +429,9 @@ function CollapsibleSection({
         aria-label={`${open ? "Collapse" : "Expand"} ${title}`}
         className="flex min-h-11 w-full items-center gap-2 text-left"
       >
-        <span className="font-[var(--font-pixel)] text-[10px] text-[var(--color-text)]">
-          {title}
-        </span>
-        {summary && (
-          <span className="font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]">
-            {summary}
-          </span>
-        )}
-        <span className="ml-auto text-[var(--color-text-3)]">{open ? "▾" : "▶"}</span>
+        <span className="font-pixel text-[10px] text-text">{title}</span>
+        {summary && <span className="font-pixel text-[10px] text-text-3">{summary}</span>}
+        <span className="ml-auto text-text-3">{open ? "▾" : "▶"}</span>
       </button>
       {open && children}
     </div>
@@ -474,14 +468,11 @@ function PokemonPicker({
 
   return (
     <div ref={boxRef}>
-      <label
-        htmlFor="edit-poke-search"
-        className="font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]"
-      >
+      <label htmlFor="edit-poke-search" className="font-pixel text-[10px] text-text-3">
         POKÉMON
       </label>
       <div className="relative mt-1">
-        <div className="flex items-center gap-2 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card-2)] px-3">
+        <div className="flex items-center gap-2 rounded-card border border-border bg-card-2 px-3">
           <input
             id="edit-poke-search"
             type="text"
@@ -493,14 +484,14 @@ function PokemonPicker({
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => setFocused(true)}
             aria-label="Search Pokémon"
-            className="min-h-11 flex-1 bg-transparent text-sm text-[var(--color-text)] outline-none"
+            className="min-h-11 flex-1 bg-transparent text-sm text-text outline-none"
           />
           {query && (
             <button
               type="button"
               onClick={() => setQuery("")}
               aria-label="Clear Pokémon search"
-              className="min-h-11 px-2 text-[var(--color-text-3)]"
+              className="min-h-11 px-2 text-text-3"
             >
               ×
             </button>
@@ -511,7 +502,7 @@ function PokemonPicker({
             role="listbox"
             aria-label="Pokémon results"
             tabIndex={-1}
-            className="absolute left-0 right-0 top-[calc(100%+4px)] z-10 max-h-[40vh] overflow-y-auto rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] shadow-lg"
+            className="absolute left-0 right-0 top-[calc(100%+4px)] z-10 max-h-[40vh] overflow-y-auto rounded-card border border-border bg-card shadow-lg"
           >
             {results.map((p) => (
               <button
@@ -524,12 +515,12 @@ function PokemonPicker({
                   setQuery("");
                   setFocused(false);
                 }}
-                className="flex min-h-11 w-full items-center gap-2 px-3 py-1.5 text-left hover:bg-[var(--color-card-2)]"
+                className="flex min-h-11 w-full items-center gap-2 px-3 py-1.5 text-left hover:bg-card-2"
               >
-                <span className="w-12 font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]">
+                <span className="w-12 font-pixel text-[10px] text-text-3">
                   #{String(p.n).padStart(3, "0")}
                 </span>
-                <span className="flex-1 text-sm text-[var(--color-text)]">{p.name}</span>
+                <span className="flex-1 text-sm text-text">{p.name}</span>
                 <span className="flex gap-1">
                   {p.types.map((t) => (
                     <TypeBadge key={t} type={t} size="sm" />
@@ -546,7 +537,7 @@ function PokemonPicker({
 
 function SelectedPokeCard({ poke, shiny }: { poke: Pokemon; shiny: boolean }) {
   return (
-    <div className="flex items-center gap-3 rounded-[var(--radius-card)] bg-[var(--color-card-2)] p-3">
+    <div className="flex items-center gap-3 rounded-card bg-card-2 p-3">
       <img
         src={spriteUrl(poke.n, { shiny })}
         alt=""
@@ -556,13 +547,11 @@ function SelectedPokeCard({ poke, shiny }: { poke: Pokemon; shiny: boolean }) {
         className="h-14 w-14 shrink-0 object-contain"
       />
       <div className="flex flex-col gap-1">
-        <div className="font-[var(--font-pixel)] text-[9px] text-[var(--color-text-3)]">
+        <div className="font-pixel text-[9px] text-text-3">
           #{String(poke.n).padStart(3, "0")}
-          {shiny ? <span className="ml-1 text-[var(--color-gold)]">✦</span> : null}
+          {shiny ? <span className="ml-1 text-gold">✦</span> : null}
         </div>
-        <div className="font-[var(--font-pixel)] text-[10px] text-[var(--color-gold)]">
-          {poke.name}
-        </div>
+        <div className="font-pixel text-[10px] text-gold">{poke.name}</div>
         <div className="flex gap-1">
           {poke.types.map((t) => (
             <TypeBadge key={t} type={t} />
@@ -594,10 +583,7 @@ function LevelAndNature({
     <div className="flex flex-col gap-2">
       <div className="flex items-end gap-3">
         <div className="flex flex-col gap-1">
-          <label
-            htmlFor="edit-level"
-            className="font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]"
-          >
+          <label htmlFor="edit-level" className="font-pixel text-[10px] text-text-3">
             LEVEL
           </label>
           <input
@@ -610,14 +596,11 @@ function LevelAndNature({
             value={draft.level}
             onChange={(e) => onPatch({ level: e.target.value })}
             aria-label="Level"
-            className="min-h-11 w-20 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card-2)] px-3 text-sm text-[var(--color-text)] outline-none"
+            className="min-h-11 w-20 rounded-card border border-border bg-card-2 px-3 text-sm text-text outline-none"
           />
         </div>
         <div className="flex flex-1 flex-col gap-1">
-          <label
-            htmlFor="edit-nature"
-            className="font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]"
-          >
+          <label htmlFor="edit-nature" className="font-pixel text-[10px] text-text-3">
             NATURE
           </label>
           <select
@@ -625,7 +608,7 @@ function LevelAndNature({
             value={draft.nature}
             onChange={(e) => onPatch({ nature: e.target.value })}
             aria-label="Nature"
-            className="min-h-11 w-full rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card-2)] px-2 text-sm text-[var(--color-text)] outline-none"
+            className="min-h-11 w-full rounded-card border border-border bg-card-2 px-2 text-sm text-text outline-none"
           >
             <option value="">— neutral</option>
             {NATURE_NAMES.map((n) => (
@@ -637,15 +620,10 @@ function LevelAndNature({
         </div>
       </div>
       {draft.nature && (
-        <div className="font-[var(--font-pixel)] text-[9px] text-[var(--color-text-3)]">
-          {natureSummary(draft.nature)}
-        </div>
+        <div className="font-pixel text-[9px] text-text-3">{natureSummary(draft.nature)}</div>
       )}
       {computed && (
-        <div
-          aria-label="Computed stats"
-          className="font-[var(--font-pixel)] text-[9px] text-[var(--color-text-2)]"
-        >
+        <div aria-label="Computed stats" className="font-pixel text-[9px] text-text-2">
           ~ATK {computed.atk} · SpA {computed.spa} · Spe {computed.spe}
         </div>
       )}

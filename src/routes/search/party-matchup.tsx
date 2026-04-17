@@ -17,15 +17,15 @@ import type { PartyMember, TypeName } from "~/schemas";
 
 function effClass(eff: string): string {
   const e = eff.toLowerCase();
-  if (e.includes("burn") || e.includes("fire")) return "text-[var(--color-red)]";
-  if (e.includes("para")) return "text-[var(--color-gold)]";
-  if (e.includes("sleep")) return "text-[var(--color-blue)]";
+  if (e.includes("burn") || e.includes("fire")) return "text-red";
+  if (e.includes("para")) return "text-gold";
+  if (e.includes("sleep")) return "text-blue";
   if (e.includes("psn") || e.includes("poison")) return "text-[#b84fb8]";
-  if (e.includes("freeze")) return "text-[var(--color-blue)]";
-  if (e.includes("flinch")) return "text-[var(--color-text-2)]";
-  if (e.includes("drain")) return "text-[var(--color-green)]";
-  if (e.includes("ohko")) return "text-[var(--color-red)]";
-  return "text-[var(--color-text-2)]";
+  if (e.includes("freeze")) return "text-blue";
+  if (e.includes("flinch")) return "text-text-2";
+  if (e.includes("drain")) return "text-green";
+  if (e.includes("ohko")) return "text-red";
+  return "text-text-2";
 }
 
 interface ScoredMove {
@@ -144,11 +144,9 @@ export function PartyMatchupList({
   if (party.length === 0) {
     return (
       <section className="flex flex-col gap-2">
-        <h3 className="font-[var(--font-pixel)] text-xs text-[var(--color-text)]">
-          MY PARTY — WHO TO USE
-        </h3>
-        <div className="rounded-[var(--radius-card)] border border-dashed border-[var(--color-border)] bg-[var(--color-card-2)] p-4 text-center">
-          <p className="font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]">
+        <h3 className="font-pixel text-xs text-text">MY PARTY — WHO TO USE</h3>
+        <div className="rounded-card border border-dashed border-border bg-card-2 p-4 text-center">
+          <p className="font-pixel text-[10px] text-text-3">
             ADD POKEMON TO PARTY
             <br />
             FOR BATTLE SUGGESTIONS
@@ -173,9 +171,7 @@ export function PartyMatchupList({
 
   return (
     <section className="flex flex-col gap-2">
-      <h3 className="font-[var(--font-pixel)] text-xs text-[var(--color-text)]">
-        MY PARTY — WHO TO USE
-      </h3>
+      <h3 className="font-pixel text-xs text-text">MY PARTY — WHO TO USE</h3>
       <div className="flex flex-col gap-2">
         {scored.map((s, i) => (
           <ScoredCard
@@ -221,21 +217,19 @@ function ScoredCard({
 
   return (
     <div
-      className={`rounded-[var(--radius-card)] border bg-[var(--color-card)] p-3 ${
-        isTop ? "border-[var(--color-gold)]" : "border-[var(--color-border)]"
-      } ${risky ? "ring-1 ring-[var(--color-red)]/40" : ""}`}
+      className={`rounded-card border bg-card p-3 ${
+        isTop ? "border-gold" : "border-border"
+      } ${risky ? "ring-1 ring-red/40" : ""}`}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex flex-col gap-1">
           <div className="flex items-baseline gap-1">
-            <span className="text-sm font-semibold text-[var(--color-text)]">
+            <span className="text-sm font-semibold text-text">
               {isTop ? "⭐ " : ""}
               {pm.name}
             </span>
             {pm.level !== undefined && (
-              <span className="font-[var(--font-pixel)] text-[9px] text-[var(--color-text-3)]">
-                Lv.{pm.level}
-              </span>
+              <span className="font-pixel text-[9px] text-text-3">Lv.{pm.level}</span>
             )}
           </div>
           <div className="flex gap-1">
@@ -245,7 +239,7 @@ function ScoredCard({
           </div>
           {s.statLabel && (
             <div
-              className="font-[var(--font-pixel)] text-[9px]"
+              className="font-pixel text-[9px]"
               style={{
                 color:
                   s.statCls === "phy"
@@ -260,7 +254,7 @@ function ScoredCard({
           )}
         </div>
         <span
-          className="shrink-0 rounded-[var(--radius-card)] px-2 py-1 font-[var(--font-pixel)] text-[9px] text-white"
+          className="shrink-0 rounded-card px-2 py-1 font-pixel text-[9px] text-white"
           style={{ backgroundColor: rating.color }}
         >
           {rating.label}
@@ -274,37 +268,25 @@ function ScoredCard({
             const tags: ReactNode[] = [];
             if (mv.raw >= 4)
               tags.push(
-                <span
-                  key="4x"
-                  className="rounded bg-[var(--color-red)] px-1 py-0.5 text-[9px] text-white"
-                >
+                <span key="4x" className="rounded bg-red px-1 py-0.5 text-[9px] text-white">
                   4×
                 </span>,
               );
             else if (mv.raw >= 2)
               tags.push(
-                <span
-                  key="2x"
-                  className="rounded bg-[var(--color-green)] px-1 py-0.5 text-[9px] text-white"
-                >
+                <span key="2x" className="rounded bg-green px-1 py-0.5 text-[9px] text-white">
                   2×
                 </span>,
               );
             else if (mv.raw === 0)
               tags.push(
-                <span
-                  key="0x"
-                  className="rounded bg-[var(--color-text-3)] px-1 py-0.5 text-[9px] text-white"
-                >
+                <span key="0x" className="rounded bg-text-3 px-1 py-0.5 text-[9px] text-white">
                   0×
                 </span>,
               );
             if (mv.stab)
               tags.push(
-                <span
-                  key="stab"
-                  className="rounded bg-[var(--color-gold)] px-1 py-0.5 text-[9px] text-white"
-                >
+                <span key="stab" className="rounded bg-gold px-1 py-0.5 text-[9px] text-white">
                   STAB
                 </span>,
               );
@@ -312,7 +294,7 @@ function ScoredCard({
               <span
                 key="cat"
                 className={`rounded px-1 py-0.5 text-[9px] text-white ${
-                  phys ? "bg-[var(--color-red)]/80" : "bg-[var(--color-blue)]/80"
+                  phys ? "bg-red/80" : "bg-blue/80"
                 }`}
               >
                 {phys ? "PHY" : "SPE"}
@@ -331,31 +313,31 @@ function ScoredCard({
             const subParts: ReactNode[] = [];
             if (mv.pow && mv.pow > 0)
               subParts.push(
-                <span key="pow" className="text-[var(--color-text-2)]">
+                <span key="pow" className="text-text-2">
                   {mv.pow}bp
                 </span>,
               );
             else if (mv.pow === 0 && mv.effNote)
               subParts.push(
-                <span key="pow" className="text-[var(--color-text-3)]">
+                <span key="pow" className="text-text-3">
                   status
                 </span>,
               );
             if (dmg)
               subParts.push(
-                <span key="dmg" className="text-[var(--color-gold)]">
+                <span key="dmg" className="text-gold">
                   {dmg}
                 </span>,
               );
             if (mv.acc !== null && mv.acc > 0 && mv.acc < 100)
               subParts.push(
-                <span key="acc" className="text-[var(--color-text-3)]">
+                <span key="acc" className="text-text-3">
                   {mv.acc}%
                 </span>,
               );
             else if (mv.acc === 0 && mv.pow && mv.pow > 0)
               subParts.push(
-                <span key="acc" className="text-[var(--color-text-3)]">
+                <span key="acc" className="text-text-3">
                   ∞ acc
                 </span>,
               );
@@ -372,13 +354,13 @@ function ScoredCard({
                 type="button"
                 aria-label={`${mv.name} breakdown`}
                 onClick={() => onMoveClick(pm, mv.name, mv.type)}
-                className="flex w-full items-start gap-2 rounded-[var(--radius-card)] bg-[var(--color-card-2)] p-2 text-left text-xs hover:bg-[var(--color-card)]"
+                className="flex w-full items-start gap-2 rounded-card bg-card-2 p-2 text-left text-xs hover:bg-card"
               >
                 <span className="mt-0.5">
                   <TypeBadge type={mv.type} size="sm" />
                 </span>
                 <span className="flex-1">
-                  <span className="text-[var(--color-text)]">{mv.name}</span>
+                  <span className="text-text">{mv.name}</span>
                   {subParts.length > 0 && (
                     <span className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[10px]">
                       {subParts}
@@ -391,17 +373,17 @@ function ScoredCard({
           })}
         </div>
       ) : s.bestAtkType ? (
-        <div className="mt-2 text-[11px] text-[var(--color-text-2)]">
+        <div className="mt-2 text-[11px] text-text-2">
           Best type:{" "}
           <span className="inline-block align-middle">
             <TypeBadge type={s.bestAtkType} size="sm" />
           </span>{" "}
-          — <span className="text-[var(--color-text-3)]">add moves for full breakdown</span>
+          — <span className="text-text-3">add moves for full breakdown</span>
         </div>
       ) : null}
 
       {s.pmImm.length > 0 && (
-        <div className="mt-2 flex flex-wrap items-center gap-1 text-[11px] text-[var(--color-green)]">
+        <div className="mt-2 flex flex-wrap items-center gap-1 text-[11px] text-green">
           🛡 {pm.name} immune to
           {s.pmImm.map((t) => (
             <span key={t} className="inline-block">
@@ -411,19 +393,19 @@ function ScoredCard({
         </div>
       )}
       {s.defRisk >= 4 && s.defBestType && (
-        <div className="mt-1 flex items-center gap-1 text-[11px] text-[var(--color-red)]">
+        <div className="mt-1 flex items-center gap-1 text-[11px] text-red">
           ⚠️ Enemy hits {pm.name} <strong>4×</strong> with{" "}
           <TypeBadge type={s.defBestType} size="sm" /> — HIGH RISK
         </div>
       )}
       {s.defRisk >= 2 && s.defRisk < 4 && s.defBestType && (
-        <div className="mt-1 flex items-center gap-1 text-[11px] text-[var(--color-red)]">
+        <div className="mt-1 flex items-center gap-1 text-[11px] text-red">
           ⚠️ Enemy hits {pm.name} <strong>{s.defRisk}×</strong> with{" "}
           <TypeBadge type={s.defBestType} size="sm" />
         </div>
       )}
       {s.defRisk <= 0.5 && (
-        <div className="mt-1 text-[11px] text-[var(--color-green)]">
+        <div className="mt-1 text-[11px] text-green">
           🛡 {pm.name} resists enemy ({s.defRisk}×)
         </div>
       )}

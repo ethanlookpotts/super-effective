@@ -15,7 +15,7 @@ const SettingsRoute = lazy(() =>
 
 function RouteFallback() {
   return (
-    <div aria-label="Loading" className="p-4 text-xs text-[var(--color-text-3)]">
+    <div aria-label="Loading" className="p-4 text-xs text-text-3">
       Loading…
     </div>
   );

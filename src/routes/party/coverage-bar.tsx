@@ -19,14 +19,14 @@ export function CoverageBar({ party }: { party: readonly PartyMember[] }) {
   return (
     <div
       aria-label="Type coverage"
-      className="flex flex-wrap gap-1 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] p-2"
+      className="flex flex-wrap gap-1 rounded-card border border-border bg-card p-2"
     >
       {TYPES.map((t) => {
         const on = covered.has(t);
         return (
           <span
             key={t}
-            className="rounded px-1.5 py-0.5 font-[var(--font-pixel)] text-[8px] tracking-wider"
+            className="rounded px-1.5 py-0.5 font-pixel text-[8px] tracking-wider"
             style={{
               backgroundColor: on ? tc(t) : "transparent",
               color: on ? "#fff" : "var(--color-text-3)",

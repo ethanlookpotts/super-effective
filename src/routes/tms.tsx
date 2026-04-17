@@ -152,10 +152,8 @@ export function TmsRoute() {
   if (!active) {
     return (
       <section>
-        <h2 className="font-[var(--font-pixel)] text-sm text-[var(--color-text)]">TMs &amp; HMs</h2>
-        <p className="mt-2 text-sm text-[var(--color-text-2)]">
-          Create a playthrough to track your TM inventory.
-        </p>
+        <h2 className="font-pixel text-sm text-text">TMs &amp; HMs</h2>
+        <p className="mt-2 text-sm text-text-2">Create a playthrough to track your TM inventory.</p>
       </section>
     );
   }
@@ -167,7 +165,7 @@ export function TmsRoute() {
   return (
     <section aria-label="TMs and HMs page" className="flex flex-col gap-3">
       <header className="flex items-baseline justify-between">
-        <h2 className="font-[var(--font-pixel)] text-sm text-[var(--color-text)]">TMs &amp; HMs</h2>
+        <h2 className="font-pixel text-sm text-text">TMs &amp; HMs</h2>
       </header>
 
       <label className="flex flex-col gap-1">
@@ -178,7 +176,7 @@ export function TmsRoute() {
           placeholder="TM number, move, or location…"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="min-h-11 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] px-3 text-sm text-[var(--color-text)]"
+          className="min-h-11 rounded-card border border-border bg-card px-3 text-sm text-text"
         />
       </label>
 
@@ -193,7 +191,7 @@ export function TmsRoute() {
       <div
         role="group"
         aria-label="Filter by ownership"
-        className="flex gap-2 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] p-1"
+        className="flex gap-2 rounded-card border border-border bg-card p-1"
       >
         {(["all", "owned", "missing"] as const).map((f) => (
           <button
@@ -201,14 +199,12 @@ export function TmsRoute() {
             type="button"
             aria-pressed={filter === f}
             onClick={() => setFilter(f)}
-            className={`min-h-11 flex-1 rounded-[var(--radius-card)] px-2 text-xs ${
-              filter === f
-                ? "bg-[var(--color-card-2)] text-[var(--color-text)]"
-                : "text-[var(--color-text-2)]"
+            className={`min-h-11 flex-1 rounded-card px-2 text-xs ${
+              filter === f ? "bg-card-2 text-text" : "text-text-2"
             }`}
           >
             {f.toUpperCase()}{" "}
-            <span className="ml-1 text-[var(--color-text-3)]">
+            <span className="ml-1 text-text-3">
               {f === "all" ? allTotal : f === "owned" ? allOwned : allMissing}
             </span>
           </button>
@@ -218,23 +214,21 @@ export function TmsRoute() {
       {carrierRanking.length > 0 && (
         <div
           aria-label="Recommended HM Carrier"
-          className="rounded-[var(--radius-card)] border border-[var(--color-gold)] bg-[var(--color-card)] p-3"
+          className="rounded-card border border-gold bg-card p-3"
         >
-          <div className="font-[var(--font-pixel)] text-xs text-[var(--color-gold)]">
+          <div className="font-pixel text-xs text-gold">
             🎒 HM CARRIER — BEST FIELD-MOVE HOLDERS
           </div>
-          <div className="mt-1 text-[10px] text-[var(--color-text-3)]">
+          <div className="mt-1 text-[10px] text-text-3">
             Keep a utility mon for HMs so your battlers don't burn moveslots.
           </div>
           <div className="mt-2 flex flex-col gap-2">
             {carrierRanking.map((c, i) => (
               <div
                 key={`${c.pm.n}-${i}`}
-                className="flex items-center gap-2 rounded-[var(--radius-card)] bg-[var(--color-card-2)] p-2"
+                className="flex items-center gap-2 rounded-card bg-card-2 p-2"
               >
-                <span className="w-6 text-[10px] font-[var(--font-pixel)] text-[var(--color-text-3)]">
-                  #{i + 1}
-                </span>
+                <span className="w-6 text-[10px] font-pixel text-text-3">#{i + 1}</span>
                 <img
                   src={spriteUrl(c.pm.n)}
                   alt=""
@@ -244,8 +238,8 @@ export function TmsRoute() {
                   }}
                 />
                 <div className="flex-1">
-                  <div className="text-sm text-[var(--color-text)]">{c.pm.name}</div>
-                  <div className="text-[10px] text-[var(--color-text-3)]">
+                  <div className="text-sm text-text">{c.pm.name}</div>
+                  <div className="text-[10px] text-text-3">
                     CARRIES {c.hmsLearnable}/{ownedHms.length} HMs
                   </div>
                 </div>
@@ -256,7 +250,7 @@ export function TmsRoute() {
       )}
 
       {tms.length === 0 && hms.length === 0 && tutors.length === 0 ? (
-        <div className="p-4 text-center text-sm text-[var(--color-text-2)]">
+        <div className="p-4 text-center text-sm text-text-2">
           <div className="text-2xl">📀</div>
           NO RESULTS
         </div>
@@ -318,16 +312,11 @@ export function TmsRoute() {
 
       <Section label="UTILITY NPCs">
         {UTILITY_NPCS.map((u) => (
-          <div
-            key={u.label}
-            className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] p-3"
-          >
-            <div className="font-[var(--font-pixel)] text-xs text-[var(--color-text)]">
-              {u.label}
-            </div>
-            <div className="mt-1 text-[10px] text-[var(--color-text-3)]">{u.loc}</div>
-            <div className="mt-1 text-xs text-[var(--color-text-2)]">
-              <span className="text-[var(--color-gold)]">{u.cost}</span> · {u.note}
+          <div key={u.label} className="rounded-card border border-border bg-card p-3">
+            <div className="font-pixel text-xs text-text">{u.label}</div>
+            <div className="mt-1 text-[10px] text-text-3">{u.loc}</div>
+            <div className="mt-1 text-xs text-text-2">
+              <span className="text-gold">{u.cost}</span> · {u.note}
             </div>
           </div>
         ))}
@@ -347,15 +336,15 @@ function TmScanSummaryRow({ summary }: { summary: TmScanSummary }) {
     <div
       role={summary.error ? "alert" : "status"}
       aria-label="TM scan result"
-      className={`rounded-[var(--radius-card)] border px-3 py-2 text-xs ${
+      className={`rounded-card border px-3 py-2 text-xs ${
         summary.error
-          ? "border-[var(--color-red)] text-[var(--color-red)]"
-          : "border-[color-mix(in_srgb,var(--color-gold)_25%,transparent)] bg-[color-mix(in_srgb,var(--color-gold)_5%,transparent)] text-[var(--color-text)]"
+          ? "border-red text-red"
+          : "border-[color-mix(in_srgb,var(--color-gold)_25%,transparent)] bg-[color-mix(in_srgb,var(--color-gold)_5%,transparent)] text-text"
       }`}
     >
       <div>{message}</div>
       {!summary.error && summary.tokens > 0 && (
-        <div className="mt-1 font-[var(--font-pixel)] text-[9px] text-[var(--color-text-3)]">
+        <div className="mt-1 font-pixel text-[9px] text-text-3">
           {summary.tokens} tok · {costStr} ·{" "}
           <a
             href="https://console.anthropic.com/settings/usage"
@@ -374,7 +363,7 @@ function TmScanSummaryRow({ summary }: { summary: TmScanSummary }) {
 function Section({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-2">
-      <div className="font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]">{label}</div>
+      <div className="font-pixel text-[10px] text-text-3">{label}</div>
       {children}
     </div>
   );
@@ -404,15 +393,13 @@ function TmCard({
     <div
       role="listitem"
       aria-label={`${entry.num} ${entry.move}`}
-      className={`rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] p-3 ${
+      className={`rounded-card border border-border bg-card p-3 ${
         owned ? "bg-[color-mix(in_srgb,var(--color-green)_12%,var(--color-card))]" : ""
       } ${entry.tmType === "tutor" && owned ? "opacity-60" : ""}`}
     >
       <div className="flex items-center gap-2">
-        <span className="w-12 font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]">
-          {entry.num}
-        </span>
-        <span className="flex-1 text-sm text-[var(--color-text)]">{entry.move}</span>
+        <span className="w-12 font-pixel text-[10px] text-text-3">{entry.num}</span>
+        <span className="flex-1 text-sm text-text">{entry.move}</span>
         <TypeBadge type={entry.type} size="sm" />
         {entry.tmType === "tm" ? (
           <div
@@ -425,13 +412,13 @@ function TmCard({
               aria-label={`Decrease ${entry.num}`}
               disabled={count === 0}
               onClick={() => onSetCount(entry.num, Math.max(0, count - 1))}
-              className="min-h-11 w-8 rounded-full bg-[var(--color-card-2)] text-[var(--color-text)] disabled:opacity-30"
+              className="min-h-11 w-8 rounded-full bg-card-2 text-text disabled:opacity-30"
             >
               −
             </button>
             <span
               aria-label={`Owned: ${count}`}
-              className={`w-6 text-center text-sm ${owned ? "text-[var(--color-green)]" : "text-[var(--color-text-3)]"}`}
+              className={`w-6 text-center text-sm ${owned ? "text-green" : "text-text-3"}`}
             >
               {count}
             </span>
@@ -439,7 +426,7 @@ function TmCard({
               type="button"
               aria-label={`Increase ${entry.num}`}
               onClick={() => onSetCount(entry.num, count + 1)}
-              className="min-h-11 w-8 rounded-full bg-[var(--color-card-2)] text-[var(--color-text)]"
+              className="min-h-11 w-8 rounded-full bg-card-2 text-text"
             >
               +
             </button>
@@ -454,25 +441,22 @@ function TmCard({
                 : `${owned ? "Taught" : "Not taught"} ${entry.move} tutor`
             }
             onClick={() => onSetCount(entry.num, owned ? 0 : 1)}
-            className={`min-h-11 rounded-[var(--radius-card)] border px-3 text-xs ${
-              owned
-                ? "border-[var(--color-green)] text-[var(--color-green)]"
-                : "border-[var(--color-border)] text-[var(--color-text-2)]"
+            className={`min-h-11 rounded-card border px-3 text-xs ${
+              owned ? "border-green text-green" : "border-border text-text-2"
             }`}
           >
             {entry.tmType === "hm" ? (owned ? "✓ HAVE" : "+ HAVE") : owned ? "✓ TAUGHT" : "○ TEACH"}
           </button>
         )}
       </div>
-      <div className="mt-1 pl-14 text-[10px] text-[var(--color-text-3)]">{entry.loc}</div>
+      <div className="mt-1 pl-14 text-[10px] text-text-3">{entry.loc}</div>
       <button
         type="button"
         aria-expanded={expanded}
         onClick={() => onToggleExpand(entry.num)}
-        className="mt-2 min-h-11 w-full rounded-[var(--radius-card)] bg-[var(--color-card-2)] px-3 text-left text-[10px] font-[var(--font-pixel)] text-[var(--color-text-2)]"
+        className="mt-2 min-h-11 w-full rounded-card bg-card-2 px-3 text-left text-[10px] font-pixel text-text-2"
       >
-        {expanded ? "▾" : "▶"} WHO CAN LEARN{" "}
-        <span className="text-[var(--color-gold)]">{learnersCount}</span>
+        {expanded ? "▾" : "▶"} WHO CAN LEARN <span className="text-gold">{learnersCount}</span>
       </button>
       {expanded && (
         <div
@@ -481,7 +465,7 @@ function TmCard({
           className="mt-2 flex flex-col gap-2"
         >
           {learnersCount === 0 ? (
-            <div className="text-[10px] text-[var(--color-text-3)]">
+            <div className="text-[10px] text-text-3">
               No current party or PC member can learn this move.
             </div>
           ) : (
@@ -519,16 +503,14 @@ function LearnerGroup({
 }) {
   return (
     <div>
-      <div className="mb-1 text-[9px] font-[var(--font-pixel)] text-[var(--color-text-3)]">
-        {label}
-      </div>
+      <div className="mb-1 text-[9px] font-pixel text-text-3">{label}</div>
       <div className="flex flex-wrap gap-1">
         {list.map((pm, i) => (
           <button
             key={`${pm.n}-${i}`}
             type="button"
             onClick={() => onPick(pm)}
-            className="flex min-h-11 items-center gap-1 rounded-full bg-[var(--color-card-2)] p-1 pr-3"
+            className="flex min-h-11 items-center gap-1 rounded-full bg-card-2 p-1 pr-3"
           >
             <img
               src={spriteUrl(pm.n)}
@@ -538,7 +520,7 @@ function LearnerGroup({
                 (e.target as HTMLImageElement).style.display = "none";
               }}
             />
-            <span className="text-xs text-[var(--color-text)]">{pm.name}</span>
+            <span className="text-xs text-text">{pm.name}</span>
           </button>
         ))}
       </div>

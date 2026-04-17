@@ -18,7 +18,7 @@ export function SettingsRoute() {
   }, [settings]);
 
   if (isLoading || !settings) {
-    return <div className="p-4 text-[var(--color-text-2)]">Loading…</div>;
+    return <div className="p-4 text-text-2">Loading…</div>;
   }
 
   function patch(update: Partial<Settings>) {
@@ -28,8 +28,8 @@ export function SettingsRoute() {
   return (
     <section className="flex flex-col gap-6 pb-12">
       <header>
-        <h2 className="font-[var(--font-pixel)] text-sm text-[var(--color-text)]">SETTINGS</h2>
-        <p className="mt-1 text-xs text-[var(--color-text-3)]">
+        <h2 className="font-pixel text-sm text-text">SETTINGS</h2>
+        <p className="mt-1 text-xs text-text-3">
           Backend: <code>{storeRepo.id}</code>
           {storeRepo.capabilities.syncsRemotely ? " (syncs remotely)" : ""}
         </p>
@@ -56,17 +56,15 @@ function ThemeSection({
 }) {
   return (
     <fieldset className="flex flex-col gap-2">
-      <legend className="font-[var(--font-pixel)] text-xs text-[var(--color-text-2)]">THEME</legend>
+      <legend className="font-pixel text-xs text-text-2">THEME</legend>
       <div className="flex gap-2">
         {THEMES.map((t) => (
           <button
             key={t}
             type="button"
             onClick={() => onChange(t)}
-            className={`min-h-11 flex-1 rounded-[var(--radius-card)] border px-3 text-xs uppercase ${
-              theme === t
-                ? "border-[var(--color-gold)] bg-[var(--color-card)] text-[var(--color-text)]"
-                : "border-[var(--color-border)] bg-[var(--color-card-2)] text-[var(--color-text-2)]"
+            className={`min-h-11 flex-1 rounded-card border px-3 text-xs uppercase ${
+              theme === t ? "border-gold bg-card text-text" : "border-border bg-card-2 text-text-2"
             }`}
           >
             {t}
@@ -121,8 +119,8 @@ function ClaudeKeySection({
 
   return (
     <fieldset className="flex flex-col gap-2">
-      <legend className="font-[var(--font-pixel)] text-xs text-[var(--color-text-2)]">
-        CLAUDE API KEY <span className="text-[var(--color-text-3)]">(for OCR scan)</span>
+      <legend className="font-pixel text-xs text-text-2">
+        CLAUDE API KEY <span className="text-text-3">(for OCR scan)</span>
       </legend>
       <input
         type="password"
@@ -130,14 +128,14 @@ function ClaudeKeySection({
         placeholder="sk-ant-…"
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
-        className="min-h-11 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] px-3 text-sm text-[var(--color-text)]"
+        className="min-h-11 rounded-card border border-border bg-card px-3 text-sm text-text"
       />
       <div className="flex gap-2">
         <button
           type="button"
           onClick={test}
           disabled={!draft}
-          className="min-h-11 flex-1 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card-2)] px-3 text-xs text-[var(--color-text)] disabled:opacity-40"
+          className="min-h-11 flex-1 rounded-card border border-border bg-card-2 px-3 text-xs text-text disabled:opacity-40"
         >
           TEST
         </button>
@@ -145,7 +143,7 @@ function ClaudeKeySection({
           type="button"
           onClick={() => onChange(draft)}
           disabled={!draft || draft === claudeApiKey}
-          className="min-h-11 flex-1 rounded-[var(--radius-card)] bg-[var(--color-gold)] px-3 text-xs font-semibold text-black disabled:opacity-40"
+          className="min-h-11 flex-1 rounded-card bg-gold px-3 text-xs font-semibold text-black disabled:opacity-40"
         >
           SAVE
         </button>
@@ -156,7 +154,7 @@ function ClaudeKeySection({
               setDraft("");
               onChange("");
             }}
-            className="min-h-11 rounded-[var(--radius-card)] border border-[var(--color-red)] px-3 text-xs text-[var(--color-red)]"
+            className="min-h-11 rounded-card border border-red px-3 text-xs text-red"
           >
             FORGET
           </button>
@@ -164,11 +162,7 @@ function ClaudeKeySection({
       </div>
       <div
         className={`text-xs ${
-          status === "ok"
-            ? "text-[var(--color-green)]"
-            : status === "error"
-              ? "text-[var(--color-red)]"
-              : "text-[var(--color-text-3)]"
+          status === "ok" ? "text-green" : status === "error" ? "text-red" : "text-text-3"
         }`}
       >
         {claudeApiKey ? "Key saved." : "No key set."}
@@ -213,8 +207,8 @@ function GitHubSyncSection({
 
   return (
     <fieldset className="flex flex-col gap-2">
-      <legend className="font-[var(--font-pixel)] text-xs text-[var(--color-text-2)]">
-        GITHUB SYNC <span className="text-[var(--color-text-3)]">(cross-device)</span>
+      <legend className="font-pixel text-xs text-text-2">
+        GITHUB SYNC <span className="text-text-3">(cross-device)</span>
       </legend>
       <input
         type="password"
@@ -222,14 +216,14 @@ function GitHubSyncSection({
         placeholder="ghp_… or github_pat_…"
         value={tokenDraft}
         onChange={(e) => setTokenDraft(e.target.value)}
-        className="min-h-11 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] px-3 text-sm text-[var(--color-text)]"
+        className="min-h-11 rounded-card border border-border bg-card px-3 text-sm text-text"
       />
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
           onClick={testToken}
           disabled={!tokenDraft}
-          className="min-h-11 flex-1 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card-2)] px-3 text-xs text-[var(--color-text)] disabled:opacity-40"
+          className="min-h-11 flex-1 rounded-card border border-border bg-card-2 px-3 text-xs text-text disabled:opacity-40"
         >
           TEST
         </button>
@@ -237,7 +231,7 @@ function GitHubSyncSection({
           type="button"
           onClick={saveToken}
           disabled={!tokenDraft || tokenDraft === settings.githubToken}
-          className="min-h-11 flex-1 rounded-[var(--radius-card)] bg-[var(--color-gold)] px-3 text-xs font-semibold text-black disabled:opacity-40"
+          className="min-h-11 flex-1 rounded-card bg-gold px-3 text-xs font-semibold text-black disabled:opacity-40"
         >
           SAVE
         </button>
@@ -247,7 +241,7 @@ function GitHubSyncSection({
               type="button"
               onClick={() => sync.pull()}
               disabled={sync.status.syncing}
-              className="min-h-11 flex-1 rounded-[var(--radius-card)] border border-[var(--color-blue)] px-3 text-xs text-[var(--color-blue)] disabled:opacity-40"
+              className="min-h-11 flex-1 rounded-card border border-blue px-3 text-xs text-blue disabled:opacity-40"
             >
               SYNC NOW
             </button>
@@ -257,7 +251,7 @@ function GitHubSyncSection({
                 setTokenDraft("");
                 sync.disconnect();
               }}
-              className="min-h-11 rounded-[var(--radius-card)] border border-[var(--color-red)] px-3 text-xs text-[var(--color-red)]"
+              className="min-h-11 rounded-card border border-red px-3 text-xs text-red"
             >
               FORGET
             </button>
@@ -302,12 +296,7 @@ function SyncStatusLine({
       : testState === "error"
         ? `Test failed: ${testMsg}`
         : "";
-  const cls =
-    tone === "ok"
-      ? "text-[var(--color-green)]"
-      : tone === "error"
-        ? "text-[var(--color-red)]"
-        : "text-[var(--color-text-3)]";
+  const cls = tone === "ok" ? "text-green" : tone === "error" ? "text-red" : "text-text-3";
   return (
     <div className={`text-xs ${cls}`}>
       {text}

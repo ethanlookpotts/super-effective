@@ -75,10 +75,8 @@ export function MovesSection({
   return (
     <section aria-label="Moves" className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
-        <span className="font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]">
-          MOVES
-        </span>
-        <span className="font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]">
+        <span className="font-pixel text-[10px] text-text-3">MOVES</span>
+        <span className="font-pixel text-[10px] text-text-3">
           {moves.length}/{MAX_MOVES} SET
         </span>
       </div>
@@ -107,11 +105,11 @@ export function MovesSection({
             const cat = md ? catLabel(md) : { label: "—", color: "var(--color-text-3)" };
             return (
               <li key={`${mv.name}-${i}`}>
-                <div className="flex min-h-11 items-center gap-2 rounded-[var(--radius-card)] bg-[var(--color-card-2)] px-2 py-1.5">
+                <div className="flex min-h-11 items-center gap-2 rounded-card bg-card-2 px-2 py-1.5">
                   <TypeBadge type={mv.type} size="sm" />
-                  <span className="flex-1 text-[11px] text-[var(--color-text)]">{mv.name}</span>
+                  <span className="flex-1 text-[11px] text-text">{mv.name}</span>
                   <span
-                    className="rounded px-1 py-0.5 font-[var(--font-pixel)] text-[9px] text-white"
+                    className="rounded px-1 py-0.5 font-pixel text-[9px] text-white"
                     style={{ backgroundColor: cat.color }}
                   >
                     {cat.label}
@@ -120,7 +118,7 @@ export function MovesSection({
                     type="button"
                     onClick={() => removeMove(i)}
                     aria-label={`Remove ${mv.name}`}
-                    className="min-h-11 min-w-11 font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]"
+                    className="min-h-11 min-w-11 font-pixel text-[10px] text-text-3"
                   >
                     ✕
                   </button>
@@ -142,7 +140,7 @@ export function MovesSection({
             autoCorrect="off"
             spellCheck={false}
             aria-label="Search moves"
-            className="min-h-11 w-full rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card-2)] px-3 text-sm text-[var(--color-text)] outline-none"
+            className="min-h-11 w-full rounded-card border border-border bg-card-2 px-3 text-sm text-text outline-none"
           />
           <div className="flex flex-wrap gap-1" role="group" aria-label="Filter by type">
             {TYPES.map((t) => {
@@ -154,7 +152,7 @@ export function MovesSection({
                   onClick={() => setTypeFilter(active ? null : t)}
                   aria-pressed={active}
                   aria-label={`Filter ${t}`}
-                  className="rounded px-1.5 py-0.5 font-[var(--font-pixel)] text-[8px] tracking-wider"
+                  className="rounded px-1.5 py-0.5 font-pixel text-[8px] tracking-wider"
                   style={{
                     backgroundColor: active ? tc(t) : "transparent",
                     color: active ? "#fff" : "var(--color-text-3)",
@@ -174,7 +172,7 @@ export function MovesSection({
             className="flex max-h-[40vh] flex-col gap-1 overflow-y-auto"
           >
             {filtered.length === 0 ? (
-              <div className="py-3 text-center font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]">
+              <div className="py-3 text-center font-pixel text-[10px] text-text-3">
                 NO MOVES FOUND
               </div>
             ) : (
@@ -207,24 +205,20 @@ export function MovesSection({
                     role="option"
                     aria-selected={isPicked}
                     aria-label={`${isPicked ? "Remove" : "Add"} ${mv.name}`}
-                    className="flex min-h-11 items-center gap-2 rounded-[var(--radius-card)] bg-[var(--color-card-2)] px-2 py-1.5 text-left"
+                    className="flex min-h-11 items-center gap-2 rounded-card bg-card-2 px-2 py-1.5 text-left"
                     style={{
                       border: isPicked ? "1px solid var(--color-gold)" : "1px solid transparent",
                     }}
                   >
                     <TypeBadge type={mv.type} size="sm" />
-                    <span className="flex-1 text-[11px] text-[var(--color-text)]">{mv.name}</span>
+                    <span className="flex-1 text-[11px] text-text">{mv.name}</span>
                     <span
-                      className="rounded px-1 py-0.5 font-[var(--font-pixel)] text-[9px] text-white"
+                      className="rounded px-1 py-0.5 font-pixel text-[9px] text-white"
                       style={{ backgroundColor: cat.color }}
                     >
                       {cat.label}
                     </span>
-                    {isPicked && (
-                      <span className="font-[var(--font-pixel)] text-[10px] text-[var(--color-gold)]">
-                        ✓
-                      </span>
-                    )}
+                    {isPicked && <span className="font-pixel text-[10px] text-gold">✓</span>}
                   </button>
                 );
               })
@@ -254,7 +248,7 @@ function HiddenPowerRow({
         type="button"
         onClick={onToggle}
         aria-label={picked ? "Remove Hidden Power" : "Add Hidden Power"}
-        className="flex min-h-11 items-center gap-2 rounded-[var(--radius-card)] bg-[var(--color-card-2)] px-2 py-1.5 text-left"
+        className="flex min-h-11 items-center gap-2 rounded-card bg-card-2 px-2 py-1.5 text-left"
         style={{
           border: picked || picking ? "1px solid var(--color-gold)" : "1px solid transparent",
         }}
@@ -262,21 +256,21 @@ function HiddenPowerRow({
         {picked ? (
           <TypeBadge type={displayType} size="sm" />
         ) : (
-          <span className="rounded bg-[var(--color-border-2)] px-1.5 py-0.5 font-[var(--font-pixel)] text-[9px] tracking-wider text-white">
+          <span className="rounded bg-border-2 px-1.5 py-0.5 font-pixel text-[9px] tracking-wider text-white">
             HP
           </span>
         )}
-        <span className="flex-1 text-[11px] text-[var(--color-text)]">Hidden Power</span>
+        <span className="flex-1 text-[11px] text-text">Hidden Power</span>
         <span
-          className="rounded px-1 py-0.5 font-[var(--font-pixel)] text-[9px] text-white"
+          className="rounded px-1 py-0.5 font-pixel text-[9px] text-white"
           style={{ backgroundColor: "var(--color-blue)" }}
         >
           SPE
         </span>
         {picked ? (
-          <span className="font-[var(--font-pixel)] text-[10px] text-[var(--color-gold)]">✓</span>
+          <span className="font-pixel text-[10px] text-gold">✓</span>
         ) : picking ? (
-          <span className="font-[var(--font-pixel)] text-[10px] text-[var(--color-gold)]">▾</span>
+          <span className="font-pixel text-[10px] text-gold">▾</span>
         ) : null}
       </button>
       {picking && !picked && (
@@ -287,7 +281,7 @@ function HiddenPowerRow({
               type="button"
               onClick={() => onSelectType(t)}
               aria-label={`Hidden Power ${t}`}
-              className="min-h-11 rounded px-2 font-[var(--font-pixel)] text-[9px] tracking-wider text-white"
+              className="min-h-11 rounded px-2 font-pixel text-[9px] tracking-wider text-white"
               style={{ backgroundColor: tc(t) }}
             >
               {t.toUpperCase()}

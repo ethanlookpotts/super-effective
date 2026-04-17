@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSettings } from "~/hooks/use-settings";
 
 const DEFAULT_CLASS =
-  "min-h-11 w-full rounded-[var(--radius-card)] border border-[color-mix(in_srgb,var(--color-gold)_25%,transparent)] bg-[color-mix(in_srgb,var(--color-gold)_7%,transparent)] px-3 font-[var(--font-pixel)] text-xs text-[var(--color-gold)] disabled:opacity-50";
+  "min-h-11 w-full rounded-card border border-[color-mix(in_srgb,var(--color-gold)_25%,transparent)] bg-[color-mix(in_srgb,var(--color-gold)_7%,transparent)] px-3 font-pixel text-xs text-gold disabled:opacity-50";
 
 export function ScanButton({
   label,

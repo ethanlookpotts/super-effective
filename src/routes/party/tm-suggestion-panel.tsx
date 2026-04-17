@@ -102,9 +102,7 @@ export function TmSuggestionPanel({
 
   return (
     <section aria-label="TM suggestions" className="flex flex-col gap-2">
-      <h3 className="font-[var(--font-pixel)] text-xs text-[var(--color-gold)]">
-        📀 TM SUGGESTIONS — BEST MOVES TO TEACH NOW
-      </h3>
+      <h3 className="font-pixel text-xs text-gold">📀 TM SUGGESTIONS — BEST MOVES TO TEACH NOW</h3>
       <ul className="flex flex-col gap-2">
         {suggestions.map((s) => (
           <li key={`${s.source.num}-${s.target.n}-${s.targetIdx}`}>
@@ -115,7 +113,7 @@ export function TmSuggestionPanel({
                 navigate(`/party?teach=${s.target.n}:${encodeURIComponent(s.source.move)}`)
               }
               aria-label={`Teach ${s.source.move} to ${s.target.name}`}
-              className="flex min-h-11 w-full items-center gap-2 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] p-2 text-left"
+              className="flex min-h-11 w-full items-center gap-2 rounded-card border border-border bg-card p-2 text-left"
             >
               <img
                 src={spriteUrl(s.target.n, { shiny: s.target.shiny })}
@@ -126,33 +124,27 @@ export function TmSuggestionPanel({
                 className="h-10 w-10 shrink-0 object-contain"
               />
               <div className="flex flex-1 flex-col gap-0.5 overflow-hidden">
-                <div className="flex flex-wrap items-center gap-1 text-[11px] text-[var(--color-text)]">
-                  <span className="font-[var(--font-pixel)] text-[10px]">{s.target.name}</span>
-                  <span className="text-[var(--color-text-3)]">·</span>
+                <div className="flex flex-wrap items-center gap-1 text-[11px] text-text">
+                  <span className="font-pixel text-[10px]">{s.target.name}</span>
+                  <span className="text-text-3">·</span>
                   {s.replacedName ? (
                     <>
-                      <span className="text-[var(--color-text-3)] line-through">
-                        {s.replacedName}
-                      </span>
-                      <span className="text-[var(--color-text-3)]">→</span>
+                      <span className="text-text-3 line-through">{s.replacedName}</span>
+                      <span className="text-text-3">→</span>
                     </>
                   ) : (
-                    <span className="text-[var(--color-green)]">+</span>
+                    <span className="text-green">+</span>
                   )}
                   <TypeBadge type={s.source.type} size="sm" />
-                  <span className="text-[var(--color-text)]">{s.source.move}</span>
+                  <span className="text-text">{s.source.move}</span>
                 </div>
                 <div className="flex flex-wrap gap-2 text-[10px]">
-                  {s.superDelta > 0 && (
-                    <span className="text-[var(--color-green)]">+{s.superDelta} cov</span>
-                  )}
-                  {s.coverageLost > 0 && (
-                    <span className="text-[var(--color-red)]">−{s.coverageLost} cov</span>
-                  )}
-                  <span className="text-[var(--color-gold)]">+{s.scoreDelta.toFixed(1)} score</span>
+                  {s.superDelta > 0 && <span className="text-green">+{s.superDelta} cov</span>}
+                  {s.coverageLost > 0 && <span className="text-red">−{s.coverageLost} cov</span>}
+                  <span className="text-gold">+{s.scoreDelta.toFixed(1)} score</span>
                 </div>
               </div>
-              <span className="shrink-0 text-[var(--color-text-3)]">▶</span>
+              <span className="shrink-0 text-text-3">▶</span>
             </button>
           </li>
         ))}

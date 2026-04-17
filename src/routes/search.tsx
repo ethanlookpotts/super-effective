@@ -267,9 +267,7 @@ function DefaultView({
     <div className="flex flex-col gap-3">
       {recents.length > 0 && (
         <section className="flex flex-col gap-2">
-          <div className="font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]">
-            RECENT
-          </div>
+          <div className="font-pixel text-[10px] text-text-3">RECENT</div>
           <div className="flex flex-wrap gap-1.5">
             {recents.slice(0, 6).map((r) => (
               <button
@@ -277,7 +275,7 @@ function DefaultView({
                 type="button"
                 aria-label={`Recent ${r.name}`}
                 onClick={() => onPick(r.n)}
-                className="min-h-11 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] px-2 py-1 text-xs text-[var(--color-text)]"
+                className="min-h-11 rounded-card border border-border bg-card px-2 py-1 text-xs text-text"
               >
                 {r.name}
               </button>
@@ -288,7 +286,7 @@ function DefaultView({
 
       {activeType ? (
         <section className="flex flex-col gap-2">
-          <div className="font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]">
+          <div className="font-pixel text-[10px] text-text-3">
             {activeType.toUpperCase()} TYPE ({filtered.length})
           </div>
           <div className="flex flex-col gap-1.5">
@@ -301,11 +299,11 @@ function DefaultView({
                   type="button"
                   aria-label={`View ${p.name}`}
                   onClick={() => onPick(p.n)}
-                  className="flex min-h-11 w-full items-center gap-2 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] p-2 text-left"
+                  className="flex min-h-11 w-full items-center gap-2 rounded-card border border-border bg-card p-2 text-left"
                 >
                   <span className="flex-1">
-                    <span className="block text-sm text-[var(--color-text)]">{p.name}</span>
-                    <span className="block text-[10px] text-[var(--color-text-3)]">{short}</span>
+                    <span className="block text-sm text-text">{p.name}</span>
+                    <span className="block text-[10px] text-text-3">{short}</span>
                   </span>
                   <span className="flex gap-1">
                     {p.types.map((t) => (
@@ -318,16 +316,16 @@ function DefaultView({
           </div>
         </section>
       ) : recents.length === 0 ? (
-        <div className="rounded-[var(--radius-card)] border border-dashed border-[var(--color-border)] bg-[var(--color-card-2)] p-6 text-center">
+        <div className="rounded-card border border-dashed border-border bg-card-2 p-6 text-center">
           <div className="text-2xl">🔍</div>
-          <p className="mt-2 font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]">
+          <p className="mt-2 font-pixel text-[10px] text-text-3">
             SEARCH BY NAME ABOVE
             <br />
             OR TAP A TYPE TO BROWSE
           </p>
         </div>
       ) : (
-        <p className="text-center font-[var(--font-pixel)] text-[9px] leading-relaxed text-[var(--color-text-3)]">
+        <p className="text-center font-pixel text-[9px] leading-relaxed text-text-3">
           TAP A TYPE PILL TO BROWSE ALL POKEMON OF THAT TYPE
         </p>
       )}

@@ -74,13 +74,11 @@ export function PcBox({
         onClick={() => setCollapsed((c) => !c)}
         aria-expanded={!collapsed}
         aria-label="Toggle PC Box"
-        className="flex min-h-11 w-full items-center gap-2 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2 text-left"
+        className="flex min-h-11 w-full items-center gap-2 rounded-card border border-border bg-card px-3 py-2 text-left"
       >
-        <span className="font-[var(--font-pixel)] text-xs text-[var(--color-text)]">📦 PC BOX</span>
-        <span className="font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]">
-          ({pc.length} CAUGHT)
-        </span>
-        <span className="ml-auto text-[var(--color-text-3)]">{arrow}</span>
+        <span className="font-pixel text-xs text-text">📦 PC BOX</span>
+        <span className="font-pixel text-[10px] text-text-3">({pc.length} CAUGHT)</span>
+        <span className="ml-auto text-text-3">{arrow}</span>
       </button>
 
       {!collapsed && (
@@ -90,10 +88,10 @@ export function PcBox({
               type="button"
               onClick={onAdd}
               aria-label="Add new Pokémon to PC"
-              className="flex min-h-11 w-full flex-col items-center justify-center gap-1 rounded-[var(--radius-card)] border border-dashed border-[var(--color-border-2)] bg-[var(--color-card-2)] p-4 text-[var(--color-text-3)]"
+              className="flex min-h-11 w-full flex-col items-center justify-center gap-1 rounded-card border border-dashed border-border-2 bg-card-2 p-4 text-text-3"
             >
               <span className="text-2xl leading-none">＋</span>
-              <span className="font-[var(--font-pixel)] text-[9px]">ADD NEW</span>
+              <span className="font-pixel text-[9px]">ADD NEW</span>
             </button>
           </li>
           {pc.map((pm, idx) =>
@@ -102,17 +100,15 @@ export function PcBox({
                 <div
                   role="group"
                   aria-label={`Confirm remove ${pm.name}`}
-                  className="flex min-h-11 w-full flex-col items-center justify-center gap-1 rounded-[var(--radius-card)] border border-[var(--color-red)] bg-[var(--color-card)] p-2 text-center"
+                  className="flex min-h-11 w-full flex-col items-center justify-center gap-1 rounded-card border border-red bg-card p-2 text-center"
                 >
-                  <span className="font-[var(--font-pixel)] text-[10px] text-[var(--color-red)]">
-                    REMOVE?
-                  </span>
+                  <span className="font-pixel text-[10px] text-red">REMOVE?</span>
                   <div className="flex gap-1">
                     <button
                       type="button"
                       onClick={() => removePc(idx)}
                       aria-label={`Confirm remove ${pm.name}`}
-                      className="min-h-11 rounded-[var(--radius-card)] bg-[var(--color-red)] px-2 font-[var(--font-pixel)] text-[9px] text-white"
+                      className="min-h-11 rounded-card bg-red px-2 font-pixel text-[9px] text-white"
                     >
                       YES
                     </button>
@@ -120,7 +116,7 @@ export function PcBox({
                       type="button"
                       onClick={() => setConfirmIdx(null)}
                       aria-label="Cancel remove"
-                      className="min-h-11 rounded-[var(--radius-card)] bg-[var(--color-card-2)] px-2 font-[var(--font-pixel)] text-[9px] text-[var(--color-text-2)]"
+                      className="min-h-11 rounded-card bg-card-2 px-2 font-pixel text-[9px] text-text-2"
                     >
                       NO
                     </button>
@@ -166,7 +162,7 @@ function PcSlot({
 }) {
   const shortName = member.name.length > 9 ? `${member.name.slice(0, 8)}…` : member.name;
   return (
-    <div className="flex min-h-11 w-full flex-col gap-1 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] p-2">
+    <div className="flex min-h-11 w-full flex-col gap-1 rounded-card border border-border bg-card p-2">
       <button
         type="button"
         onClick={onEdit}
@@ -181,13 +177,11 @@ function PcSlot({
           }}
           className="h-10 w-10 object-contain"
         />
-        <span className="font-[var(--font-pixel)] text-[9px] text-[var(--color-text-3)]">
+        <span className="font-pixel text-[9px] text-text-3">
           #{String(member.n).padStart(3, "0")}
-          {member.shiny ? <span className="ml-1 text-[var(--color-gold)]">✦</span> : null}
+          {member.shiny ? <span className="ml-1 text-gold">✦</span> : null}
         </span>
-        <span className="font-[var(--font-pixel)] text-[10px] text-[var(--color-text)]">
-          {shortName}
-        </span>
+        <span className="font-pixel text-[10px] text-text">{shortName}</span>
         <span className="flex flex-wrap gap-1">
           {member.types.map((t) => (
             <TypeBadge key={t} type={t} size="sm" />
@@ -199,7 +193,7 @@ function PcSlot({
           type="button"
           onClick={onMove}
           aria-label={`Move ${member.name} to party`}
-          className="min-h-11 flex-1 rounded-[var(--radius-card)] bg-[var(--color-gold)] px-2 font-[var(--font-pixel)] text-[9px] text-black"
+          className="min-h-11 flex-1 rounded-card bg-gold px-2 font-pixel text-[9px] text-black"
         >
           → PARTY
         </button>
@@ -207,7 +201,7 @@ function PcSlot({
           type="button"
           onClick={onRemove}
           aria-label={`Remove ${member.name} from PC`}
-          className="min-h-11 w-11 rounded-[var(--radius-card)] border border-[var(--color-border-2)] bg-[var(--color-card-2)] font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]"
+          className="min-h-11 w-11 rounded-card border border-border-2 bg-card-2 font-pixel text-[10px] text-text-3"
         >
           ✕
         </button>

@@ -52,7 +52,7 @@ export function TypeFilter({
               aria-label={t}
               aria-pressed={isActive}
               onClick={() => onToggle(t)}
-              className={`min-h-11 shrink-0 rounded-[var(--radius-card)] border px-2.5 py-1 font-[var(--font-pixel)] text-[10px] tracking-wider text-white transition ${
+              className={`min-h-11 shrink-0 rounded-card border px-2.5 py-1 font-pixel text-[10px] tracking-wider text-white transition ${
                 isActive ? "opacity-100" : "opacity-80"
               }`}
               style={{

@@ -1,7 +1,7 @@
 import type { GameScreenAggregate } from "./game-screen";
 
-const LABEL = "font-[var(--font-pixel)] text-[9px] text-[var(--color-text-3)]";
-const VALUE = "text-[11px] text-[var(--color-text)]";
+const LABEL = "font-pixel text-[9px] text-text-3";
+const VALUE = "text-[11px] text-text";
 
 function formatCost(inputTokens: number, outputTokens: number): string {
   const cost = inputTokens * 0.000001 + outputTokens * 0.000005;
@@ -75,25 +75,23 @@ export function ScanResultBox({
     <div
       role="region"
       aria-label="Scan result"
-      className="flex flex-col gap-2 rounded-[var(--radius-card)] border border-[color-mix(in_srgb,var(--color-gold)_25%,transparent)] bg-[color-mix(in_srgb,var(--color-gold)_5%,transparent)] p-3"
+      className="flex flex-col gap-2 rounded-card border border-[color-mix(in_srgb,var(--color-gold)_25%,transparent)] bg-[color-mix(in_srgb,var(--color-gold)_5%,transparent)] p-3"
     >
       <div className="flex items-center justify-between gap-2">
-        <span className="font-[var(--font-pixel)] text-[10px] text-[var(--color-gold)]">
-          📷 SCAN RESULT
-        </span>
+        <span className="font-pixel text-[10px] text-gold">📷 SCAN RESULT</span>
         {aggregate && rows.length > 0 && (
           <button
             type="button"
             onClick={onReset}
             aria-label="Reset form to scan values"
-            className="min-h-11 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card-2)] px-2 font-[var(--font-pixel)] text-[9px] text-[var(--color-text-2)]"
+            className="min-h-11 rounded-card border border-border bg-card-2 px-2 font-pixel text-[9px] text-text-2"
           >
             ↺ RESET TO SCAN
           </button>
         )}
       </div>
       {error && (
-        <div role="alert" className="text-[11px] text-[var(--color-red)]">
+        <div role="alert" className="text-[11px] text-red">
           {error}
         </div>
       )}
@@ -108,10 +106,10 @@ export function ScanResultBox({
             ))}
           </div>
         ) : (
-          <div className="text-[11px] text-[var(--color-text-3)]">Nothing recognised.</div>
+          <div className="text-[11px] text-text-3">Nothing recognised.</div>
         ))}
       {aggregate && totalTokens > 0 && (
-        <div className="font-[var(--font-pixel)] text-[9px] text-[var(--color-text-3)]">
+        <div className="font-pixel text-[9px] text-text-3">
           {totalTokens} tok · {formatCost(aggregate.inputTokens, aggregate.outputTokens)} ·{" "}
           <a
             href="https://console.anthropic.com/settings/usage"

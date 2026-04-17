@@ -68,9 +68,7 @@ export function EvolutionChain({
 
   return (
     <section className="flex flex-col gap-2">
-      <div className="font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]">
-        EVOLUTION CHAIN
-      </div>
+      <div className="font-pixel text-[10px] text-text-3">EVOLUTION CHAIN</div>
 
       {branching ? (
         <BranchView root={root} currentDex={dex} onPick={onPick} />
@@ -97,12 +95,10 @@ function LinearView({
       {chain.map((stage, i) => (
         <div key={stage.n} className="flex items-center gap-1.5">
           {i > 0 && (
-            <div className="flex items-center gap-1 text-[var(--color-text-3)]">
+            <div className="flex items-center gap-1 text-text-3">
               <span>→</span>
               {stage.cond && (
-                <span className="rounded bg-[var(--color-card-2)] px-1.5 py-0.5 text-[10px]">
-                  {stage.cond}
-                </span>
+                <span className="rounded bg-card-2 px-1.5 py-0.5 text-[10px]">{stage.cond}</span>
               )}
             </div>
           )}
@@ -126,12 +122,12 @@ function BranchView({
   return (
     <div className="flex items-start gap-2">
       <StageButton n={root} current={root === currentDex} onPick={onPick} />
-      <span className="mt-2 text-[var(--color-text-3)]">→</span>
+      <span className="mt-2 text-text-3">→</span>
       <div className="flex flex-col gap-1.5">
         {intos.map((link) => (
           <div key={link.n} className="flex items-center gap-1.5">
             <StageButton n={link.n} current={link.n === currentDex} onPick={onPick} />
-            <span className="rounded bg-[var(--color-card-2)] px-1.5 py-0.5 text-[10px] text-[var(--color-text-3)]">
+            <span className="rounded bg-card-2 px-1.5 py-0.5 text-[10px] text-text-3">
               {link.c}
             </span>
           </div>
@@ -156,16 +152,12 @@ function StageButton({
       type="button"
       aria-label={`View ${name}`}
       onClick={() => onPick(n)}
-      className={`flex min-h-11 flex-col items-start rounded-[var(--radius-card)] border px-2 py-1 text-left ${
-        current
-          ? "border-[var(--color-gold)] bg-[var(--color-card-2)]"
-          : "border-[var(--color-border)] bg-[var(--color-card)]"
+      className={`flex min-h-11 flex-col items-start rounded-card border px-2 py-1 text-left ${
+        current ? "border-gold bg-card-2" : "border-border bg-card"
       }`}
     >
-      <span className="text-xs text-[var(--color-text)]">{name}</span>
-      <span className="font-[var(--font-pixel)] text-[9px] text-[var(--color-text-3)]">
-        #{String(n).padStart(3, "0")}
-      </span>
+      <span className="text-xs text-text">{name}</span>
+      <span className="font-pixel text-[9px] text-text-3">#{String(n).padStart(3, "0")}</span>
     </button>
   );
 }
@@ -204,14 +196,10 @@ function EvolveButtons({
           type="button"
           aria-label={b.label}
           onClick={() => onEvolve(b.memberDex, b.targetDex)}
-          className="flex min-h-11 items-center justify-between gap-2 rounded-[var(--radius-card)] border border-[var(--color-gold)] bg-[var(--color-card-2)] px-3 py-2 text-left"
+          className="flex min-h-11 items-center justify-between gap-2 rounded-card border border-gold bg-card-2 px-3 py-2 text-left"
         >
-          <span className="font-[var(--font-pixel)] text-[10px] text-[var(--color-gold)]">
-            {b.label}
-          </span>
-          <span className="rounded bg-[var(--color-card)] px-1.5 py-0.5 text-[10px] text-[var(--color-text-2)]">
-            {b.cond}
-          </span>
+          <span className="font-pixel text-[10px] text-gold">{b.label}</span>
+          <span className="rounded bg-card px-1.5 py-0.5 text-[10px] text-text-2">{b.cond}</span>
         </button>
       ))}
     </div>

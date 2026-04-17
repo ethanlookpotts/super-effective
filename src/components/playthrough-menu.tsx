@@ -66,17 +66,15 @@ export function PlaythroughMenu({ open, onClose }: { open: boolean; onClose: () 
       <dialog
         open
         aria-label="Playthrough menu"
-        className="relative w-full max-w-[480px] rounded-t-[var(--radius-card-lg)] bg-[var(--color-card)] p-4"
+        className="relative w-full max-w-[480px] rounded-t-card-lg bg-card p-4"
       >
         {mode === "list" ? (
           <div className="flex flex-col gap-2">
             {store.playthroughs.map((pt) => (
               <div
                 key={pt.id}
-                className={`flex items-center gap-2 rounded-[var(--radius-card)] border p-2 ${
-                  pt.id === activeId
-                    ? "border-[var(--color-gold)] bg-[var(--color-card-2)]"
-                    : "border-[var(--color-border)]"
+                className={`flex items-center gap-2 rounded-card border p-2 ${
+                  pt.id === activeId ? "border-gold bg-card-2" : "border-border"
                 }`}
               >
                 {renamingId === pt.id ? (
@@ -90,30 +88,28 @@ export function PlaythroughMenu({ open, onClose }: { open: boolean; onClose: () 
                       if (e.key === "Escape") setRenamingId(null);
                     }}
                     ref={(el) => el?.focus()}
-                    className="flex-1 rounded bg-transparent px-2 py-1 text-sm text-[var(--color-text)]"
+                    className="flex-1 rounded bg-transparent px-2 py-1 text-sm text-text"
                   />
                 ) : (
                   <>
-                    <span className="flex-1 text-sm text-[var(--color-text)]">{pt.name}</span>
+                    <span className="flex-1 text-sm text-text">{pt.name}</span>
                     <button
                       type="button"
                       onClick={() => startRename(pt.id, pt.name)}
                       aria-label={`Rename ${pt.name}`}
-                      className="min-h-11 px-2 text-xs text-[var(--color-text-2)]"
+                      className="min-h-11 px-2 text-xs text-text-2"
                     >
                       ✏
                     </button>
                   </>
                 )}
                 {pt.id === activeId ? (
-                  <span className="text-[10px] font-[var(--font-pixel)] text-[var(--color-gold)]">
-                    ACTIVE
-                  </span>
+                  <span className="text-[10px] font-pixel text-gold">ACTIVE</span>
                 ) : (
                   <button
                     type="button"
                     onClick={() => handleSwitch(pt.id)}
-                    className="min-h-11 rounded bg-[var(--color-card-2)] px-3 text-xs text-[var(--color-text)]"
+                    className="min-h-11 rounded bg-card-2 px-3 text-xs text-text"
                   >
                     SWITCH
                   </button>
@@ -122,7 +118,7 @@ export function PlaythroughMenu({ open, onClose }: { open: boolean; onClose: () 
                   type="button"
                   onClick={() => handleDelete(pt.id, pt.name)}
                   aria-label={`Delete ${pt.name}`}
-                  className="min-h-11 px-2 text-xs text-[var(--color-red)]"
+                  className="min-h-11 px-2 text-xs text-red"
                 >
                   🗑
                 </button>
@@ -131,7 +127,7 @@ export function PlaythroughMenu({ open, onClose }: { open: boolean; onClose: () 
             <button
               type="button"
               onClick={() => setMode("picker")}
-              className="min-h-11 rounded-[var(--radius-card)] border border-dashed border-[var(--color-border)] px-3 text-xs font-[var(--font-pixel)] text-[var(--color-text-2)]"
+              className="min-h-11 rounded-card border border-dashed border-border px-3 text-xs font-pixel text-text-2"
             >
               ＋ NEW RUN
             </button>
@@ -141,16 +137,14 @@ export function PlaythroughMenu({ open, onClose }: { open: boolean; onClose: () 
             <button
               type="button"
               onClick={() => setMode("list")}
-              className="self-start text-xs text-[var(--color-text-2)]"
+              className="self-start text-xs text-text-2"
             >
               ← BACK
             </button>
-            <h3 className="font-[var(--font-pixel)] text-xs text-[var(--color-text)]">
-              SELECT GAME
-            </h3>
+            <h3 className="font-pixel text-xs text-text">SELECT GAME</h3>
             {GAMES.map((gen) => (
               <div key={gen.region} className="flex flex-col gap-2">
-                <div className="text-[10px] font-[var(--font-pixel)] text-[var(--color-text-3)]">
+                <div className="text-[10px] font-pixel text-text-3">
                   GEN {gen.gen} · {gen.region.toUpperCase()}
                 </div>
                 <div className="flex gap-2">
@@ -159,7 +153,7 @@ export function PlaythroughMenu({ open, onClose }: { open: boolean; onClose: () 
                       key={g.id}
                       type="button"
                       onClick={() => handleCreate(g.id)}
-                      className="min-h-11 flex-1 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card-2)] p-2 text-sm text-[var(--color-text)]"
+                      className="min-h-11 flex-1 rounded-card border border-border bg-card-2 p-2 text-sm text-text"
                     >
                       <span className="mr-2">{g.icon}</span>
                       {g.name.toUpperCase()}

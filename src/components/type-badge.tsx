@@ -11,7 +11,7 @@ export function TypeBadge({
   const scale = size === "sm" ? "px-1.5 py-0.5 text-[9px]" : "px-2 py-1 text-[10px]";
   return (
     <span
-      className={`inline-block rounded font-[var(--font-pixel)] tracking-wider text-white ${scale}`}
+      className={`inline-block rounded font-pixel tracking-wider text-white ${scale}`}
       style={{ backgroundColor: tc(type) }}
     >
       {type.toUpperCase()}

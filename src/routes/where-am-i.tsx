@@ -17,7 +17,7 @@ export function WhereAmIRoute() {
   return (
     <section aria-label="Where Am I page" className="flex flex-col gap-3">
       <header>
-        <h2 className="font-[var(--font-pixel)] text-sm text-[var(--color-text)]">WHERE AM I</h2>
+        <h2 className="font-pixel text-sm text-text">WHERE AM I</h2>
       </header>
 
       <label className="flex flex-col gap-1">
@@ -28,12 +28,12 @@ export function WhereAmIRoute() {
           placeholder="Route, cave, or Pokémon…"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="min-h-11 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] px-3 text-sm text-[var(--color-text)]"
+          className="min-h-11 rounded-card border border-border bg-card px-3 text-sm text-text"
         />
       </label>
 
       {list.length === 0 ? (
-        <div className="p-4 text-center text-sm text-[var(--color-text-2)]">
+        <div className="p-4 text-center text-sm text-text-2">
           <div className="text-2xl">🗺️</div>
           NO RESULTS
         </div>
@@ -44,7 +44,7 @@ export function WhereAmIRoute() {
             return (
               <li
                 key={loc.name}
-                className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)]"
+                className="overflow-hidden rounded-card border border-border bg-card"
               >
                 <button
                   type="button"
@@ -52,25 +52,21 @@ export function WhereAmIRoute() {
                   aria-expanded={open}
                   className="flex min-h-11 w-full items-center justify-between px-3 py-2 text-left"
                 >
-                  <span className="text-sm text-[var(--color-text)]">{loc.name}</span>
-                  <span className={`text-[var(--color-text-3)] ${open ? "rotate-180" : ""}`}>
-                    ▾
-                  </span>
+                  <span className="text-sm text-text">{loc.name}</span>
+                  <span className={`text-text-3 ${open ? "rotate-180" : ""}`}>▾</span>
                 </button>
                 {open && (
-                  <div className="flex flex-col gap-2 border-t border-[var(--color-border)] p-3">
+                  <div className="flex flex-col gap-2 border-t border-border p-3">
                     {loc.methods.map((m) => (
                       <div key={m.label}>
-                        <div className="mb-1 text-[10px] font-[var(--font-pixel)] text-[var(--color-text-3)]">
-                          {m.label}
-                        </div>
+                        <div className="mb-1 text-[10px] font-pixel text-text-3">{m.label}</div>
                         <div className="flex flex-wrap gap-1">
                           {m.p.map((name) => (
                             <button
                               key={name}
                               type="button"
                               onClick={() => goSearch(name)}
-                              className="min-h-11 rounded-full bg-[var(--color-card-2)] px-3 text-xs text-[var(--color-text)]"
+                              className="min-h-11 rounded-full bg-card-2 px-3 text-xs text-text"
                             >
                               {name}
                             </button>

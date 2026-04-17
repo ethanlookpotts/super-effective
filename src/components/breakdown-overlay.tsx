@@ -42,14 +42,14 @@ export function BreakdownOverlay({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="flex max-h-[85dvh] w-full max-w-[480px] flex-col gap-3 overflow-y-auto rounded-t-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] p-4 sm:rounded-[var(--radius-card)]">
+      <div className="flex max-h-[85dvh] w-full max-w-[480px] flex-col gap-3 overflow-y-auto rounded-t-card border border-border bg-card p-4 sm:rounded-card">
         <header className="flex items-start justify-between gap-2">
-          <h3 className="font-[var(--font-pixel)] text-xs text-[var(--color-text)]">{title}</h3>
+          <h3 className="font-pixel text-xs text-text">{title}</h3>
           <button
             type="button"
             aria-label="Close breakdown"
             onClick={onClose}
-            className="min-h-8 min-w-8 rounded border border-[var(--color-border)] bg-[var(--color-card-2)] px-2 font-[var(--font-pixel)] text-[10px] text-[var(--color-text-2)]"
+            className="min-h-8 min-w-8 rounded border border-border bg-card-2 px-2 font-pixel text-[10px] text-text-2"
           >
             ×
           </button>
@@ -69,7 +69,7 @@ export function BreakdownOverlay({
           <AbilitySection ability={target.data.ability} atkType={target.data.attackerType} />
         )}
         {target.data.ability && target.data.ability.kind === "noop" && (
-          <p className="text-[11px] text-[var(--color-text-3)]">
+          <p className="text-[11px] text-text-3">
             Ability <strong>{target.data.ability.name}</strong> doesn't affect{" "}
             {target.data.attackerType}.
           </p>
@@ -97,19 +97,14 @@ function MoveMeta({ data }: { data: MoveBreakdown }) {
   });
 
   return (
-    <div className="flex flex-col gap-2 rounded-[var(--radius-card)] bg-[var(--color-card-2)] p-2">
+    <div className="flex flex-col gap-2 rounded-card bg-card-2 p-2">
       <div className="flex items-center gap-2">
         <TypeBadge type={data.attackerType} />
-        <span className="font-[var(--font-pixel)] text-[10px] text-[var(--color-text-2)]">
-          {data.moveName}
-        </span>
+        <span className="font-pixel text-[10px] text-text-2">{data.moveName}</span>
       </div>
       <div className="flex flex-wrap gap-2 text-[10px]">
         {items.map((it) => (
-          <span
-            key={it.label}
-            className="rounded bg-[var(--color-card)] px-2 py-0.5 text-[var(--color-text-3)]"
-          >
+          <span key={it.label} className="rounded bg-card px-2 py-0.5 text-text-3">
             {it.label}{" "}
             <strong style={{ color: it.color ?? "var(--color-text)" }}>{it.value}</strong>
           </span>
@@ -130,20 +125,18 @@ function TypeMatchupSection({
 }) {
   return (
     <section className="flex flex-col gap-1.5">
-      <div className="font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]">
-        TYPE MATCHUP
-      </div>
+      <div className="font-pixel text-[10px] text-text-3">TYPE MATCHUP</div>
       {typeRows.map((r) => (
         <div key={r.defType} className="flex items-center gap-2 text-[11px]">
           <TypeBadge type={attackerType} size="sm" />
-          <span className="text-[var(--color-text-3)]">→</span>
+          <span className="text-text-3">→</span>
           <TypeBadge type={r.defType} size="sm" />
-          <span className="text-[var(--color-text-3)]">=</span>
+          <span className="text-text-3">=</span>
           <span className={`font-semibold ${multClassToColor(r.mult)}`}>{formatMult(r.mult)}</span>
         </div>
       ))}
       {typeRows.length > 1 && (
-        <div className="text-[10px] text-[var(--color-text-3)]">
+        <div className="text-[10px] text-text-3">
           {typeRows.map((r) => formatMult(r.mult)).join(" × ")} = {formatMult(typeProduct)}
         </div>
       )}
@@ -159,12 +152,12 @@ function AbilitySection({
   atkType: MatchupBreakdown["attackerType"];
 }) {
   return (
-    <section className="flex flex-col gap-1 rounded-[var(--radius-card)] border border-[var(--color-gold)]/40 bg-[var(--color-card-2)] p-2">
-      <div className="font-[var(--font-pixel)] text-[10px] text-[var(--color-gold)]">
+    <section className="flex flex-col gap-1 rounded-card border border-gold/40 bg-card-2 p-2">
+      <div className="font-pixel text-[10px] text-gold">
         ABILITY: {ability.name.toUpperCase()}
-        {ability.multi && <span className="ml-1 text-[var(--color-text-3)]"> (may vary)</span>}
+        {ability.multi && <span className="ml-1 text-text-3"> (may vary)</span>}
       </div>
-      <div className="text-[11px] text-[var(--color-text-2)]">
+      <div className="text-[11px] text-text-2">
         {ability.kind === "immune"
           ? `${ability.name} grants full immunity to ${atkType}.`
           : `${ability.name} × ${ability.multiplier} to ${atkType}.`}
@@ -180,11 +173,9 @@ function StabSection({ data }: { data: MoveBreakdown }) {
   const before =
     data.ability && data.ability.kind !== "noop" ? data.ability.after : data.typeProduct;
   return (
-    <section className="flex flex-col gap-1 rounded-[var(--radius-card)] border border-[var(--color-gold)]/40 bg-[var(--color-card-2)] p-2">
-      <div className="font-[var(--font-pixel)] text-[10px] text-[var(--color-gold)]">
-        STAB (SAME-TYPE ATTACK BONUS)
-      </div>
-      <div className="text-[11px] text-[var(--color-text-2)]">
+    <section className="flex flex-col gap-1 rounded-card border border-gold/40 bg-card-2 p-2">
+      <div className="font-pixel text-[10px] text-gold">STAB (SAME-TYPE ATTACK BONUS)</div>
+      <div className="text-[11px] text-text-2">
         {data.attackerName} is {data.attackerType} type — 1.5× bonus.
         <br />
         {formatMult(before)} × 1.5 ={" "}
@@ -199,16 +190,14 @@ function StabSection({ data }: { data: MoveBreakdown }) {
 function ResultBlock({ final }: { final: number }) {
   return (
     <div
-      className={`mt-1 flex items-center justify-between rounded-[var(--radius-card)] border-2 ${resultBorder(final)} bg-[var(--color-card-2)] p-3`}
+      className={`mt-1 flex items-center justify-between rounded-card border-2 ${resultBorder(final)} bg-card-2 p-3`}
     >
       <div>
-        <div className="font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]">
-          RESULT
-        </div>
-        <div className="text-[11px] text-[var(--color-text)]">{multLabel(final)}</div>
+        <div className="font-pixel text-[10px] text-text-3">RESULT</div>
+        <div className="text-[11px] text-text">{multLabel(final)}</div>
       </div>
       <div
-        className={`font-[var(--font-pixel)] text-xl ${multClassToColor(final)}`}
+        className={`font-pixel text-xl ${multClassToColor(final)}`}
         aria-label={`Final multiplier ${formatMult(final)}`}
       >
         {formatMult(final)}
@@ -220,25 +209,25 @@ function ResultBlock({ final }: { final: number }) {
 function multClassToColor(m: number): string {
   switch (multClass(m)) {
     case "zero":
-      return "text-[var(--color-text-3)]";
+      return "text-text-3";
     case "good":
-      return "text-[var(--color-green)]";
+      return "text-green";
     case "bad":
-      return "text-[var(--color-red)]";
+      return "text-red";
     default:
-      return "text-[var(--color-text-2)]";
+      return "text-text-2";
   }
 }
 
 function resultBorder(m: number): string {
   switch (multClass(m)) {
     case "zero":
-      return "border-[var(--color-text-3)]";
+      return "border-text-3";
     case "good":
-      return "border-[var(--color-green)]";
+      return "border-green";
     case "bad":
-      return "border-[var(--color-red)]";
+      return "border-red";
     default:
-      return "border-[var(--color-border)]";
+      return "border-border";
   }
 }

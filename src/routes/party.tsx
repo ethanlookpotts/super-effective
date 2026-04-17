@@ -35,8 +35,8 @@ export function PartyRoute() {
   if (!active) {
     return (
       <section>
-        <h2 className="font-[var(--font-pixel)] text-sm text-[var(--color-text)]">PARTY</h2>
-        <p className="mt-2 text-sm text-[var(--color-text-2)]">
+        <h2 className="font-pixel text-sm text-text">PARTY</h2>
+        <p className="mt-2 text-sm text-text-2">
           No active playthrough yet. Create one from the playthrough menu.
         </p>
       </section>
@@ -54,9 +54,9 @@ export function PartyRoute() {
   return (
     <section aria-label="Party page" className="flex flex-col gap-3">
       <header className="flex items-baseline justify-between">
-        <h2 className="font-[var(--font-pixel)] text-sm text-[var(--color-text)]">PARTY</h2>
+        <h2 className="font-pixel text-sm text-text">PARTY</h2>
         {count > 0 && (
-          <span className="font-[var(--font-pixel)] text-[9px] text-[var(--color-text-3)]">
+          <span className="font-pixel text-[9px] text-text-3">
             {count} / {PARTY_MAX} IN PARTY
           </span>
         )}

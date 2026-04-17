@@ -12,8 +12,8 @@ const STAT_LABELS: Record<keyof PartyStats, string> = {
 };
 
 const ROW_INPUT =
-  "min-h-11 w-full rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] px-3 text-sm text-[var(--color-text)] outline-none";
-const ROW_LABEL = "w-16 shrink-0 font-[var(--font-pixel)] text-[9px] text-[var(--color-text-3)]";
+  "min-h-11 w-full rounded-card border border-border bg-card px-3 text-sm text-text outline-none";
+const ROW_LABEL = "w-16 shrink-0 font-pixel text-[9px] text-text-3";
 
 export function AdvancedInfoSection({
   draft,
@@ -86,7 +86,7 @@ export function AdvancedInfoSection({
           onClick={() => onPatch({ shiny: !draft.shiny })}
           aria-pressed={draft.shiny}
           aria-label="Shiny toggle"
-          className="min-h-11 rounded-[var(--radius-card)] border border-[var(--color-border)] px-3 font-[var(--font-pixel)] text-[10px]"
+          className="min-h-11 rounded-card border border-border px-3 font-pixel text-[10px]"
           style={{
             backgroundColor: draft.shiny ? "var(--color-gold)" : "transparent",
             color: draft.shiny ? "black" : "var(--color-text-3)",
@@ -155,9 +155,7 @@ export function AdvancedInfoSection({
         <div className="grid grid-cols-6 gap-1">
           {STAT_KEYS.map((k) => (
             <div key={k} className="flex flex-col items-center gap-1">
-              <span className="font-[var(--font-pixel)] text-[8px] text-[var(--color-text-3)]">
-                {STAT_LABELS[k]}
-              </span>
+              <span className="font-pixel text-[8px] text-text-3">{STAT_LABELS[k]}</span>
               <input
                 type="number"
                 min={1}

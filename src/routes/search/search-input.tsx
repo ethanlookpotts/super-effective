@@ -43,7 +43,7 @@ export function SearchInput({
 
   return (
     <div ref={boxRef} className="relative">
-      <div className="flex items-center gap-2 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] px-3">
+      <div className="flex items-center gap-2 rounded-card border border-border bg-card px-3">
         <input
           id="s-in"
           type="text"
@@ -52,7 +52,7 @@ export function SearchInput({
           value={value}
           onChange={(e) => onChangeValue(e.target.value)}
           onFocus={() => setFocused(true)}
-          className="min-h-11 flex-1 bg-transparent text-sm text-[var(--color-text)] outline-none"
+          className="min-h-11 flex-1 bg-transparent text-sm text-text outline-none"
         />
         {value && (
           <button
@@ -62,7 +62,7 @@ export function SearchInput({
               onClear();
               setFocused(false);
             }}
-            className="min-h-11 px-2 text-[var(--color-text-3)]"
+            className="min-h-11 px-2 text-text-3"
           >
             ×
           </button>
@@ -73,13 +73,11 @@ export function SearchInput({
           role="listbox"
           aria-label="Search results dropdown"
           tabIndex={-1}
-          className="absolute left-0 right-0 top-[calc(100%+4px)] z-30 max-h-[60vh] overflow-y-auto rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] shadow-lg"
+          className="absolute left-0 right-0 top-[calc(100%+4px)] z-30 max-h-[60vh] overflow-y-auto rounded-card border border-border bg-card shadow-lg"
         >
           {pokes.length > 0 && (
             <>
-              <div className="px-3 pb-1 pt-2 font-[var(--font-pixel)] text-[9px] text-[var(--color-text-3)]">
-                POKÉMON
-              </div>
+              <div className="px-3 pb-1 pt-2 font-pixel text-[9px] text-text-3">POKÉMON</div>
               {pokes.map((p) => (
                 <button
                   key={p.n}
@@ -91,12 +89,12 @@ export function SearchInput({
                     setFocused(false);
                     onPick({ kind: "pokemon", dex: p.n });
                   }}
-                  className="flex min-h-11 w-full items-center gap-2 px-3 py-1.5 text-left hover:bg-[var(--color-card-2)]"
+                  className="flex min-h-11 w-full items-center gap-2 px-3 py-1.5 text-left hover:bg-card-2"
                 >
-                  <span className="w-12 font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]">
+                  <span className="w-12 font-pixel text-[10px] text-text-3">
                     #{String(p.n).padStart(3, "0")}
                   </span>
-                  <span className="flex-1 text-sm text-[var(--color-text)]">{p.name}</span>
+                  <span className="flex-1 text-sm text-text">{p.name}</span>
                   <span className="flex gap-1">
                     {p.types.map((t) => (
                       <TypeBadge key={t} type={t} size="sm" />
@@ -108,9 +106,7 @@ export function SearchInput({
           )}
           {moves.length > 0 && (
             <>
-              <div className="px-3 pb-1 pt-2 font-[var(--font-pixel)] text-[9px] text-[var(--color-text-3)]">
-                MOVES
-              </div>
+              <div className="px-3 pb-1 pt-2 font-pixel text-[9px] text-text-3">MOVES</div>
               {moves.map((m) => {
                 const catLabel = m.cat === "phys" ? "PHY" : m.cat === "spec" ? "SPE" : "STA";
                 return (
@@ -124,12 +120,12 @@ export function SearchInput({
                       setFocused(false);
                       onPick({ kind: "move", name: m.name });
                     }}
-                    className="flex min-h-11 w-full items-center gap-2 px-3 py-1.5 text-left hover:bg-[var(--color-card-2)]"
+                    className="flex min-h-11 w-full items-center gap-2 px-3 py-1.5 text-left hover:bg-card-2"
                   >
-                    <span className="flex-1 text-sm text-[var(--color-text)]">{m.name}</span>
+                    <span className="flex-1 text-sm text-text">{m.name}</span>
                     <span className="flex items-center gap-1">
                       <TypeBadge type={m.type} size="sm" />
-                      <span className="rounded bg-[var(--color-card-2)] px-1.5 py-0.5 font-[var(--font-pixel)] text-[9px] text-[var(--color-text-2)]">
+                      <span className="rounded bg-card-2 px-1.5 py-0.5 font-pixel text-[9px] text-text-2">
                         {catLabel}
                       </span>
                     </span>

@@ -39,15 +39,13 @@ export function PokeDetail({
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] p-3">
+      <div className="rounded-card border border-border bg-card p-3">
         <div className="flex items-start justify-between gap-3">
           <div className="flex flex-col gap-1">
-            <span className="font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]">
+            <span className="font-pixel text-[10px] text-text-3">
               #{String(poke.n).padStart(3, "0")}
             </span>
-            <h2 className="font-[var(--font-pixel)] text-base text-[var(--color-text)]">
-              {poke.name}
-            </h2>
+            <h2 className="font-pixel text-base text-text">{poke.name}</h2>
             <div className="mt-1 flex gap-1">
               {poke.types.map((t) => (
                 <TypeBadge key={t} type={t} />
@@ -64,16 +62,14 @@ export function PokeDetail({
           />
         </div>
 
-        <div className="mt-3 border-t border-[var(--color-border)] pt-3">
-          <div className="font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]">
-            HOW TO OBTAIN
-          </div>
+        <div className="mt-3 border-t border-border pt-3">
+          <div className="font-pixel text-[10px] text-text-3">HOW TO OBTAIN</div>
           <ul className="mt-1 flex flex-col gap-1">
             {obtain.map((o, i) => (
               <li
                 // biome-ignore lint/suspicious/noArrayIndexKey: obtain strings are free-form and may repeat
                 key={`${o}-${i}`}
-                className="text-xs text-[var(--color-text-2)]"
+                className="text-xs text-text-2"
               >
                 {o}
               </li>
@@ -81,14 +77,10 @@ export function PokeDetail({
           </ul>
           {abilityMod && (
             <>
-              <div className="mt-2 font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]">
-                ABILITY
-              </div>
-              <div className="text-xs font-semibold text-[var(--color-gold)]">
+              <div className="mt-2 font-pixel text-[10px] text-text-3">ABILITY</div>
+              <div className="text-xs font-semibold text-gold">
                 {abilityMod.name}
-                {abilityMod.multi && (
-                  <span className="ml-1 text-[var(--color-text-3)]"> (may vary)</span>
-                )}
+                {abilityMod.multi && <span className="ml-1 text-text-3"> (may vary)</span>}
               </div>
             </>
           )}
@@ -107,7 +99,7 @@ export function PokeDetail({
           <button
             type="button"
             aria-label={`${poke.name} in party`}
-            className="min-h-11 rounded-[var(--radius-card)] border border-[var(--color-green)] bg-[var(--color-card-2)] px-3 py-2 font-[var(--font-pixel)] text-[10px] text-[var(--color-green)]"
+            className="min-h-11 rounded-card border border-green bg-card-2 px-3 py-2 font-pixel text-[10px] text-green"
             disabled
           >
             ✓ IN PARTY
@@ -117,7 +109,7 @@ export function PokeDetail({
             type="button"
             aria-label={`Add ${poke.name} to party`}
             onClick={() => onAddToParty(poke.n)}
-            className="min-h-11 rounded-[var(--radius-card)] border border-[var(--color-gold)] bg-[var(--color-gold)]/10 px-3 py-2 font-[var(--font-pixel)] text-[10px] text-[var(--color-gold)]"
+            className="min-h-11 rounded-card border border-gold bg-gold/10 px-3 py-2 font-pixel text-[10px] text-gold"
           >
             ➕ ADD TO PARTY
           </button>
@@ -126,7 +118,7 @@ export function PokeDetail({
           <button
             type="button"
             aria-label={`${poke.name} in PC box`}
-            className="min-h-11 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card-2)] px-3 py-2 font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]"
+            className="min-h-11 rounded-card border border-border bg-card-2 px-3 py-2 font-pixel text-[10px] text-text-3"
             disabled
           >
             📦 IN PC BOX
@@ -136,7 +128,7 @@ export function PokeDetail({
             type="button"
             aria-label={`Send ${poke.name} to PC`}
             onClick={() => onAddToPC(poke.n)}
-            className="min-h-11 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card-2)] px-3 py-2 font-[var(--font-pixel)] text-[10px] text-[var(--color-text)]"
+            className="min-h-11 rounded-card border border-border bg-card-2 px-3 py-2 font-pixel text-[10px] text-text"
           >
             📦 SEND TO PC
           </button>

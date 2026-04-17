@@ -24,7 +24,7 @@ export function MoveDetail({
 
   if (!mv) {
     return (
-      <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] p-4 text-center text-sm text-[var(--color-text-2)]">
+      <div className="rounded-card border border-border bg-card p-4 text-center text-sm text-text-2">
         Move not found.
       </div>
     );
@@ -45,18 +45,14 @@ export function MoveDetail({
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] p-3">
+      <div className="rounded-card border border-border bg-card p-3">
         <div className="flex items-start justify-between gap-2">
-          <h2 className="font-[var(--font-pixel)] text-sm text-[var(--color-text)]">{mv.name}</h2>
+          <h2 className="font-pixel text-sm text-text">{mv.name}</h2>
           <div className="flex items-center gap-1">
             <TypeBadge type={mv.type} />
             <span
-              className={`rounded px-1.5 py-1 font-[var(--font-pixel)] text-[10px] text-white ${
-                mv.cat === "phys"
-                  ? "bg-[var(--color-red)]"
-                  : mv.cat === "spec"
-                    ? "bg-[var(--color-blue)]"
-                    : "bg-[var(--color-text-3)]"
+              className={`rounded px-1.5 py-1 font-pixel text-[10px] text-white ${
+                mv.cat === "phys" ? "bg-red" : mv.cat === "spec" ? "bg-blue" : "bg-text-3"
               }`}
             >
               {catLabel}
@@ -68,12 +64,10 @@ export function MoveDetail({
             {metaItems.map((item) => (
               <div
                 key={item.label}
-                className="flex items-center gap-1.5 rounded-[var(--radius-card)] bg-[var(--color-card-2)] px-2 py-1 text-[11px]"
+                className="flex items-center gap-1.5 rounded-card bg-card-2 px-2 py-1 text-[11px]"
               >
-                <span className="font-[var(--font-pixel)] text-[9px] text-[var(--color-text-3)]">
-                  {item.label}
-                </span>
-                <span className="text-[var(--color-text)]">{item.value}</span>
+                <span className="font-pixel text-[9px] text-text-3">{item.label}</span>
+                <span className="text-text">{item.value}</span>
               </div>
             ))}
           </div>
@@ -82,25 +76,23 @@ export function MoveDetail({
 
       {(tm || tutor) && (
         <section className="flex flex-col gap-2">
-          <h3 className="font-[var(--font-pixel)] text-xs text-[var(--color-text)]">
-            📀 TM / HM / TUTOR
-          </h3>
-          <div className="flex flex-col gap-1.5 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] p-3">
+          <h3 className="font-pixel text-xs text-text">📀 TM / HM / TUTOR</h3>
+          <div className="flex flex-col gap-1.5 rounded-card border border-border bg-card p-3">
             {tm && (
               <div className="flex items-center gap-2 text-xs">
-                <span className="rounded bg-[var(--color-gold)] px-1.5 py-0.5 font-[var(--font-pixel)] text-[10px] text-white">
+                <span className="rounded bg-gold px-1.5 py-0.5 font-pixel text-[10px] text-white">
                   {tm.tmType === "hm" ? "HM" : "TM"}
                   {String(tm.num).padStart(2, "0")}
                 </span>
-                <span className="text-[var(--color-text-2)]">{tm.loc}</span>
+                <span className="text-text-2">{tm.loc}</span>
               </div>
             )}
             {tutor && (
               <div className="flex items-center gap-2 text-xs">
-                <span className="rounded bg-[var(--color-blue)] px-1.5 py-0.5 font-[var(--font-pixel)] text-[10px] text-white">
+                <span className="rounded bg-blue px-1.5 py-0.5 font-pixel text-[10px] text-white">
                   TUTOR
                 </span>
-                <span className="text-[var(--color-text-2)]">{tutor.loc}</span>
+                <span className="text-text-2">{tutor.loc}</span>
               </div>
             )}
           </div>
@@ -108,12 +100,10 @@ export function MoveDetail({
       )}
 
       <section className="flex flex-col gap-2">
-        <h3 className="font-[var(--font-pixel)] text-xs text-[var(--color-text)]">
-          📚 WHO CAN LEARN ({learners.length})
-        </h3>
+        <h3 className="font-pixel text-xs text-text">📚 WHO CAN LEARN ({learners.length})</h3>
         {learners.length === 0 ? (
-          <div className="rounded-[var(--radius-card)] border border-dashed border-[var(--color-border)] bg-[var(--color-card-2)] p-4 text-center">
-            <p className="font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]">
+          <div className="rounded-card border border-dashed border-border bg-card-2 p-4 text-center">
+            <p className="font-pixel text-[10px] text-text-3">
               NO POKÉMON LEARN THIS MOVE
               <br />
               IN FRLG
@@ -127,11 +117,11 @@ export function MoveDetail({
                 type="button"
                 aria-label={`View ${p.name}`}
                 onClick={() => onPickPoke(p.n)}
-                className="flex min-h-11 w-full items-center gap-2 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] p-2 text-left"
+                className="flex min-h-11 w-full items-center gap-2 rounded-card border border-border bg-card p-2 text-left"
               >
                 <span className="flex-1">
-                  <span className="block text-sm text-[var(--color-text)]">{p.name}</span>
-                  <span className="block font-[var(--font-pixel)] text-[9px] text-[var(--color-text-3)]">
+                  <span className="block text-sm text-text">{p.name}</span>
+                  <span className="block font-pixel text-[9px] text-text-3">
                     #{String(p.n).padStart(3, "0")}
                   </span>
                 </span>
