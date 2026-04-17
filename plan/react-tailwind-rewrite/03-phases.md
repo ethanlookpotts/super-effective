@@ -62,12 +62,12 @@ The biggest route (959 lines of vanilla). Split into subcomponents:
 
 **Schema extension**: added optional `nature`, `pokeball`, `otName`, `otId`, `trainerMemo`, `stats` to `PartyMember` so the edit modal round-trips all vanilla fields.
 
-## Phase 6 — Breakdown overlay  ⏳ TODO
+## Phase 6 — Breakdown overlay  ✅ DONE
 
-- [ ] `lib/damage.ts` — pure helpers: `applyAbilityMod`, `matchupBreakdown(atkType, defender)`, `moveBreakdown(moveName, moveType, defender, attackerTypes)`
-- [ ] `components/breakdown-overlay.tsx` — dialog rendering the breakdown structure
-- [ ] Wire from Search detail's type-matchup rows
-- [ ] Wire from Party matchup's move chips
+- [x] `lib/damage.ts` — pure helpers: `applyAbilityMod`, `matchupBreakdown(atkType, defender)`, `moveBreakdown(moveName, moveType, defender, attacker)` + 20 unit tests
+- [x] `components/breakdown-overlay.tsx` — accessible dialog rendering type-matchup rows, ability step, STAB, and result block
+- [x] Wire from Search detail's type-matchup rows (opens matchup breakdown)
+- [x] Wire from Party matchup's move chips (opens move breakdown with STAB)
 
 ## Phase 7 — OCR scan UI  ⏳ TODO
 

@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { BreakdownOverlay, type BreakdownTarget } from "~/components/breakdown-overlay";
 import { TypeBadge } from "~/components/type-badge";
 import { POKEMON, getObtain } from "~/data/pokemon";
 import { TYPES } from "~/data/types";
 import { useUpdateActivePlaythrough } from "~/hooks/use-playthroughs";
 import { useActivePlaythrough } from "~/hooks/use-store";
+import { matchupBreakdown } from "~/lib/damage";
 import type { PartyMember, RecentPokemon, TypeName } from "~/schemas";
 import { MoveDetail } from "./search/move-detail";
 import { PokeDetail, pokeByDex } from "./search/poke-detail";
@@ -165,6 +167,18 @@ export function SearchRoute() {
     [updatePt],
   );
 
+  const [breakdown, setBreakdown] = useState<BreakdownTarget | null>(null);
+  const openTypeBreakdown = useCallback(
+    (atkType: string) => {
+      if (!activePoke || !isTypeName(atkType)) return;
+      setBreakdown({
+        kind: "matchup",
+        data: matchupBreakdown(atkType as TypeName, activePoke),
+      });
+    },
+    [activePoke],
+  );
+
   return (
     <section aria-label="Search page" className="flex min-h-full flex-col gap-3">
       <SearchInput
@@ -196,11 +210,14 @@ export function SearchRoute() {
             onPick={goPoke}
             onAddToParty={handleAddToParty}
             onEvolve={handleEvolve}
+            onBreakdown={openTypeBreakdown}
           />
         ) : (
           <DefaultView recents={recents} activeType={activeType} gameId={gameId} onPick={goPoke} />
         )}
       </div>
+
+      <BreakdownOverlay target={breakdown} onClose={() => setBreakdown(null)} />
     </section>
   );
 }

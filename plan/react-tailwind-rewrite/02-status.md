@@ -29,6 +29,7 @@ As of the last commit on `refactor/react-tailwind`. Update this doc in the same 
 - [x] `lib/sprites.ts` — sprite / art URLs
 - [x] `lib/colors.ts` — `tc(type)` helper
 - [x] `lib/party-calc.ts` — pure scoring engine (49 unit tests)
+- [x] `lib/damage.ts` — `applyAbilityMod` / `matchupBreakdown` / `moveBreakdown` + formatters (20 unit tests)
 
 ### Repositories + hooks
 - [x] `LocalStorageStoreRepository` with legacy `se_v1` migrations
@@ -56,11 +57,16 @@ As of the last commit on `refactor/react-tailwind`. Update this doc in the same 
 - [x] `components/type-badge.tsx`
 
 ### UI — routes
-- [x] `routes/search.tsx` + 8 subcomponents — Pokémon + move detail, type filter, matchup, evolution chain, stat bars
+- [x] `routes/search.tsx` + 8 subcomponents — Pokémon + move detail, type filter, matchup, evolution chain, stat bars, breakdown overlay wiring
 - [x] `routes/gyms.tsx` — all 13 bosses + 6 rivals, starter toggle
 - [x] `routes/where-am-i.tsx` — 34 locations with filter
 - [x] `routes/tms.tsx` — TMs + HMs + Tutors + HM Carrier ranking
 - [x] `routes/settings.tsx` — theme + Claude key + gist sync + conflict modal
+
+### Breakdown overlay
+- [x] `components/breakdown-overlay.tsx` — accessible dialog (type-matchup rows, ability step, STAB, result block)
+- [x] Type-matchup rows in Search detail open a matchup breakdown
+- [x] Move chips in Party matchup list open a move breakdown (STAB-aware)
 
 ## Outstanding
 
@@ -78,9 +84,6 @@ See [03-phases.md](./03-phases.md) Phase 5.
 - [x] `routes/party/suggestion-panel.tsx` — top-5 team suggestions from `calc.computeSuggestions` (strip + dialog + apply writes active playthrough)
 - [x] `routes/party/tm-suggestion-panel.tsx` — top-6 `rankTeachTargets` rows (owned TMs/HMs/tutors, replaced→TM, cov/score delta, deep-link URL primed for edit modal)
 - [x] Teach modal deep-link (`?teach=<dex>:<move>`) — TM suggestion rows navigate, PartyRoute consumes param, EditModal pre-queues the move
-
-### Breakdown overlay
-See [03-phases.md](./03-phases.md) Phase 6. Type-matchup rows in Search detail link to a breakdown component that explains the final multiplier (STAB × type product × ability mod). Pure component — depends only on `data/types`, `data/abilities`, `lib/damage`.
 
 ### OCR UI wiring
 See [03-phases.md](./03-phases.md) Phase 7. Vision client exists; routes don't yet invoke it. Needs:
@@ -101,12 +104,12 @@ See [03-phases.md](./03-phases.md) Phase 9. Add `scripts/screenshot-readme.ts` t
 ## File inventory
 
 Current repo (on branch):
-- `src/` — ~45 files
-- `test/` — 2 files (53 tests)
+- `src/` — ~47 files
+- `test/` — 3 files (73 tests: 4 repositories + 49 party-calc + 20 damage)
 - `plan/` — this directory
 
 Bundle (last measured):
 - `index.html` — 0.52 KB
-- CSS — 18.9 KB / 4.6 KB gzip
-- JS — 474 KB / 127 KB gzip
+- CSS — 22.2 KB / 5.1 KB gzip
+- JS — 590 KB / 155 KB gzip
   - Above the 500 KB warning threshold. Code-splitting on routes is a Phase 10 follow-up (not blocking parity).

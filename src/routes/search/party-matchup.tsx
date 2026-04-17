@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { BreakdownOverlay, type BreakdownTarget } from "~/components/breakdown-overlay";
 import { TypeBadge } from "~/components/type-badge";
-import { getAbilityMod } from "~/data/abilities";
 import { MOVE_DATA, type MoveStats } from "~/data/moves";
+import { POKEMON } from "~/data/pokemon";
 import {
   STATS,
   computeAttackerStats,
@@ -11,16 +12,8 @@ import {
   estimateEnemyStat,
 } from "~/data/stats";
 import { PHYS, dmult } from "~/data/types";
+import { applyAbilityMod, moveBreakdown } from "~/lib/damage";
 import type { PartyMember, TypeName } from "~/schemas";
-
-function applyAbilityMod(m: number, atkType: TypeName, defN: number): number {
-  const mod = getAbilityMod(String(defN));
-  if (!mod) return m;
-  if (mod.immune?.includes(atkType)) return 0;
-  const resist = mod.resist?.[atkType];
-  if (resist !== undefined) return m * resist;
-  return m;
-}
 
 function effClass(eff: string): string {
   const e = eff.toLowerCase();
@@ -146,6 +139,8 @@ export function PartyMatchupList({
     return list;
   }, [enemyDex, enemyTypes, party]);
 
+  const [breakdown, setBreakdown] = useState<BreakdownTarget | null>(null);
+
   if (party.length === 0) {
     return (
       <section className="flex flex-col gap-2">
@@ -163,6 +158,19 @@ export function PartyMatchupList({
     );
   }
 
+  function openMoveBreakdown(pm: PartyMember, moveName: string, moveType: TypeName) {
+    const defender = POKEMON.find((p) => p.n === enemyDex);
+    if (!defender) return;
+    setBreakdown({
+      kind: "move",
+      data: moveBreakdown(moveName, moveType, defender, {
+        n: pm.n,
+        name: pm.name,
+        types: pm.types,
+      }),
+    });
+  }
+
   return (
     <section className="flex flex-col gap-2">
       <h3 className="font-[var(--font-pixel)] text-xs text-[var(--color-text)]">
@@ -170,9 +178,16 @@ export function PartyMatchupList({
       </h3>
       <div className="flex flex-col gap-2">
         {scored.map((s, i) => (
-          <ScoredCard key={s.pm.n} s={s} isTop={i === 0} enemyDex={enemyDex} />
+          <ScoredCard
+            key={s.pm.n}
+            s={s}
+            isTop={i === 0}
+            enemyDex={enemyDex}
+            onMoveClick={openMoveBreakdown}
+          />
         ))}
       </div>
+      <BreakdownOverlay target={breakdown} onClose={() => setBreakdown(null)} />
     </section>
   );
 }
@@ -189,10 +204,12 @@ function ScoredCard({
   s,
   isTop,
   enemyDex,
+  onMoveClick,
 }: {
   s: Scored;
   isTop: boolean;
   enemyDex: number;
+  onMoveClick: (pm: PartyMember, moveName: string, moveType: TypeName) => void;
 }) {
   const rating = ratingBadge(s.bestOff);
   const pm = s.pm;
@@ -350,9 +367,12 @@ function ScoredCard({
               );
 
             return (
-              <div
+              <button
                 key={mv.name}
-                className="flex items-start gap-2 rounded-[var(--radius-card)] bg-[var(--color-card-2)] p-2 text-xs"
+                type="button"
+                aria-label={`${mv.name} breakdown`}
+                onClick={() => onMoveClick(pm, mv.name, mv.type)}
+                className="flex w-full items-start gap-2 rounded-[var(--radius-card)] bg-[var(--color-card-2)] p-2 text-left text-xs hover:bg-[var(--color-card)]"
               >
                 <span className="mt-0.5">
                   <TypeBadge type={mv.type} size="sm" />
@@ -366,7 +386,7 @@ function ScoredCard({
                   )}
                 </span>
                 <span className="flex shrink-0 flex-wrap justify-end gap-0.5">{tags}</span>
-              </div>
+              </button>
             );
           })}
         </div>
