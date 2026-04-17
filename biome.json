@@ -43,6 +43,12 @@
       "suspicious": {
         "noExplicitAny": "error",
         "noConsole": { "level": "warn", "options": { "allow": ["warn", "error"] } }
+      },
+      "a11y": {
+        "useSemanticElements": "off",
+        "useKeyWithClickEvents": "off",
+        "useFocusableInteractive": "warn",
+        "noRedundantRoles": "warn"
       }
     }
   },

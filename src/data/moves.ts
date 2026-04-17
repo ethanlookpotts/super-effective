@@ -17,8 +17,11 @@ export interface Move {
 export type MoveStats = readonly [power: number, accuracy: number, effect: string];
 
 export interface TmHmEntry {
-  num: number;
+  /** Full identifier, e.g. "TM01", "HM06". Keys `Playthrough.tmInventory`. */
+  num: string;
   move: string;
+  type: TypeName;
+  cat: MoveCategory;
   loc: string;
   tmType: "tm" | "hm";
   buyable: boolean;
@@ -688,10 +691,13 @@ const RAW_TM_HM: readonly RawTmHm[] = [
 
 export const TM_HM: readonly TmHmEntry[] = RAW_TM_HM.map((t) => {
   const tmType: "tm" | "hm" = t.num.startsWith("HM") ? "hm" : "tm";
-  const buyable = tmType === "tm" && /Dept. Store|Game Corner/.test(t.loc);
+  const buyable = tmType === "tm" && /Dept\. Store|Game Corner/.test(t.loc);
+  const moveDef = ALL_MOVES.find((m) => m.name === t.move);
   return {
-    num: Number(t.num.slice(2)),
+    num: t.num,
     move: t.move,
+    type: moveDef?.type ?? "Normal",
+    cat: moveDef?.cat ?? "stat",
     loc: t.loc,
     tmType,
     buyable,
