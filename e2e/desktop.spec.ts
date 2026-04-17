@@ -53,7 +53,7 @@ test("party grid shows 3 columns at desktop width", async ({ page }) => {
 test("edit modal is centered, not a bottom sheet", async ({ page }) => {
   await page.getByRole("link", { name: "PARTY" }).click();
   // Click an empty party slot to open edit modal
-  await page.getByRole("button", { name: "Add Pokémon to party" }).first().click();
+  await page.getByRole("button", { name: "Add Pokémon" }).first().click();
   const modal = page.getByRole("dialog", { name: /ADD POKÉMON|EDIT POKÉMON/ });
   await expect(modal).toBeVisible();
   const box = await modal.boundingBox();
