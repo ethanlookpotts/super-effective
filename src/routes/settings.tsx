@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { ConflictModal } from "~/features/sync/conflict-modal";
 import { useSyncContext } from "~/features/sync/sync-context";
 import { useSaveSettings, useSettings } from "~/hooks/use-settings";
 import { useStoreRepository } from "~/repositories";
@@ -44,8 +43,6 @@ export function SettingsRoute() {
       />
 
       <GitHubSyncSection sync={sync} settings={settings} onPatch={patch} />
-
-      <ConflictModal conflict={sync.conflict} onResolve={sync.resolveConflict} />
     </section>
   );
 }

@@ -93,8 +93,8 @@ See [03-phases.md](./03-phases.md) Phase 5.
 See [03-phases.md](./03-phases.md) Phase 8.
 - [x] `@playwright/test` installed (pinned to `^1.56.0`), `e2e/` unignored in Biome
 - [x] `e2e/fixtures.ts` — UUID seed id, shared `seedPlaythrough({ party, pc, tmInventory })` helper that writes directly to `se_v1`
-- [x] Every spec walked against `npm run preview`: 90 passing, 8 parked as `test.fixme` — 3 for missing-in-React "Send to PC from search" UX, 4 for the sync conflict flow (needs a deterministic `useSync` test hook), 1 for the vanilla 3-column desktop party grid
-- [x] Accessible-label touch-ups on React components to support role/label selectors: `aria-label="Current game"` on the masthead; `aria-label="Party page" / "Gyms page" / "TMs and HMs page" / "Where Am I page"` on route sections; `aria-label="Rival starter"` on the Gyms starter region; `aria-pressed` on starter buttons; `aria-label="Computed stats"` on the edit-modal summary; HM toggle label clarified to `Need HM01` / `Have HM01`
+- [x] Every spec walks against `npm run preview`: **98 passing, 0 parked**. The 8 previously-parked `test.fixme` cases were resolved in Phase 10 by adding the missing features / moving the conflict modal to the Shell (see Phase 10 entries below)
+- [x] Accessible-label touch-ups on React components to support role/label selectors: `aria-label="Current game"` on the masthead; `aria-label="Party page" / "Gyms page" / "TMs and HMs page" / "Where Am I page"` on route sections; `aria-label="Rival starter"` on the Gyms starter region; `aria-pressed` on starter buttons; `aria-label="Computed stats"` on the edit-modal summary; HM toggle label clarified to `Need HM01` / `Have HM01`; `aria-label="Party grid"` on the party slot container
 - [x] `.github/workflows/ci.yml` — new `e2e` job runs `npx playwright install --with-deps chromium`, builds, and invokes `npx playwright test`; uploads `playwright-report/` + `test-results/` on failure
 
 ### README screenshots ✅ DONE

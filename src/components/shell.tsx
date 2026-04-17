@@ -1,6 +1,7 @@
 import { type ReactNode, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { gameName } from "~/data/games";
+import { ConflictModal } from "~/features/sync/conflict-modal";
 import { useSyncContext } from "~/features/sync/sync-context";
 import { useActivePlaythrough } from "~/hooks/use-store";
 import { PlaythroughMenu } from "./playthrough-menu";
@@ -77,6 +78,7 @@ export function Shell({ children }: { children: ReactNode }) {
       </nav>
       <main className="flex-1 p-4">{children}</main>
       <PlaythroughMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
+      <ConflictModal conflict={sync.conflict} onResolve={sync.resolveConflict} />
     </div>
   );
 }
