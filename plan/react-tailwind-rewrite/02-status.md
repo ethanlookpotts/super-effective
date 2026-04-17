@@ -89,12 +89,13 @@ See [03-phases.md](./03-phases.md) Phase 5.
 - [x] `routes/party/tm-suggestion-panel.tsx` — top-6 `rankTeachTargets` rows (owned TMs/HMs/tutors, replaced→TM, cov/score delta, deep-link URL primed for edit modal)
 - [x] Teach modal deep-link (`?teach=<dex>:<move>`) — TM suggestion rows navigate, PartyRoute consumes param, EditModal pre-queues the move
 
-### E2E tests
-See [03-phases.md](./03-phases.md) Phase 8. Progress so far:
-- [x] `@playwright/test` installed as a devDependency
-- [x] `e2e/` no longer in Biome's ignore list — the 13 legacy specs format / lint-clean (vanilla-global seed helpers retyped with a `LegacyWindow` interface + `TODO(phase-8)` markers; they will be rewritten to seed `se_v1` directly when each spec is walked)
-- [ ] Walk each spec against the running React app (`npm run preview`), update selectors where the React DOM differs, rewrite seed helpers
-- [ ] Re-enable the Playwright job in CI (needs `npx playwright install chromium` + a webServer step)
+### E2E tests ✅ DONE
+See [03-phases.md](./03-phases.md) Phase 8.
+- [x] `@playwright/test` installed (pinned to `^1.56.0`), `e2e/` unignored in Biome
+- [x] `e2e/fixtures.ts` — UUID seed id, shared `seedPlaythrough({ party, pc, tmInventory })` helper that writes directly to `se_v1`
+- [x] Every spec walked against `npm run preview`: 90 passing, 8 parked as `test.fixme` — 3 for missing-in-React "Send to PC from search" UX, 4 for the sync conflict flow (needs a deterministic `useSync` test hook), 1 for the vanilla 3-column desktop party grid
+- [x] Accessible-label touch-ups on React components to support role/label selectors: `aria-label="Current game"` on the masthead; `aria-label="Party page" / "Gyms page" / "TMs and HMs page" / "Where Am I page"` on route sections; `aria-label="Rival starter"` on the Gyms starter region; `aria-pressed` on starter buttons; `aria-label="Computed stats"` on the edit-modal summary; HM toggle label clarified to `Need HM01` / `Have HM01`
+- [x] `.github/workflows/ci.yml` — new `e2e` job runs `npx playwright install --with-deps chromium`, builds, and invokes `npx playwright test`; uploads `playwright-report/` + `test-results/` on failure
 
 ### README screenshots
 See [03-phases.md](./03-phases.md) Phase 9. Add `scripts/screenshot-readme.ts` to regenerate the 4 tracked PNGs via Playwright against Vite preview.
