@@ -106,7 +106,7 @@ See [03-phases.md](./03-phases.md) Phase 9.
 
 Current repo (on branch):
 - `src/` — ~50 files (+scan button/result-box/game-screen accumulator)
-- `test/` — 3 files (73 tests: 4 repositories + 49 party-calc + 20 damage)
+- `test/` — 4 files (77 tests: 4 repositories + 49 party-calc + 20 damage + 4 local-storage migration)
 - `plan/` — this directory
 
 Bundle (last measured, after route-level + learnsets code-splitting):

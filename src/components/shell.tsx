@@ -51,7 +51,7 @@ export function Shell({ children }: { children: ReactNode }) {
           <button
             type="button"
             onClick={() => setMenuOpen(true)}
-            aria-label="Switch playthrough"
+            aria-label={`${active?.name ?? "＋ NEW"} — switch playthrough`}
             className="min-h-11 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card-2)] px-3 text-xs text-[var(--color-text)]"
           >
             {active?.name ?? "＋ NEW"}
