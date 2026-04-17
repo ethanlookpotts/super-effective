@@ -2,8 +2,7 @@
 import { expect, test } from "./fixtures";
 
 async function openTmsPage(page: import("@playwright/test").Page) {
-  await page.getByRole("button", { name: "Open menu" }).click();
-  await page.getByRole("button", { name: /TMs & HMs/ }).click();
+  await page.getByRole("link", { name: "TMS" }).click();
 }
 
 // TODO(phase-8): re-port — the React build doesn't expose these globals.
@@ -159,8 +158,7 @@ test("TM Suggestions section appears on Party page when a TM is owned", async ({
     },
   ]);
   await seedInventory(page, { TM26: 1 }); // Earthquake
-  await page.getByRole("button", { name: "Open menu" }).click();
-  await page.getByRole("button", { name: /MY PARTY/ }).click();
+  await page.getByRole("link", { name: "PARTY" }).click();
   await expect(page.getByText("TM SUGGESTIONS")).toBeVisible();
   await expect(
     page.getByRole("region", { name: "TM suggestions" }).getByText("Earthquake"),
@@ -178,8 +176,7 @@ test("TM Suggestion row opens the teach modal with move pre-queued", async ({ pa
     },
   ]);
   await seedInventory(page, { TM26: 1 }); // Earthquake
-  await page.getByRole("button", { name: "Open menu" }).click();
-  await page.getByRole("button", { name: /MY PARTY/ }).click();
+  await page.getByRole("link", { name: "PARTY" }).click();
   await page
     .getByRole("region", { name: "TM suggestions" })
     .getByRole("button", { name: /Teach Earthquake/ })

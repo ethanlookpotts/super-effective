@@ -9,10 +9,10 @@ test("hamburger button is hidden on desktop", async ({ page }) => {
 });
 
 test("sidebar nav is always visible without opening a drawer", async ({ page }) => {
-  await expect(page.getByRole("button", { name: /SEARCH/ })).toBeVisible();
-  await expect(page.getByRole("button", { name: /MY PARTY/ })).toBeVisible();
-  await expect(page.getByRole("button", { name: /GYMS/ })).toBeVisible();
-  await expect(page.getByRole("button", { name: /WHERE AM I/ })).toBeVisible();
+  await expect(page.getByRole("link", { name: "SEARCH" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "PARTY" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "GYMS" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "WHERE" })).toBeVisible();
   await expect(page.getByRole("button", { name: /TMs/ })).toBeVisible();
 });
 
@@ -22,7 +22,7 @@ test("game title and run switcher appear in the sidebar", async ({ page }) => {
 });
 
 test("sidebar nav navigates without drawer overlay", async ({ page }) => {
-  await page.getByRole("button", { name: /GYMS/ }).click();
+  await page.getByRole("link", { name: "GYMS" }).click();
   await expect(page.getByRole("region", { name: "Gyms page" })).toBeVisible();
   // Sidebar nav is always visible on desktop (no modal backdrop state)
   await expect(page.getByRole("navigation")).toBeVisible();
@@ -41,7 +41,7 @@ test("type filter pills wrap to multiple lines on desktop", async ({ page }) => 
 });
 
 test("party grid shows 3 columns at desktop width", async ({ page }) => {
-  await page.getByRole("button", { name: /MY PARTY/ }).click();
+  await page.getByRole("link", { name: "PARTY" }).click();
   await expect(page.getByRole("region", { name: "Party page" })).toBeVisible();
   const grid = page.getByRole("list", { name: "Party slots" });
   const cols = await grid.evaluate(
@@ -51,7 +51,7 @@ test("party grid shows 3 columns at desktop width", async ({ page }) => {
 });
 
 test("edit modal is centered, not a bottom sheet", async ({ page }) => {
-  await page.getByRole("button", { name: /MY PARTY/ }).click();
+  await page.getByRole("link", { name: "PARTY" }).click();
   // Click an empty party slot to open edit modal
   await page.getByRole("button", { name: "Add Pokémon to party" }).first().click();
   const modal = page.getByRole("dialog", { name: /ADD POKÉMON|EDIT POKÉMON/ });

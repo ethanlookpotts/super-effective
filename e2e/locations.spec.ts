@@ -3,8 +3,7 @@
 import { expect, test } from "./fixtures";
 
 test.beforeEach(async ({ page }) => {
-  await page.getByRole("button", { name: "Open menu" }).click();
-  await page.getByRole("button", { name: "WHERE AM I" }).click();
+  await page.getByRole("link", { name: "WHERE" }).click();
 });
 
 test("where am I tab renders location list", async ({ page }) => {
@@ -15,7 +14,6 @@ test("where am I tab renders location list", async ({ page }) => {
 });
 
 test("TMs page is reachable from drawer", async ({ page }) => {
-  await page.getByRole("button", { name: "Open menu" }).click();
   await page.getByRole("button", { name: /TMs/ }).click();
   await expect(
     page.getByRole("region", { name: "TMs and HMs page" }).getByText("TMs & HMs"),
@@ -24,7 +22,6 @@ test("TMs page is reachable from drawer", async ({ page }) => {
 });
 
 test("TM search by move name shows TM card", async ({ page }) => {
-  await page.getByRole("button", { name: "Open menu" }).click();
   await page.getByRole("button", { name: /TMs/ }).click();
   await page.getByPlaceholder("Move name or TM number…").fill("earthquake");
   await expect(page.getByText("TM26")).toBeVisible();
@@ -33,7 +30,6 @@ test("TM search by move name shows TM card", async ({ page }) => {
 });
 
 test("TM search by number shows TM card", async ({ page }) => {
-  await page.getByRole("button", { name: "Open menu" }).click();
   await page.getByRole("button", { name: /TMs/ }).click();
   await page.getByPlaceholder("Move name or TM number…").fill("tm26");
   await expect(page.getByText("Earthquake")).toBeVisible();

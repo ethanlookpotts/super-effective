@@ -3,7 +3,7 @@ import { SEED_STORE, expect, test } from "./fixtures";
 // Helper: navigate to Settings page
 async function goSettings(page) {
   await page.getByLabel("Open menu").click();
-  await page.getByRole("button", { name: "SETTINGS" }).click();
+  await page.getByRole("link", { name: "SETTINGS" }).click();
 }
 
 // Mock gist data matching the seed store

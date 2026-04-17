@@ -2,9 +2,11 @@ import { test as base, expect } from "@playwright/test";
 
 export { expect };
 
+const SEED_PT_ID = "00000000-0000-4000-8000-000000000001";
+
 export const SEED_STORE = JSON.stringify({
-  playthroughs: [{ id: "seed-001", name: "RUN 1", gameId: "frlg-fr", party: [], recents: [] }],
-  activePtId: "seed-001",
+  playthroughs: [{ id: SEED_PT_ID, name: "RUN 1", gameId: "frlg-fr", party: [], recents: [] }],
+  activePtId: SEED_PT_ID,
 });
 
 /**

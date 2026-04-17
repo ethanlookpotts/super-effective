@@ -72,7 +72,7 @@ test("evolution chain absent for Pokémon with no evolutions", async ({ page }) 
 test("EVOLVE button appears when party member can evolve", async ({ page }) => {
   await page.getByLabel("Search Pokémon").fill("Bulbasaur");
   await page.getByRole("option", { name: "Bulbasaur" }).click();
-  await page.getByRole("button", { name: /ADD TO PARTY/ }).click();
+  await page.getByRole("button", { name: /Add .+ to party/ }).click();
   await page.getByLabel("Search Pokémon").fill("Ivysaur");
   await page.getByRole("option", { name: "Ivysaur" }).click();
   await expect(
@@ -111,7 +111,7 @@ test("base stats info modal closes", async ({ page }) => {
   await expect(page.getByText("BASE STATS EXPLAINED")).toBeVisible();
   await page
     .getByRole("dialog", { name: "Base Stats Explained" })
-    .getByRole("button", { name: /CLOSE/ })
+    .getByRole("button", { name: "Close base stats help" })
     .click();
   await expect(page.getByText("BASE STATS EXPLAINED")).not.toBeVisible();
 });
@@ -120,18 +120,16 @@ test("party matchup shows stat category note and move power/effect", async ({ pa
   // Add Charizard to party
   await page.getByLabel("Search Pokémon").fill("Charizard");
   await page.getByRole("option", { name: "Charizard" }).click();
-  await page.getByRole("button", { name: /ADD TO PARTY/ }).click();
+  await page.getByRole("button", { name: /Add .+ to party/ }).click();
   // Add Flamethrower via edit modal
-  await page.getByRole("button", { name: "Open menu" }).click();
-  await page.getByRole("button", { name: "MY PARTY" }).click();
+  await page.getByRole("link", { name: "PARTY" }).click();
   await page.getByRole("button", { name: "Edit Charizard" }).click();
   await page.getByRole("button", { name: "Moves section" }).click();
   await page.getByRole("textbox", { name: "Search moves..." }).fill("Flamethrower");
   await page.getByRole("region", { name: "Move picker" }).getByText("Flamethrower").click();
   await page.getByRole("button", { name: /SAVE/ }).click();
   // Navigate back to search
-  await page.getByRole("button", { name: "Open menu" }).click();
-  await page.getByRole("button", { name: "SEARCH" }).click();
+  await page.getByRole("link", { name: "SEARCH" }).click();
   // Search a Grass enemy — Charizard should be top suggestion
   await page.getByLabel("Search Pokémon").fill("Oddish");
   await page.getByRole("option", { name: "Oddish" }).click();
@@ -147,7 +145,7 @@ test("EVOLVE button swaps party member to next form", async ({ page }) => {
   const content = page.getByRole("region", { name: "Search content" });
   await page.getByLabel("Search Pokémon").fill("Bulbasaur");
   await page.getByRole("option", { name: "Bulbasaur" }).click();
-  await page.getByRole("button", { name: /ADD TO PARTY/ }).click();
+  await page.getByRole("button", { name: /Add .+ to party/ }).click();
   await page.getByLabel("Search Pokémon").fill("Ivysaur");
   await page.getByRole("option", { name: "Ivysaur" }).click();
   await content.getByRole("button", { name: /EVOLVE Bulbasaur/ }).click();

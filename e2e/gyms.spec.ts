@@ -3,8 +3,7 @@
 import { expect, test } from "./fixtures";
 
 test.beforeEach(async ({ page }) => {
-  await page.getByRole("button", { name: "Open menu" }).click();
-  await page.getByRole("button", { name: /GYMS/ }).click();
+  await page.getByRole("link", { name: "GYMS" }).click();
 });
 
 test("gyms tab renders all gym leaders", async ({ page }) => {
@@ -40,7 +39,6 @@ test("rival starter persists across reload", async ({ page }) => {
   await expect(page.getByRole("button", { name: /Squirtle/ })).toHaveClass(/active/);
 
   await page.reload();
-  await page.getByRole("button", { name: "Open menu" }).click();
-  await page.getByRole("button", { name: /GYMS/ }).click();
+  await page.getByRole("link", { name: "GYMS" }).click();
   await expect(page.getByRole("button", { name: /Squirtle/ })).toHaveClass(/active/);
 });

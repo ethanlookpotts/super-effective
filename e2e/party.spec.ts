@@ -6,8 +6,7 @@ test("add to party fills a party slot", async ({ page }) => {
   await page.getByLabel("Search Pokémon").fill("Pikachu");
   await page.getByRole("option", { name: "Pikachu" }).click();
   await page.getByRole("button", { name: /ADD TO PARTY/ }).click();
-  await page.getByRole("button", { name: "Open menu" }).click();
-  await page.getByRole("button", { name: "MY PARTY" }).click();
+  await page.getByRole("link", { name: "PARTY" }).click();
   await expect(page.getByRole("button", { name: "Edit Pikachu" })).toBeVisible();
 });
 
@@ -26,8 +25,7 @@ test("IN PARTY button navigates to Party tab", async ({ page }) => {
 });
 
 test("move picker shows learnset instantly with no loading state", async ({ page }) => {
-  await page.getByRole("button", { name: "Open menu" }).click();
-  await page.getByRole("button", { name: "MY PARTY" }).click();
+  await page.getByRole("link", { name: "PARTY" }).click();
   await page.getByRole("button", { name: "Add Pokémon to party" }).first().click();
   await page.getByRole("textbox", { name: "Search Pokémon..." }).fill("Growlithe");
   await page.getByRole("option", { name: "Growlithe" }).click();
@@ -39,8 +37,7 @@ test("move picker shows learnset instantly with no loading state", async ({ page
 });
 
 test("edit modal sections are collapsed and disabled until Pokémon selected", async ({ page }) => {
-  await page.getByRole("button", { name: "Open menu" }).click();
-  await page.getByRole("button", { name: "MY PARTY" }).click();
+  await page.getByRole("link", { name: "PARTY" }).click();
   await page.getByRole("button", { name: "Add Pokémon to party" }).first().click();
 
   // Moves section header visible but not interactive before Pokémon picked
@@ -63,8 +60,7 @@ test("edit modal sections are collapsed and disabled until Pokémon selected", a
 });
 
 test("level and nature entry computes and saves", async ({ page }) => {
-  await page.getByRole("button", { name: "Open menu" }).click();
-  await page.getByRole("button", { name: "MY PARTY" }).click();
+  await page.getByRole("link", { name: "PARTY" }).click();
   await page.getByRole("button", { name: "Add Pokémon to party" }).first().click();
   await page.getByRole("textbox", { name: "Search Pokémon..." }).fill("Pikachu");
   await page.getByRole("option", { name: "Pikachu" }).click();
@@ -84,8 +80,7 @@ test("level and nature entry computes and saves", async ({ page }) => {
 });
 
 test("Hidden Power type selection", async ({ page }) => {
-  await page.getByRole("button", { name: "Open menu" }).click();
-  await page.getByRole("button", { name: "MY PARTY" }).click();
+  await page.getByRole("link", { name: "PARTY" }).click();
   await page.getByRole("button", { name: "Add Pokémon to party" }).first().click();
   await page.getByRole("textbox", { name: "Search Pokémon..." }).fill("Pikachu");
   await page.getByRole("option", { name: "Pikachu" }).click();

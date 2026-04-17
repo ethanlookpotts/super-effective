@@ -29,7 +29,6 @@ test("PC Box shows caught count after adding from search", async ({ page }) => {
   await page.getByLabel("Search Pokémon").fill("Charizard");
   await page.getByRole("option", { name: "Charizard" }).click();
   await page.getByRole("button", { name: "📦 SEND TO PC" }).click();
-  await page.getByRole("button", { name: "Open menu" }).click();
   await page.getByRole("button", { name: "🎒 MY PARTY" }).click();
   await expect(page.getByText("(1 CAUGHT)")).toBeVisible();
   await expect(page.getByRole("region", { name: "PC Box" }).getByText("Charizard")).toBeVisible();
@@ -49,8 +48,7 @@ test("IN PC BOX button is inactive when Pokémon already in PC", async ({ page }
 
 test("move Pokémon from PC to party (party not full)", async ({ page }) => {
   await seedPC(page, [25]); // Pikachu
-  await page.getByRole("button", { name: "Open menu" }).click();
-  await page.getByRole("button", { name: "MY PARTY" }).click();
+  await page.getByRole("link", { name: "PARTY" }).click();
   await page.getByRole("button", { name: "Move Pikachu to party" }).click();
   // Pikachu now appears in party
   await expect(page.getByRole("button", { name: "Edit Pikachu" })).toBeVisible();
@@ -60,8 +58,7 @@ test("move Pokémon from PC to party (party not full)", async ({ page }) => {
 
 test("remove Pokémon from PC — cancel then confirm", async ({ page }) => {
   await seedPC(page, [25]); // Pikachu
-  await page.getByRole("button", { name: "Open menu" }).click();
-  await page.getByRole("button", { name: "MY PARTY" }).click();
+  await page.getByRole("link", { name: "PARTY" }).click();
   // Tap ✕ to enter confirm state
   await page.getByRole("button", { name: "Remove Pikachu from PC" }).click();
   await expect(page.getByRole("button", { name: "YES" })).toBeVisible();
@@ -76,8 +73,7 @@ test("remove Pokémon from PC — cancel then confirm", async ({ page }) => {
 
 test("PC Box collapses and expands", async ({ page }) => {
   await seedPC(page, [25]);
-  await page.getByRole("button", { name: "Open menu" }).click();
-  await page.getByRole("button", { name: "MY PARTY" }).click();
+  await page.getByRole("link", { name: "PARTY" }).click();
   await expect(page.getByRole("region", { name: "PC Box" }).getByText("Pikachu")).toBeVisible();
   // Collapse
   await page.getByRole("button", { name: "Toggle PC Box" }).click();
@@ -88,15 +84,13 @@ test("PC Box collapses and expands", async ({ page }) => {
 });
 
 test("no suggestions shown when no Pokémon available", async ({ page }) => {
-  await page.getByRole("button", { name: "Open menu" }).click();
-  await page.getByRole("button", { name: "MY PARTY" }).click();
+  await page.getByRole("link", { name: "PARTY" }).click();
   await expect(page.getByText(/SUGGESTED PARTIES/)).not.toBeVisible();
 });
 
 test("suggestion strip cards appear with Pokémon in PC", async ({ page }) => {
   await seedPC(page, [6, 9, 3, 94, 65, 131]);
-  await page.getByRole("button", { name: "Open menu" }).click();
-  await page.getByRole("button", { name: "MY PARTY" }).click();
+  await page.getByRole("link", { name: "PARTY" }).click();
   await expect(page.getByRole("button", { name: /Suggestion 1/ })).toBeVisible();
 });
 
@@ -116,8 +110,7 @@ test("suggestion uses party + PC as combined pool", async ({ page }) => {
 
 test("suggestion modal shows coverage score and sprites", async ({ page }) => {
   await seedPC(page, [6, 9, 3, 94, 65, 131]);
-  await page.getByRole("button", { name: "Open menu" }).click();
-  await page.getByRole("button", { name: "MY PARTY" }).click();
+  await page.getByRole("link", { name: "PARTY" }).click();
   await page.getByRole("button", { name: /Suggestion 1/ }).click();
   // Modal title shows coverage score
   await expect(page.getByText(/OPTION 1 · \d+\/18 COVERED/)).toBeVisible();
@@ -126,8 +119,7 @@ test("suggestion modal shows coverage score and sprites", async ({ page }) => {
 
 test("applying a suggestion fills the party and empties the PC", async ({ page }) => {
   await seedPC(page, [6, 9, 3, 94, 65, 131]);
-  await page.getByRole("button", { name: "Open menu" }).click();
-  await page.getByRole("button", { name: "MY PARTY" }).click();
+  await page.getByRole("link", { name: "PARTY" }).click();
   await page.getByRole("button", { name: /Suggestion 1/ }).click();
   await page.getByRole("button", { name: "USE THIS PARTY" }).click();
   // Modal closed, party has 6 filled slots
