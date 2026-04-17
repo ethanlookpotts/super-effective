@@ -48,13 +48,20 @@ export type PartyMember = z.infer<typeof PartyMember>;
 export const RivalStarter = z.enum(["bulbasaur", "charmander", "squirtle"]);
 export type RivalStarter = z.infer<typeof RivalStarter>;
 
+export const RecentPokemon = z.object({
+  n: z.number().int().positive(),
+  name: z.string().min(1),
+  types: z.array(TypeName).min(1).max(2),
+});
+export type RecentPokemon = z.infer<typeof RecentPokemon>;
+
 export const Playthrough = z.object({
   id: z.string().uuid(),
   name: z.string().min(1),
   gameId: z.string().min(1),
   party: z.array(PartyMember).default([]),
   pc: z.array(PartyMember).default([]),
-  recents: z.array(z.number().int().positive()).default([]),
+  recents: z.array(RecentPokemon).default([]),
   rivalStarter: RivalStarter.default("bulbasaur"),
   tmInventory: z.record(z.string(), z.number().int().min(0)).default({}),
 });
