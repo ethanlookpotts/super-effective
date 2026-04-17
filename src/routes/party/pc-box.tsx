@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { TypeBadge } from "~/components/type-badge";
 import { useUpdateActivePlaythrough } from "~/hooks/use-playthroughs";
 import { spriteUrl } from "~/lib/sprites";
@@ -10,15 +9,18 @@ import { PARTY_MAX } from "./party-grid";
 export function PcBox({
   party,
   pc,
+  onEdit,
+  onAdd,
 }: {
   party: readonly PartyMember[];
   pc: readonly PartyMember[];
+  onEdit: (idx: number) => void;
+  onAdd: () => void;
 }) {
   const [collapsed, setCollapsed] = useState(false);
   const [confirmIdx, setConfirmIdx] = useState<number | null>(null);
   const [swapFromIdx, setSwapFromIdx] = useState<number | null>(null);
   const update = useUpdateActivePlaythrough();
-  const navigate = useNavigate();
 
   const arrow = collapsed ? "▶" : "▼";
 
@@ -63,11 +65,6 @@ export function PcBox({
     );
   }
 
-  function addNew() {
-    // Edit modal lands in a follow-up commit; redirect to Search for now.
-    navigate("/search");
-  }
-
   const incoming = swapFromIdx !== null ? pc[swapFromIdx] : null;
 
   return (
@@ -91,7 +88,7 @@ export function PcBox({
           <li>
             <button
               type="button"
-              onClick={addNew}
+              onClick={onAdd}
               aria-label="Add new Pokémon to PC"
               className="flex min-h-11 w-full flex-col items-center justify-center gap-1 rounded-[var(--radius-card)] border border-dashed border-[var(--color-border-2)] bg-[var(--color-card-2)] p-4 text-[var(--color-text-3)]"
             >
@@ -134,6 +131,7 @@ export function PcBox({
               <li key={`pc-${idx}-${pm.n}`}>
                 <PcSlot
                   member={pm}
+                  onEdit={() => onEdit(idx)}
                   onMove={() => moveToParty(idx)}
                   onRemove={() => setConfirmIdx(idx)}
                 />
@@ -157,38 +155,45 @@ export function PcBox({
 
 function PcSlot({
   member,
+  onEdit,
   onMove,
   onRemove,
 }: {
   member: PartyMember;
+  onEdit: () => void;
   onMove: () => void;
   onRemove: () => void;
 }) {
   const shortName = member.name.length > 9 ? `${member.name.slice(0, 8)}…` : member.name;
   return (
     <div className="flex min-h-11 w-full flex-col gap-1 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] p-2">
-      <img
-        src={spriteUrl(member.n, { shiny: member.shiny })}
-        alt=""
-        onError={(e) => {
-          e.currentTarget.style.display = "none";
-        }}
-        className="mx-auto h-10 w-10 object-contain"
-      />
-      <div className="flex items-center justify-between font-[var(--font-pixel)] text-[9px] text-[var(--color-text-3)]">
-        <span>
+      <button
+        type="button"
+        onClick={onEdit}
+        aria-label={`Edit ${member.name}`}
+        className="flex flex-col items-center gap-1 text-left"
+      >
+        <img
+          src={spriteUrl(member.n, { shiny: member.shiny })}
+          alt=""
+          onError={(e) => {
+            e.currentTarget.style.display = "none";
+          }}
+          className="h-10 w-10 object-contain"
+        />
+        <span className="font-[var(--font-pixel)] text-[9px] text-[var(--color-text-3)]">
           #{String(member.n).padStart(3, "0")}
           {member.shiny ? <span className="ml-1 text-[var(--color-gold)]">✦</span> : null}
         </span>
-      </div>
-      <span className="font-[var(--font-pixel)] text-[10px] text-[var(--color-text)]">
-        {shortName}
-      </span>
-      <span className="flex flex-wrap gap-1">
-        {member.types.map((t) => (
-          <TypeBadge key={t} type={t} size="sm" />
-        ))}
-      </span>
+        <span className="font-[var(--font-pixel)] text-[10px] text-[var(--color-text)]">
+          {shortName}
+        </span>
+        <span className="flex flex-wrap gap-1">
+          {member.types.map((t) => (
+            <TypeBadge key={t} type={t} size="sm" />
+          ))}
+        </span>
+      </button>
       <div className="mt-1 flex gap-1">
         <button
           type="button"

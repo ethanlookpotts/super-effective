@@ -1,6 +1,7 @@
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { useActivePlaythrough } from "~/hooks/use-store";
 import { CoverageBar } from "./party/coverage-bar";
+import { EditModal, type EditModalState } from "./party/edit-modal";
 import { PARTY_MAX, PartyGrid } from "./party/party-grid";
 import { PcBox } from "./party/pc-box";
 import { SuggestionPanel } from "./party/suggestion-panel";
@@ -8,7 +9,7 @@ import { TmSuggestionPanel } from "./party/tm-suggestion-panel";
 
 export function PartyRoute() {
   const active = useActivePlaythrough();
-  const navigate = useNavigate();
+  const [editState, setEditState] = useState<EditModalState | null>(null);
 
   if (!active) {
     return (
@@ -24,15 +25,6 @@ export function PartyRoute() {
   const party = active.party;
   const count = party.length;
 
-  function goPickPokemon() {
-    navigate("/search");
-  }
-
-  function editMember(_idx: number) {
-    // Edit modal lands in a follow-up commit (Phase 5).
-    navigate("/search");
-  }
-
   return (
     <section className="flex flex-col gap-3">
       <header className="flex items-baseline justify-between">
@@ -44,7 +36,11 @@ export function PartyRoute() {
         )}
       </header>
 
-      <PartyGrid party={party} onEdit={editMember} onAdd={goPickPokemon} />
+      <PartyGrid
+        party={party}
+        onEdit={(idx) => setEditState({ mode: "party", slot: idx })}
+        onAdd={() => setEditState({ mode: "party", slot: -1 })}
+      />
 
       <CoverageBar party={party} />
 
@@ -52,7 +48,21 @@ export function PartyRoute() {
 
       <SuggestionPanel party={party} pc={active.pc} />
 
-      <PcBox party={party} pc={active.pc} />
+      <PcBox
+        party={party}
+        pc={active.pc}
+        onEdit={(idx) => setEditState({ mode: "pc", slot: idx })}
+        onAdd={() => setEditState({ mode: "pc", slot: -1 })}
+      />
+
+      {editState && (
+        <EditModal
+          state={editState}
+          party={party}
+          pc={active.pc}
+          onClose={() => setEditState(null)}
+        />
+      )}
     </section>
   );
 }
