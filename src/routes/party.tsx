@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { ALL_MOVES } from "~/data/moves";
 import { useActivePlaythrough } from "~/hooks/use-store";
 import { CoverageBar } from "./party/coverage-bar";
 import { EditModal, type EditModalState } from "./party/edit-modal";
@@ -10,6 +12,25 @@ import { TmSuggestionPanel } from "./party/tm-suggestion-panel";
 export function PartyRoute() {
   const active = useActivePlaythrough();
   const [editState, setEditState] = useState<EditModalState | null>(null);
+  const [teachMove, setTeachMove] = useState<string | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const teachParam = searchParams.get("teach");
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: we only want to run when the URL param changes.
+  useEffect(() => {
+    if (!teachParam || !active) return;
+    const [rawDex, rawMove] = teachParam.split(":");
+    const dex = Number.parseInt(rawDex ?? "", 10);
+    const move = rawMove ? decodeURIComponent(rawMove) : "";
+    if (!Number.isFinite(dex) || !move) return;
+    const idx = active.party.findIndex((pm) => pm.n === dex);
+    if (idx < 0) return;
+    setEditState({ mode: "party", slot: idx });
+    setTeachMove(move);
+    const next = new URLSearchParams(searchParams);
+    next.delete("teach");
+    setSearchParams(next, { replace: true });
+  }, [teachParam]);
 
   if (!active) {
     return (
@@ -24,6 +45,11 @@ export function PartyRoute() {
 
   const party = active.party;
   const count = party.length;
+
+  function closeModal() {
+    setEditState(null);
+    setTeachMove(null);
+  }
 
   return (
     <section className="flex flex-col gap-3">
@@ -60,9 +86,16 @@ export function PartyRoute() {
           state={editState}
           party={party}
           pc={active.pc}
-          onClose={() => setEditState(null)}
+          initialTeachMove={teachMove ? resolveTeachMove(teachMove) : null}
+          onClose={closeModal}
         />
       )}
     </section>
   );
+}
+
+function resolveTeachMove(name: string) {
+  const m = ALL_MOVES.find((mv) => mv.name === name);
+  if (!m) return null;
+  return { name: m.name, type: m.type };
 }

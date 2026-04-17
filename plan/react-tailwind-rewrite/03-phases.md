@@ -38,7 +38,7 @@ Each phase should produce a push-ready state: lint ✓ typecheck ✓ tests ✓ b
 - [x] TMs route (inventory stepper, HM Carrier ranking, learners)
 - [x] Settings route (theme + Claude key + gist sync + conflict modal)
 
-## Phase 5 — Party route  🟡 IN PROGRESS
+## Phase 5 — Party route  ✅ DONE
 
 The biggest route (959 lines of vanilla). Split into subcomponents:
 
@@ -46,20 +46,20 @@ The biggest route (959 lines of vanilla). Split into subcomponents:
 - [x] `routes/party/party-grid.tsx` — 6-slot grid with empty "+" tile
 - [x] `routes/party/party-slot.tsx` — sprite, name, level, types, move chips
 - [x] `routes/party/coverage-bar.tsx` — offensive type coverage strip
-- [ ] `routes/party/edit-modal.tsx` — the biggest piece:
-  - [ ] Pokémon search + pick
-  - [ ] Level input (1–100)
-  - [ ] Nature dropdown
-  - [ ] Move picker (up to 4, filtered by learnset + TM inventory)
-  - [ ] Advanced (collapsed by default): ability, item, gender, shiny, OT name/id, ball, memo, in-game max stats
-  - [ ] Save / Cancel / Delete
-  - [ ] Deep-link via `?teach=<dex>:<moveName>`
+- [x] `routes/party/edit-modal.tsx` + `edit-modal-moves.tsx` + `edit-modal-info.tsx`:
+  - [x] Pokémon search + pick
+  - [x] Level input (1–100)
+  - [x] Nature dropdown (with computed ATK/SpA/Spe preview)
+  - [x] Move picker (up to 4, learnset-filtered, 18-type chip filter, Hidden Power type picker)
+  - [x] Advanced (collapsed by default): ability, item, gender, shiny, OT name/id, ball, memo, in-game max stats
+  - [x] Save / Cancel / Delete
+  - [x] Deep-link via `?teach=<dex>:<moveName>` — consumed by PartyRoute, pre-queues move into draft
 - [x] `routes/party/pc-box.tsx` — scrolling grid + "ADD NEW" tile
 - [x] `routes/party/full-party-swap-modal.tsx` — when adding to full party
 - [x] `routes/party/suggestion-panel.tsx` — top-5 from `calc.computeSuggestions`
 - [x] `routes/party/tm-suggestion-panel.tsx` — `calc.rankTeachTargets` best moves to teach
 
-**Blocker**: none. Straightforward port, but large. Estimated 2–3 focused sessions.
+**Schema extension**: added optional `nature`, `pokeball`, `otName`, `otId`, `trainerMemo`, `stats` to `PartyMember` so the edit modal round-trips all vanilla fields.
 
 ## Phase 6 — Breakdown overlay  ⏳ TODO
 

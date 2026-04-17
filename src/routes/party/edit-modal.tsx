@@ -127,11 +127,13 @@ export function EditModal({
   state,
   party,
   pc,
+  initialTeachMove,
   onClose,
 }: {
   state: EditModalState;
   party: readonly PartyMember[];
   pc: readonly PartyMember[];
+  initialTeachMove?: PartyMove | null;
   onClose: () => void;
 }) {
   const { mode, slot } = state;
@@ -139,7 +141,17 @@ export function EditModal({
   const existing = slot >= 0 ? source[slot] : undefined;
   const isEditing = slot >= 0 && slot < source.length;
 
-  const [draft, setDraft] = useState<Draft>(() => draftFromMember(existing));
+  const [draft, setDraft] = useState<Draft>(() => {
+    const d = draftFromMember(existing);
+    if (
+      initialTeachMove &&
+      !d.moves.some((m) => m.name === initialTeachMove.name) &&
+      d.moves.length < 4
+    ) {
+      return { ...d, moves: [...d.moves, initialTeachMove] };
+    }
+    return d;
+  });
   const update = useUpdateActivePlaythrough();
 
   useEffect(() => {

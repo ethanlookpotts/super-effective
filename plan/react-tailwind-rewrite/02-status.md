@@ -62,20 +62,20 @@ As of the last commit on `refactor/react-tailwind`. Update this doc in the same 
 
 ## Outstanding
 
-### Party route (in progress)
-See [03-phases.md](./03-phases.md) Phase 5. Subcomponents status:
-- [x] `routes/party.tsx` — composition root (reads active playthrough, wires grid + coverage)
+### Party route ✅ DONE
+See [03-phases.md](./03-phases.md) Phase 5.
+- [x] `routes/party.tsx` — composition root (reads active playthrough, wires grid + coverage, consumes `?teach=` deep-link)
 - [x] `routes/party/party-grid.tsx` — 6-slot grid with stable slot keys
 - [x] `routes/party/party-slot.tsx` — filled + empty slot cards (sprite, name, level, types, move chips)
 - [x] `routes/party/coverage-bar.tsx` — offensive type coverage strip (18 types)
-- [ ] `routes/party/edit-modal.tsx` — biggest piece: Pokémon picker, level, nature, moves, advanced stats
+- [x] `routes/party/edit-modal.tsx` — Pokémon picker, level, nature + computed stats, collapsible MOVES and INFO sections
+- [x] `routes/party/edit-modal-moves.tsx` — moves picker (search + 18-type filter, learnset pool, Hidden Power type picker, max 4)
+- [x] `routes/party/edit-modal-info.tsx` — ability / item / gender / shiny / ball / OT name+id / memo / in-game max stats grid
 - [x] `routes/party/pc-box.tsx` — PC grid (collapsible, ADD NEW, remove w/ confirm, → party swap)
 - [x] `routes/party/full-party-swap-modal.tsx` — reusable swap picker when party is full
 - [x] `routes/party/suggestion-panel.tsx` — top-5 team suggestions from `calc.computeSuggestions` (strip + dialog + apply writes active playthrough)
 - [x] `routes/party/tm-suggestion-panel.tsx` — top-6 `rankTeachTargets` rows (owned TMs/HMs/tutors, replaced→TM, cov/score delta, deep-link URL primed for edit modal)
-- [ ] Teach modal deep-link (`?teach=<dex>:<move>`)
-
-Grid currently redirects taps (both filled and empty slots) to `/search` as a placeholder until the edit modal lands.
+- [x] Teach modal deep-link (`?teach=<dex>:<move>`) — TM suggestion rows navigate, PartyRoute consumes param, EditModal pre-queues the move
 
 ### Breakdown overlay
 See [03-phases.md](./03-phases.md) Phase 6. Type-matchup rows in Search detail link to a breakdown component that explains the final multiplier (STAB × type product × ability mod). Pure component — depends only on `data/types`, `data/abilities`, `lib/damage`.
