@@ -31,6 +31,7 @@ function activePt(){
 // ═══════════════════════════════
 let activePoke = null;
 let activeTypeFilter = null;
+let activeMove = null; // move name when viewing move detail (who can learn it)
 
 // Modal state
 let mSlot = -1, mPoke = null, mMoves = [], mTypeFilter = null, mMoveQ = '', mLv = '', mNature = '';

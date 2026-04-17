@@ -12,7 +12,6 @@ Evolving into a multi-game companion app with playthrough support.
 ### High Priority
 
 ### Medium Priority
-- [ ] Search by move name → show all Pokémon that can learn it
 - [ ] Audit and replace E2E locators that use CSS id/class selectors (e.g. #move-section) with accessible role/heading/label alternatives so tests behave like real users — add appropriate aria labels to HTML where needed to enable this
 - [ ] IV/EV input — add back once accessible in-game (Gen III has no in-game IV/EV display; consider IV range calculator from scanned stats + nature + level, or EV tracking from battle history)
 
@@ -30,6 +29,11 @@ Evolving into a multi-game companion app with playthrough support.
 ---
 
 ## Progress
+
+### Session 27 — Move Search + Move Detail
+
+**Completed**
+- [x] Search by move name → shows all Pokémon that can learn it — `onSearch` in `js/search.js` now searches `ALL_MOVES` alongside `POKEMON`; new `renderSearchDrop` splits the dropdown into labelled **POKÉMON** and **MOVES** sections (`.pd-lbl`); new `activeMove` state + `pickMove(name)` + `renderMoveDetail()` render a move detail view with type/category badges, PWR / ACC / EFFECT meta chips (from `MOVE_DATA`), a TM / HM / TUTOR source row (when applicable, pulled from `TM_HM` + `MOVE_TUTORS`), and a `WHO CAN LEARN` list of all learners sorted by dex number (tap to open that Pokémon); hash router gains `#/search?m=<moveName>` so reload / back restores the move detail; `showPage('search')` preserves the move param; `e2e/specs/search.md` adds 5 scenarios; 5 new tests in `e2e/search.spec.ts` (dropdown MOVES section, move detail metadata, WHO CAN LEARN list, learner → Pokémon navigation, TM source row); 72 unit + 97 E2E = 169 tests pass
 
 ### Session 26 — TM/HM Planner, Scoring Upgrade, HM Carrier
 

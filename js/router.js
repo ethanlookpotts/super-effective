@@ -4,6 +4,7 @@
 //   #/search                    default search view
 //   #/search?type=<Type>        search with type filter
 //   #/search?n=<dex>            search with Pokémon detail open
+//   #/search?m=<moveName>       search with move detail open (who can learn it)
 //   #/party | #/gyms | #/location | #/tms | #/settings
 // ═══════════════════════════════
 const ROUTE_PAGES = ['search','party','gyms','location','tms','settings'];
@@ -61,6 +62,7 @@ function applyRoute(){
       const p = POKEMON.find(x=>x.n===n);
       if(p){
         activePoke = p;
+        activeMove = null;
         activeTypeFilter = null;
         document.getElementById('s-in').value = p.name;
         document.getElementById('s-cl').style.display = 'block';
@@ -68,16 +70,33 @@ function applyRoute(){
         addRecent(p);
       } else {
         activePoke = null;
+        activeMove = null;
+        activeTypeFilter = null;
+      }
+    } else if(params.m){
+      const mv = ALL_MOVES.find(m=>m.name===params.m);
+      if(mv){
+        activeMove = mv.name;
+        activePoke = null;
+        activeTypeFilter = null;
+        document.getElementById('s-in').value = mv.name;
+        document.getElementById('s-cl').style.display = 'block';
+        document.getElementById('s-drop').style.display = 'none';
+      } else {
+        activePoke = null;
+        activeMove = null;
         activeTypeFilter = null;
       }
     } else if(params.type && TYPES.includes(params.type)){
       activeTypeFilter = params.type;
       activePoke = null;
+      activeMove = null;
       document.getElementById('s-in').value = '';
       document.getElementById('s-cl').style.display = 'none';
       document.getElementById('s-drop').style.display = 'none';
     } else {
       activePoke = null;
+      activeMove = null;
       activeTypeFilter = null;
       document.getElementById('s-in').value = '';
       document.getElementById('s-cl').style.display = 'none';

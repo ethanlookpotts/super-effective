@@ -59,3 +59,35 @@
 3. Search for Charmander and open its detail card
 4. Click the "EVOLVE Charmander → Charmeleon" button
 5. Expect: the detail card switches to show Charmeleon
+
+## Search by move name — dropdown shows move matches
+
+1. Go to the app
+2. Type "Flamethrower" in the search input
+3. Expect: the dropdown contains a "MOVES" section with a "Flamethrower" option tagged as a Fire type move
+
+## Search by move name — opens move detail
+
+1. Go to the app
+2. Type "Flamethrower" in the search input
+3. Click the "Move Flamethrower" option in the dropdown
+4. Expect: a move detail view appears with the heading "Flamethrower", Fire type badge, "95" power, "100%" accuracy, and a "burn 10%" effect
+
+## Move detail — lists all Pokémon that can learn the move
+
+1. Go to the app
+2. Search for the move "Flamethrower" and open its detail
+3. Expect: a "WHO CAN LEARN" section lists Charmander, Charmeleon, and Charizard (all Fire-type starters that learn it)
+
+## Move detail — tapping a learner opens its detail card
+
+1. Go to the app
+2. Search for the move "Flamethrower" and open its detail
+3. Click the "Charizard" card in the WHO CAN LEARN list
+4. Expect: the detail card switches to show the Charizard Pokémon heading
+
+## Move detail — shows TM source when applicable
+
+1. Go to the app
+2. Search for the move "Earthquake" and open its detail
+3. Expect: a "TM / HM / TUTOR" section lists TM26 with its FRLG location

@@ -28,6 +28,7 @@ function setTypeFilter(t){
 
 function _resetSearchInput(){
   activePoke = null;
+  activeMove = null;
   document.getElementById('s-in').value = '';
   document.getElementById('s-cl').style.display = 'none';
   document.getElementById('s-drop').style.display = 'none';
@@ -49,12 +50,13 @@ function onSearch(v){
   document.getElementById('s-cl').style.display = v ? 'block' : 'none';
   if(!v.trim()){
     document.getElementById('s-drop').style.display = 'none';
-    if(!activePoke) renderSearch();
+    if(!activePoke && !activeMove) renderSearch();
     return;
   }
   const q = v.toLowerCase();
-  const list = POKEMON.filter(p=>p.name.toLowerCase().includes(q)).slice(0,10);
-  renderPDrop('s-drop', list, 'pickPoke');
+  const pokes = POKEMON.filter(p=>p.name.toLowerCase().includes(q)).slice(0,8);
+  const moves = ALL_MOVES.filter(m=>m.name.toLowerCase().includes(q)).slice(0,8);
+  renderSearchDrop('s-drop', pokes, moves);
 }
 
 function clearSearch(){
@@ -62,6 +64,7 @@ function clearSearch(){
   document.getElementById('s-cl').style.display = 'none';
   document.getElementById('s-drop').style.display = 'none';
   activePoke = null;
+  activeMove = null;
   renderSearch();
   setRoute('search');
 }
@@ -72,16 +75,32 @@ function pickPoke(n){
   document.getElementById('s-cl').style.display = 'block';
   document.getElementById('s-drop').style.display = 'none';
   activeTypeFilter = null;
+  activeMove = null;
   buildTypePills();
   addRecent(activePoke);
   renderSearch();
   setRoute('search', {n});
 }
 
+function pickMove(name){
+  const mv = ALL_MOVES.find(m=>m.name===name);
+  if(!mv) return;
+  activeMove = mv.name;
+  activePoke = null;
+  activeTypeFilter = null;
+  document.getElementById('s-in').value = mv.name;
+  document.getElementById('s-cl').style.display = 'block';
+  document.getElementById('s-drop').style.display = 'none';
+  buildTypePills();
+  renderSearch();
+  setRoute('search', {m: mv.name});
+}
+
 // Default search state: recents + type browse
 function renderSearch(){
   const scroll = document.getElementById('s-scroll');
 
+  if(activeMove){ renderMoveDetail(); return; }
   if(activePoke){ renderPokeDetail(); return; }
 
   const pt = activePt();
@@ -459,4 +478,96 @@ function renderPDrop(id, list, fn){
     <span class="pname">${p.name}</span>
     <span class="pbadges">${p.types.map(t=>`<span class="tb sm t-${t}">${t}</span>`).join('')}</span>
   </div>`).join('');
+}
+
+// Combined Pokémon + move dropdown (main search input)
+function renderSearchDrop(id, pokes, moves){
+  const dd = document.getElementById(id);
+  if(!pokes.length && !moves.length){ dd.style.display='none'; return; }
+  dd.style.display = 'block';
+  let html = '';
+  if(pokes.length){
+    html += `<div class="pd-lbl">POKÉMON</div>` + pokes.map(p=>`<div class="prow" role="option" aria-label="${p.name}" onclick="pickPoke(${p.n})">
+      <span class="pnum">#${String(p.n).padStart(3,'0')}</span>
+      <span class="pname">${p.name}</span>
+      <span class="pbadges">${p.types.map(t=>`<span class="tb sm t-${t}">${t}</span>`).join('')}</span>
+    </div>`).join('');
+  }
+  if(moves.length){
+    html += `<div class="pd-lbl">MOVES</div>` + moves.map(m=>{
+      const cc = m.cat==='phy'?'mphy':m.cat==='spe'?'mspe':'mstab';
+      const cl = m.cat==='phy'?'PHY':m.cat==='spe'?'SPE':'STA';
+      return `<div class="prow mrow" role="option" aria-label="Move ${m.name}" onclick="pickMove('${m.name.replace(/'/g,"\\'")}')">
+        <span class="pname">${m.name}</span>
+        <span class="pbadges"><span class="tb sm t-${m.type}">${m.type}</span><span class="mtag ${cc}">${cl}</span></span>
+      </div>`;
+    }).join('');
+  }
+  dd.innerHTML = html;
+}
+
+// Move detail — shows metadata + all Pokémon that can learn the move
+function renderMoveDetail(){
+  if(!activeMove) return;
+  const mv = ALL_MOVES.find(m=>m.name===activeMove);
+  const scroll = document.getElementById('s-scroll');
+  if(!mv){ scroll.innerHTML = ''; return; }
+
+  const md = MOVE_DATA[mv.name];
+  const pow = md ? md[0] : null;
+  const acc = md ? md[1] : null;
+  const eff = md ? md[2] : null;
+  const phys = PHYS.has(mv.type);
+  const cc = mv.cat==='phy'?'mphy':mv.cat==='spe'?'mspe':'mstab';
+  const cl = mv.cat==='phy'?'PHY':mv.cat==='spe'?'SPE':'STA';
+
+  let metaItems = [];
+  if(pow > 0) metaItems.push(`<div class="mv-md-item">PWR <span>${pow}</span></div>`);
+  else if(pow === 0 && mv.cat !== 'sta') metaItems.push(`<div class="mv-md-item">PWR <span>—</span></div>`);
+  if(acc > 0 && acc < 100) metaItems.push(`<div class="mv-md-item">ACC <span>${acc}%</span></div>`);
+  else if(acc === 0 && pow > 0) metaItems.push(`<div class="mv-md-item">ACC <span>∞</span></div>`);
+  else if(acc === 100) metaItems.push(`<div class="mv-md-item">ACC <span>100%</span></div>`);
+  if(eff) metaItems.push(`<div class="mv-md-item">EFFECT <span>${eff}</span></div>`);
+
+  // Source (TM / HM / tutor) if applicable
+  const tm = TM_HM.find(t=>t.move===mv.name);
+  const tutor = MOVE_TUTORS.find(t=>t.move===mv.name);
+  let sourceHtml = '';
+  if(tm || tutor){
+    const rows = [];
+    if(tm) rows.push(`<div class="mv-src-row"><span class="mv-src-tag">${tm.num}</span><span class="mv-src-loc">${tm.loc}</span></div>`);
+    if(tutor) rows.push(`<div class="mv-src-row"><span class="mv-src-tag mv-src-tutor">TUTOR</span><span class="mv-src-loc">${tutor.loc}</span></div>`);
+    sourceHtml = `<div class="sec-head">📀 TM / HM / TUTOR</div><div class="mv-src-list">${rows.join('')}</div>`;
+  }
+
+  // Learners — sorted by dex number
+  const learners = POKEMON.filter(p=>(LEARNSETS[p.n]||[]).includes(mv.name));
+
+  let learnHtml = '';
+  if(!learners.length){
+    learnHtml = `<div class="empty"><div class="ei">📚</div><p>NO POKÉMON LEARN THIS MOVE<br>IN FRLG</p></div>`;
+  } else {
+    learnHtml = learners.map(p=>`<div class="browse-card" onclick="pickPoke(${p.n})">
+      <div class="bc-left">
+        <div class="bc-name">${p.name}</div>
+        <div class="bc-num">#${String(p.n).padStart(3,'0')}</div>
+      </div>
+      <div class="bc-badges">${p.types.map(t=>`<span class="tb sm t-${t}">${t}</span>`).join('')}</div>
+    </div>`).join('');
+  }
+
+  scroll.innerHTML = `<div class="mv-card">
+      <div class="mv-card-hd">
+        <div class="mv-card-ttl" role="heading">${mv.name}</div>
+        <div class="mv-card-badges">
+          <span class="tb t-${mv.type}">${mv.type}</span>
+          <span class="mtag ${cc}">${cl}</span>
+        </div>
+      </div>
+      <div class="mv-card-meta">${metaItems.join('')}</div>
+    </div>
+    ${sourceHtml}
+    <div class="sec-head">📚 WHO CAN LEARN (${learners.length})</div>
+    ${learnHtml}`;
+  scroll.scrollTop = 0;
 }

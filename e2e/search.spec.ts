@@ -129,3 +129,44 @@ test('EVOLVE button swaps party member to next form', async ({ page }) => {
   await page.locator('#s-scroll').getByRole('button', { name: /EVOLVE Bulbasaur/ }).click();
   await expect(page.locator('#s-scroll').getByRole('button', { name: /EVOLVE Ivysaur/ })).toBeVisible();
 });
+
+test('search by move name surfaces move in dropdown', async ({ page }) => {
+  await page.getByLabel('Search Pokémon').fill('Flamethrower');
+  const drop = page.locator('#s-drop');
+  await expect(drop.getByText('MOVES')).toBeVisible();
+  await expect(drop.getByRole('option', { name: 'Move Flamethrower' })).toBeVisible();
+});
+
+test('picking a move opens move detail with metadata', async ({ page }) => {
+  await page.getByLabel('Search Pokémon').fill('Flamethrower');
+  await page.getByRole('option', { name: 'Move Flamethrower' }).click();
+  const scroll = page.locator('#s-scroll');
+  await expect(scroll.getByRole('heading', { name: 'Flamethrower' })).toBeVisible();
+  await expect(scroll.getByText('95', { exact: true })).toBeVisible();
+  await expect(scroll.getByText('100%', { exact: true })).toBeVisible();
+  await expect(scroll.getByText('burn 10%')).toBeVisible();
+});
+
+test('move detail lists Pokémon that can learn the move', async ({ page }) => {
+  await page.getByLabel('Search Pokémon').fill('Flamethrower');
+  await page.getByRole('option', { name: 'Move Flamethrower' }).click();
+  const scroll = page.locator('#s-scroll');
+  await expect(scroll.getByText(/WHO CAN LEARN/)).toBeVisible();
+  await expect(scroll.getByText('Charmander', { exact: true })).toBeVisible();
+  await expect(scroll.getByText('Charizard', { exact: true })).toBeVisible();
+});
+
+test('tapping a learner opens that Pokémon detail', async ({ page }) => {
+  await page.getByLabel('Search Pokémon').fill('Flamethrower');
+  await page.getByRole('option', { name: 'Move Flamethrower' }).click();
+  await page.locator('#s-scroll').getByText('Charizard', { exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Charizard' })).toBeVisible();
+});
+
+test('move detail shows TM source when applicable', async ({ page }) => {
+  await page.getByLabel('Search Pokémon').fill('Earthquake');
+  await page.getByRole('option', { name: 'Move Earthquake' }).click();
+  const scroll = page.locator('#s-scroll');
+  await expect(scroll.getByText('TM / HM / TUTOR')).toBeVisible();
+  await expect(scroll.getByText('TM26')).toBeVisible();
+});

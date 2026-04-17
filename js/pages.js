@@ -12,7 +12,10 @@ function showPage(id){
   if(id==='tms') renderTMs();
   closeDrawer();
   if(id==='search'){
-    const params = activePoke ? {n:activePoke.n} : (activeTypeFilter ? {type:activeTypeFilter} : {});
+    const params = activePoke ? {n:activePoke.n}
+      : activeMove ? {m:activeMove}
+      : activeTypeFilter ? {type:activeTypeFilter}
+      : {};
     setRoute('search', params);
   } else {
     setRoute(id);

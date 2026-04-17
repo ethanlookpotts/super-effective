@@ -163,7 +163,10 @@ border-bottom:1px solid var(--border);transition:background .1s;}
 .prow:active{background:var(--gold-dim);}
 .pnum{color:var(--text3);font-size:15px;min-width:30px;}
 .pname{flex:1;font-size:16px;font-weight:500;}
-.pbadges{display:flex;gap:3px;flex-shrink:0;}
+.pbadges{display:flex;gap:3px;flex-shrink:0;align-items:center;}
+.pd-lbl{font-family:var(--fp);font-size:7.5px;color:var(--text3);letter-spacing:.3px;
+padding:6px 13px 3px;background:var(--card);border-bottom:1px solid var(--border);}
+.prow.mrow .pname{font-weight:600;}
 
 /* Default state: recents + type browse results */
 .section-label{font-family:var(--fp);font-size:8px;color:var(--text3);
@@ -187,6 +190,28 @@ display:flex;align-items:center;gap:10px;}
 .bc-badges{display:flex;gap:3px;flex-wrap:wrap;flex-shrink:0;}
 .bc-obtain{font-size:14px;color:var(--text3);margin-top:3px;line-height:1.5;
 white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* ── MOVE DETAIL (selected state) ── */
+.mv-card{background:linear-gradient(135deg,rgba(255,201,60,.06),rgba(77,171,247,.04));
+border:1.5px solid rgba(255,201,60,.2);border-radius:var(--r2);
+padding:13px 14px;margin-bottom:13px;}
+.mv-card-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;
+margin-bottom:8px;}
+.mv-card-ttl{font-family:var(--fp);font-size:13px;color:var(--text);line-height:1.4;}
+.mv-card-badges{display:flex;gap:4px;flex-shrink:0;align-items:center;}
+.mv-card-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+.mv-md-item{background:var(--card2);border:1px solid var(--border);border-radius:6px;
+padding:4px 8px;font-family:var(--fp);font-size:7.5px;color:var(--text3);letter-spacing:.3px;}
+.mv-md-item span{color:var(--text);margin-left:5px;font-size:11px;}
+.mv-src-list{display:flex;flex-direction:column;gap:4px;margin-bottom:8px;}
+.mv-src-row{display:flex;align-items:center;gap:8px;background:var(--card2);
+border:1px solid var(--border);border-radius:6px;padding:6px 10px;}
+.mv-src-tag{font-family:var(--fp);font-size:8px;color:var(--green);
+background:rgba(61,220,132,.1);border:1px solid rgba(61,220,132,.25);
+border-radius:4px;padding:3px 6px;letter-spacing:.3px;}
+.mv-src-tag.mv-src-tutor{color:var(--blue);background:rgba(77,171,247,.1);
+border-color:rgba(77,171,247,.25);}
+.mv-src-loc{font-size:13px;color:var(--text2);flex:1;}
 
 /* ── POKEMON DETAIL (selected state) ── */
 .poke-card{background:linear-gradient(135deg,rgba(255,61,90,.05),rgba(72,8,216,.03));
