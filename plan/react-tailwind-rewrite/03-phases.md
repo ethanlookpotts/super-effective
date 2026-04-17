@@ -101,7 +101,7 @@ Before merging to `main`:
 - [ ] Manually exercise every feature path documented in `e2e/specs/*.md`
 - [ ] Verify `se_v1` round-trip: back up localStorage from live site, paste into preview, confirm no data loss
 - [ ] Lighthouse pass (mobile): perf ≥ 90, a11y ≥ 95
-- [ ] Bundle-size review — code-split at the route boundary if > 500 KB gzip
+- [x] Bundle-size review — code-split at the route boundary (`src/routes.tsx` uses `React.lazy` for all 6 routes behind a `<Suspense>` fallback; initial entry dropped from 603 KB → 350 KB, 160 KB → 106 KB gzip; no more Vite chunk-size warning)
 - [ ] Merge PR; monitor gh-pages deploy; remove `pr-preview/pr-N/` directory
 
 ## Phase 11 — Post-merge cleanup (optional)

@@ -109,8 +109,11 @@ Current repo (on branch):
 - `test/` — 3 files (73 tests: 4 repositories + 49 party-calc + 20 damage)
 - `plan/` — this directory
 
-Bundle (last measured):
+Bundle (last measured, after route-level code-splitting):
 - `index.html` — 0.52 KB
 - CSS — 23.2 KB / 5.3 KB gzip
-- JS — 603 KB / 160 KB gzip
-  - Above the 500 KB warning threshold. Code-splitting on routes is a Phase 10 follow-up (not blocking parity).
+- JS — 12 chunks, total ~608 KB / ~182 KB gzip
+  - Initial entry: `index-*.js` 350 KB / 106 KB gzip (shell, router, providers, sync, vendor)
+  - Per-route chunks: `search` 45 KB / 12 KB, `party` 47 KB / 12 KB, `gyms` 13 KB / 4 KB, `tms` 11 KB / 4 KB, `settings` 9 KB / 3 KB, `where-am-i` 7 KB / 2 KB gzip
+  - Shared data chunks lazy-pulled on demand: `sprites` 104 KB / 16 KB, `pokemon` 12 KB / 3 KB, `party-calc` 9 KB / 4 KB, `type-badge` 0.7 KB / 0.5 KB gzip
+  - No more Vite 500 KB chunk warning.
