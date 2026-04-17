@@ -52,7 +52,10 @@ export async function fetchGist(token: string, gistId: string): Promise<SyncPayl
   }
 }
 
-export async function createGist(token: string, store: Store): Promise<{
+export async function createGist(
+  token: string,
+  store: Store,
+): Promise<{
   gistId: string;
   payload: SyncPayload;
 }> {

@@ -74,8 +74,7 @@ export function useSync() {
       const lastSynced = read(LAST_SYNCED_KEY);
       const lastLocalChange = read(LAST_LOCAL_CHANGE_KEY);
       const remoteModified = remote.lastModified || "";
-      const remoteIsNewer =
-        !!remoteModified && (!lastSynced || remoteModified > lastSynced);
+      const remoteIsNewer = !!remoteModified && (!lastSynced || remoteModified > lastSynced);
       const localIsNewer = !!lastLocalChange && (!lastSynced || lastLocalChange > lastSynced);
 
       if (remoteIsNewer && localIsNewer) {
@@ -109,11 +108,7 @@ export function useSync() {
     setStatus((s) => ({ ...s, syncing: true, error: null }));
     try {
       const store = await storeRepo.loadStore();
-      const { gistId: newGistId, payload } = await pushGist(
-        token,
-        settings?.gistId ?? null,
-        store,
-      );
+      const { gistId: newGistId, payload } = await pushGist(token, settings?.gistId ?? null, store);
       write(LAST_SYNCED_KEY, payload.lastModified);
       write(LAST_LOCAL_CHANGE_KEY, null);
       setStatus((s) => ({ ...s, lastSynced: payload.lastModified, gistId: newGistId }));
