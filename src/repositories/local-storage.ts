@@ -23,6 +23,37 @@ function readJson<T>(key: string): unknown {
   }
 }
 
+/**
+ * Best-effort migrations applied before Zod validation so legacy data from the
+ * vanilla app loads cleanly. Mirrors the migrations in the old DataManager.load().
+ */
+function migrateLegacyStore(raw: unknown): unknown {
+  if (!raw || typeof raw !== "object") return raw;
+  const store = raw as { playthroughs?: unknown[]; activePtId?: unknown };
+  if (!Array.isArray(store.playthroughs)) return raw;
+  for (const pt of store.playthroughs) {
+    if (!pt || typeof pt !== "object") continue;
+    const p = pt as Record<string, unknown>;
+    if (!p.gameId || p.gameId === "frlg") p.gameId = "frlg-fr";
+    if (!p.pc) p.pc = [];
+    if (!p.tmInventory) p.tmInventory = {};
+    if (!p.rivalStarter) p.rivalStarter = "bulbasaur";
+    if (!Array.isArray(p.recents)) p.recents = [];
+  }
+  if (store.playthroughs.length) {
+    const first = store.playthroughs[0] as { id?: string };
+    const activeValid =
+      typeof store.activePtId === "string" &&
+      store.playthroughs.some((pt): pt is { id: string } => {
+        return Boolean(pt) && typeof (pt as { id?: unknown }).id === "string";
+      });
+    if (!activeValid && first?.id) store.activePtId = first.id;
+  } else if (!store.activePtId) {
+    store.activePtId = null;
+  }
+  return raw;
+}
+
 export class LocalStorageStoreRepository implements StoreRepository {
   readonly id = "local-storage";
   readonly capabilities = CAPS;
@@ -30,7 +61,8 @@ export class LocalStorageStoreRepository implements StoreRepository {
   async loadStore(): Promise<Store> {
     const raw = readJson(STORE_KEY);
     if (raw == null) return EMPTY_STORE;
-    const parsed = Store.safeParse(raw);
+    const migrated = migrateLegacyStore(raw);
+    const parsed = Store.safeParse(migrated);
     if (!parsed.success) {
       console.warn("[store] corrupted payload, returning empty", parsed.error);
       return EMPTY_STORE;
