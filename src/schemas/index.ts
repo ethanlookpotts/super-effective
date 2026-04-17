@@ -32,6 +32,16 @@ export const PartyMove = z.object({
 });
 export type PartyMove = z.infer<typeof PartyMove>;
 
+export const PartyStats = z.object({
+  hp: z.number().int().min(0).max(999).nullable().optional(),
+  atk: z.number().int().min(0).max(999).nullable().optional(),
+  def: z.number().int().min(0).max(999).nullable().optional(),
+  spatk: z.number().int().min(0).max(999).nullable().optional(),
+  spdef: z.number().int().min(0).max(999).nullable().optional(),
+  spe: z.number().int().min(0).max(999).nullable().optional(),
+});
+export type PartyStats = z.infer<typeof PartyStats>;
+
 export const PartyMember = z.object({
   n: z.number().int().positive(),
   name: z.string().min(1),
@@ -42,6 +52,12 @@ export const PartyMember = z.object({
   item: z.string().optional(),
   gender: z.enum(["M", "F", ""]).optional(),
   shiny: z.boolean().optional(),
+  nature: z.string().optional(),
+  pokeball: z.string().optional(),
+  otName: z.string().optional(),
+  otId: z.string().optional(),
+  trainerMemo: z.string().optional(),
+  stats: PartyStats.optional(),
 });
 export type PartyMember = z.infer<typeof PartyMember>;
 

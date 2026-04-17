@@ -4,7 +4,8 @@ import { POKEMON, type Pokemon } from "~/data/pokemon";
 import { NATURE_NAMES, computeAttackerStats, natureSummary } from "~/data/stats";
 import { useUpdateActivePlaythrough } from "~/hooks/use-playthroughs";
 import { spriteUrl } from "~/lib/sprites";
-import type { PartyMember, PartyMove } from "~/schemas";
+import type { PartyMember, PartyMove, PartyStats } from "~/schemas";
+import { AdvancedInfoSection } from "./edit-modal-info";
 import { MovesSection } from "./edit-modal-moves";
 
 export type EditMode = "party" | "pc";
@@ -15,7 +16,7 @@ export interface EditModalState {
   slot: number;
 }
 
-interface Draft {
+export interface Draft {
   poke: Pokemon | null;
   level: string;
   nature: string;
@@ -28,6 +29,7 @@ interface Draft {
   otName: string;
   otId: string;
   trainerMemo: string;
+  stats: PartyStats | null;
 }
 
 function pokemonFromMember(pm: PartyMember): Pokemon | null {
@@ -49,22 +51,53 @@ function draftFromMember(pm: PartyMember | undefined): Draft {
       otName: "",
       otId: "",
       trainerMemo: "",
+      stats: null,
     };
   }
   return {
     poke: pokemonFromMember(pm),
     level: pm.level !== undefined ? String(pm.level) : "",
-    nature: "",
+    nature: pm.nature ?? "",
     moves: pm.moves ?? [],
     shiny: pm.shiny ?? false,
     ability: pm.ability ?? "",
     item: pm.item ?? "",
     gender: pm.gender ?? "",
-    pokeball: "",
-    otName: "",
-    otId: "",
-    trainerMemo: "",
+    pokeball: pm.pokeball ?? "",
+    otName: pm.otName ?? "",
+    otId: pm.otId ?? "",
+    trainerMemo: pm.trainerMemo ?? "",
+    stats: pm.stats ?? null,
   };
+}
+
+function hasAnyStat(s: PartyStats | null): boolean {
+  if (!s) return false;
+  return Object.values(s).some((v) => typeof v === "number");
+}
+
+function hasAnyInfo(d: Draft): boolean {
+  return Boolean(
+    d.ability ||
+      d.item ||
+      d.gender ||
+      d.shiny ||
+      d.pokeball ||
+      d.otName ||
+      d.otId ||
+      d.trainerMemo ||
+      hasAnyStat(d.stats),
+  );
+}
+
+function infoSummary(d: Draft): string {
+  const parts: string[] = [];
+  if (d.ability) parts.push(d.ability);
+  if (d.item) parts.push(d.item);
+  if (d.gender === "M") parts.push("♂");
+  else if (d.gender === "F") parts.push("♀");
+  if (d.shiny) parts.push("✦ SHINY");
+  return parts.join(" · ");
 }
 
 function draftToMember(draft: Draft): PartyMember | null {
@@ -81,6 +114,12 @@ function draftToMember(draft: Draft): PartyMember | null {
   if (draft.ability) base.ability = draft.ability;
   if (draft.item) base.item = draft.item;
   if (draft.gender) base.gender = draft.gender;
+  if (draft.nature) base.nature = draft.nature;
+  if (draft.pokeball) base.pokeball = draft.pokeball;
+  if (draft.otName) base.otName = draft.otName;
+  if (draft.otId) base.otId = draft.otId;
+  if (draft.trainerMemo) base.trainerMemo = draft.trainerMemo;
+  if (hasAnyStat(draft.stats)) base.stats = draft.stats ?? undefined;
   return base;
 }
 
@@ -207,6 +246,13 @@ export function EditModal({
                   moves={draft.moves}
                   onChange={(moves: PartyMove[]) => patch({ moves })}
                 />
+              </CollapsibleSection>
+              <CollapsibleSection
+                title="INFO"
+                summary={infoSummary(draft)}
+                defaultOpen={hasAnyInfo(draft)}
+              >
+                <AdvancedInfoSection draft={draft} onPatch={patch} />
               </CollapsibleSection>
             </>
           )}
