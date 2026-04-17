@@ -149,25 +149,27 @@ export function SearchRoute() {
   }
 
   return (
-    <section aria-label="Search page" className="flex min-h-full flex-col gap-3">
-      <SearchInput
-        value={query}
-        onChangeValue={setQuery}
-        onPick={handlePick}
-        onClear={() => {
-          setQuery("");
-          clearAll();
-        }}
-      />
-
-      <TypeFilter active={activeType} onToggle={toggleType} />
+    <section aria-label="Search page" className="flex min-h-full flex-col">
+      <div className="page-header-search shrink-0 border-b border-border px-4 pt-3 pb-1">
+        <h2 className="mb-2 font-pixel text-[9px] tracking-wider text-red">🔍 SEARCH</h2>
+        <SearchInput
+          value={query}
+          onChangeValue={setQuery}
+          onPick={handlePick}
+          onClear={() => {
+            setQuery("");
+            clearAll();
+          }}
+        />
+        <TypeFilter active={activeType} onToggle={toggleType} />
+      </div>
 
       <div
         id="s-scroll"
         ref={scrollRef}
         role="region"
         aria-label="Search content"
-        className="min-h-0 flex-1 overflow-y-auto"
+        className="min-h-0 flex-1 overflow-y-auto p-4"
       >
         {activeMove ? (
           <MoveDetail moveName={activeMove} onPickPoke={goPoke} />

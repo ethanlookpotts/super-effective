@@ -43,7 +43,7 @@ export function SearchInput({
 
   return (
     <div ref={boxRef} className="relative">
-      <div className="flex items-center gap-2 rounded-card border border-border bg-card px-3">
+      <div className="flex items-center gap-2 rounded-card border-[1.5px] border-border-2 bg-card-2 px-3 focus-within:border-gold focus-within:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-gold)_18%,transparent)]">
         <input
           id="s-in"
           type="text"

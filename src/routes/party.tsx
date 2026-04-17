@@ -52,34 +52,39 @@ export function PartyRoute() {
   }
 
   return (
-    <section aria-label="Party page" className="flex flex-col gap-3">
-      <header className="flex items-baseline justify-between">
-        <h2 className="font-pixel text-sm text-text">PARTY</h2>
-        {count > 0 && (
-          <span className="font-pixel text-[9px] text-text-3">
-            {count} / {PARTY_MAX} IN PARTY
-          </span>
-        )}
-      </header>
+    <section aria-label="Party page" className="flex flex-col">
+      <div className="page-header-party shrink-0 border-b border-border px-4 pt-3 pb-3">
+        <div className="flex items-baseline justify-between gap-2">
+          <h2 className="font-pixel text-[9px] tracking-wider text-red">🎒 MY PARTY</h2>
+          {count > 0 && (
+            <span className="font-pixel text-[8px] text-text-3">
+              {count} / {PARTY_MAX} IN PARTY
+            </span>
+          )}
+        </div>
+        <p className="mt-1 font-pixel text-[8px] text-text-3">TAP SLOT TO ADD OR EDIT · UP TO 6</p>
+      </div>
 
-      <PartyGrid
-        party={party}
-        onEdit={(idx) => setEditState({ mode: "party", slot: idx })}
-        onAdd={() => setEditState({ mode: "party", slot: -1 })}
-      />
+      <div className="flex flex-col gap-3 p-4">
+        <CoverageBar party={party} />
 
-      <CoverageBar party={party} />
+        <PartyGrid
+          party={party}
+          onEdit={(idx) => setEditState({ mode: "party", slot: idx })}
+          onAdd={() => setEditState({ mode: "party", slot: -1 })}
+        />
 
-      <TmSuggestionPanel party={party} inventory={active.tmInventory} />
+        <TmSuggestionPanel party={party} inventory={active.tmInventory} />
 
-      <SuggestionPanel party={party} pc={active.pc} />
+        <SuggestionPanel party={party} pc={active.pc} />
 
-      <PcBox
-        party={party}
-        pc={active.pc}
-        onEdit={(idx) => setEditState({ mode: "pc", slot: idx })}
-        onAdd={() => setEditState({ mode: "pc", slot: -1 })}
-      />
+        <PcBox
+          party={party}
+          pc={active.pc}
+          onEdit={(idx) => setEditState({ mode: "pc", slot: idx })}
+          onAdd={() => setEditState({ mode: "pc", slot: -1 })}
+        />
+      </div>
 
       {editState && (
         <EditModal

@@ -52,15 +52,15 @@ export function TypeFilter({
               aria-label={t}
               aria-pressed={isActive}
               onClick={() => onToggle(t)}
-              className={`min-h-11 shrink-0 rounded-card border px-2.5 py-1 font-pixel text-[10px] tracking-wider text-white transition ${
-                isActive ? "opacity-100" : "opacity-80"
+              className={`min-h-8 shrink-0 rounded-full border-[1.5px] px-2.5 py-[5px] font-pixel text-[8px] leading-[1.5] tracking-[0.04em] text-white transition active:scale-95 ${
+                isActive ? "opacity-100 shadow-[0_0_6px_rgba(0,0,0,0.08)]" : "opacity-55"
               }`}
               style={{
                 backgroundColor: tc(t),
-                borderColor: isActive ? "var(--color-gold)" : "transparent",
+                borderColor: isActive ? "rgba(0,0,0,.45)" : "transparent",
               }}
             >
-              {t.toUpperCase()}
+              {t}
             </button>
           );
         })}

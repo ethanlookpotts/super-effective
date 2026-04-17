@@ -26,23 +26,25 @@ export function SettingsRoute() {
   }
 
   return (
-    <section className="flex flex-col gap-6 pb-12">
-      <header>
-        <h2 className="font-pixel text-sm text-text">SETTINGS</h2>
-        <p className="mt-1 text-xs text-text-3">
-          Backend: <code>{storeRepo.id}</code>
-          {storeRepo.capabilities.syncsRemotely ? " (syncs remotely)" : ""}
+    <section aria-label="Settings page" className="flex flex-col">
+      <div className="page-header-settings shrink-0 border-b border-border px-4 pt-3 pb-3">
+        <h2 className="font-pixel text-[9px] tracking-wider text-gold">⚙ SETTINGS</h2>
+        <p className="mt-1 font-pixel text-[8px] text-text-3">
+          BACKEND: {storeRepo.id}
+          {storeRepo.capabilities.syncsRemotely ? " · SYNCS REMOTELY" : ""}
         </p>
-      </header>
+      </div>
 
-      <ThemeSection theme={settings.theme} onChange={(theme) => patch({ theme })} />
+      <div className="flex flex-col gap-6 p-4 pb-12">
+        <ThemeSection theme={settings.theme} onChange={(theme) => patch({ theme })} />
 
-      <ClaudeKeySection
-        claudeApiKey={settings.claudeApiKey ?? ""}
-        onChange={(claudeApiKey) => patch({ claudeApiKey: claudeApiKey || undefined })}
-      />
+        <ClaudeKeySection
+          claudeApiKey={settings.claudeApiKey ?? ""}
+          onChange={(claudeApiKey) => patch({ claudeApiKey: claudeApiKey || undefined })}
+        />
 
-      <GitHubSyncSection sync={sync} settings={settings} onPatch={patch} />
+        <GitHubSyncSection sync={sync} settings={settings} onPatch={patch} />
+      </div>
     </section>
   );
 }
@@ -54,20 +56,26 @@ function ThemeSection({
   theme: Settings["theme"];
   onChange: (t: Settings["theme"]) => void;
 }) {
+  const icon: Record<(typeof THEMES)[number], string> = {
+    light: "☀",
+    system: "💻",
+    dark: "🌙",
+  };
   return (
-    <fieldset className="flex flex-col gap-2">
-      <legend className="font-pixel text-xs text-text-2">THEME</legend>
-      <div className="flex gap-2">
+    <fieldset className="flex flex-col gap-2 border-b border-border pb-6">
+      <legend className="font-pixel text-[10px] tracking-wider text-text-2">THEME</legend>
+      <p className="text-sm text-text-2">Choose light, dark, or match your device setting.</p>
+      <div className="mt-1 flex gap-2">
         {THEMES.map((t) => (
           <button
             key={t}
             type="button"
             onClick={() => onChange(t)}
-            className={`min-h-11 flex-1 rounded-card border px-3 text-xs uppercase ${
+            className={`flex min-h-11 flex-1 items-center justify-center gap-1 rounded-card border px-3 font-pixel text-[10px] uppercase tracking-wider ${
               theme === t ? "border-gold bg-card text-text" : "border-border bg-card-2 text-text-2"
             }`}
           >
-            {t}
+            <span className="text-base leading-none">{icon[t]}</span> {t}
           </button>
         ))}
       </div>
@@ -117,18 +125,44 @@ function ClaudeKeySection({
     }
   }
 
+  const keyStatus = claudeApiKey ? (
+    <span className="rounded-full bg-[color-mix(in_srgb,var(--color-green)_14%,transparent)] px-2 py-0.5 font-pixel text-[9px] text-green">
+      KEY ACTIVE
+    </span>
+  ) : (
+    <span className="rounded-full bg-card-2 px-2 py-0.5 font-pixel text-[9px] text-text-3">
+      NO KEY SET
+    </span>
+  );
   return (
-    <fieldset className="flex flex-col gap-2">
-      <legend className="font-pixel text-xs text-text-2">
-        CLAUDE API KEY <span className="text-text-3">(for OCR scan)</span>
+    <fieldset className="flex flex-col gap-2 border-b border-border pb-6">
+      <legend className="flex items-center gap-2 font-pixel text-[10px] tracking-wider text-text-2">
+        CLAUDE API KEY {keyStatus}
       </legend>
+      <p className="text-sm text-text-2">
+        Required for the 📷 SCAN feature. Sent directly to Anthropic — never stored anywhere except
+        this browser.
+      </p>
+      <ol className="mt-1 list-decimal pl-6 text-sm text-text-2 marker:text-text-3">
+        <li>
+          Go to <code className="text-text">console.anthropic.com</code>
+        </li>
+        <li>Sign in or create a free account</li>
+        <li>
+          Open <strong>API Keys → Create Key</strong>
+        </li>
+        <li>
+          Copy the key — starts with <code className="text-gold">sk-ant-</code>
+        </li>
+      </ol>
+      <label className="mt-2 block font-pixel text-[9px] tracking-wider text-text-3">API KEY</label>
       <input
         type="password"
         aria-label="Claude API key"
-        placeholder="sk-ant-…"
+        placeholder={claudeApiKey ? "Key saved — enter new key to replace" : "sk-ant-…"}
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
-        className="min-h-11 rounded-card border border-border bg-card px-3 text-sm text-text"
+        className="min-h-11 rounded-card border-[1.5px] border-border-2 bg-card-2 px-3 text-sm text-text focus:border-gold focus:outline-none"
       />
       <div className="flex gap-2">
         <button
@@ -205,18 +239,32 @@ function GitHubSyncSection({
     onPatch({ githubToken: tokenDraft || undefined });
   }
 
+  const tokenStatus = settings.githubToken ? (
+    <span className="rounded-full bg-[color-mix(in_srgb,var(--color-green)_14%,transparent)] px-2 py-0.5 font-pixel text-[9px] text-green">
+      CONNECTED
+    </span>
+  ) : (
+    <span className="rounded-full bg-card-2 px-2 py-0.5 font-pixel text-[9px] text-text-3">
+      NOT SET UP
+    </span>
+  );
   return (
     <fieldset className="flex flex-col gap-2">
-      <legend className="font-pixel text-xs text-text-2">
-        GITHUB SYNC <span className="text-text-3">(cross-device)</span>
+      <legend className="flex items-center gap-2 font-pixel text-[10px] tracking-wider text-text-2">
+        GITHUB SYNC {tokenStatus}
       </legend>
+      <p className="text-sm text-text-2">
+        Sync your playthroughs across devices via a private GitHub Gist. Requires a fine-grained
+        personal access token with <strong>Gists</strong> read &amp; write permission.
+      </p>
+      <label className="mt-2 block font-pixel text-[9px] tracking-wider text-text-3">TOKEN</label>
       <input
         type="password"
         aria-label="GitHub personal access token"
         placeholder="ghp_… or github_pat_…"
         value={tokenDraft}
         onChange={(e) => setTokenDraft(e.target.value)}
-        className="min-h-11 rounded-card border border-border bg-card px-3 text-sm text-text"
+        className="min-h-11 rounded-card border-[1.5px] border-border-2 bg-card-2 px-3 text-sm text-text focus:border-gold focus:outline-none"
       />
       <div className="flex flex-wrap gap-2">
         <button

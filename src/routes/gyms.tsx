@@ -66,74 +66,83 @@ export function GymsRoute() {
   }
 
   return (
-    <section aria-label="Gyms page" className="flex flex-col gap-3">
-      <header>
-        <h2 className="font-pixel text-sm text-text">GYMS &amp; ELITE FOUR</h2>
-      </header>
-
-      <div
-        role="region"
-        aria-label="Rival starter"
-        className="rounded-card border border-border bg-card p-3"
-      >
-        <div className="mb-2 font-pixel text-xs text-gold">🏁 GARY — YOUR STARTER</div>
-        <div className="flex gap-2">
-          {(Object.keys(STARTER_LABEL) as RivalStarter[]).map((s) => (
-            <button
-              key={s}
-              type="button"
-              aria-pressed={rivalStarter === s}
-              onClick={() => setStarter(s)}
-              className={`min-h-11 flex-1 rounded-card border px-2 text-xs ${
-                rivalStarter === s ? "border-gold bg-card-2 text-text" : "border-border text-text-2"
-              }`}
-            >
-              {STARTER_LABEL[s]}
-            </button>
-          ))}
-        </div>
+    <section aria-label="Gyms page" className="flex flex-col">
+      <div className="page-header-gyms shrink-0 border-b border-border px-4 pt-3 pb-3">
+        <h2 className="font-pixel text-[9px] tracking-wider text-green">
+          🏆 GYMS, RIVAL &amp; ELITE FOUR
+        </h2>
+        <p className="mt-1 font-pixel text-[8px] text-text-3">
+          TAP ANY POKÉMON TO SEARCH IT · SELECT YOUR STARTER ABOVE
+        </p>
       </div>
 
-      <div className="flex flex-col gap-2">
-        {ORDER.map((entry) => {
-          const key = keyFor(entry);
-          const open = openKey === key;
-          if (entry.type === "rival") {
-            const r = RIVALS[entry.i];
-            if (!r) return null;
-            const team = r.teams[rivalStarter];
+      <div className="flex flex-col gap-3 p-4">
+        <div
+          role="region"
+          aria-label="Rival starter"
+          className="rounded-card border border-border bg-card p-3"
+        >
+          <div className="mb-2 font-pixel text-xs text-gold">🏁 GARY — YOUR STARTER</div>
+          <div className="flex gap-2">
+            {(Object.keys(STARTER_LABEL) as RivalStarter[]).map((s) => (
+              <button
+                key={s}
+                type="button"
+                aria-pressed={rivalStarter === s}
+                onClick={() => setStarter(s)}
+                className={`min-h-11 flex-1 rounded-card border px-2 text-xs ${
+                  rivalStarter === s
+                    ? "border-gold bg-card-2 text-text"
+                    : "border-border text-text-2"
+                }`}
+              >
+                {STARTER_LABEL[s]}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          {ORDER.map((entry) => {
+            const key = keyFor(entry);
+            const open = openKey === key;
+            if (entry.type === "rival") {
+              const r = RIVALS[entry.i];
+              if (!r) return null;
+              const team = r.teams[rivalStarter];
+              return (
+                <BossCard
+                  key={key}
+                  title={r.location}
+                  sub={r.sub}
+                  icon={r.icon}
+                  color="#ffc93c"
+                  team={team}
+                  tip={r.tip}
+                  open={open}
+                  onToggle={() => setOpenKey(open ? null : key)}
+                  onPick={goSearch}
+                />
+              );
+            }
+            const b = BOSSES[entry.i];
+            if (!b) return null;
             return (
               <BossCard
                 key={key}
-                title={r.location}
-                sub={r.sub}
-                icon={r.icon}
-                color="#ffc93c"
-                team={team}
-                tip={r.tip}
+                title={b.name}
+                sub={b.sub}
+                icon={b.icon}
+                color={b.color}
+                team={b.team}
+                tip={b.tip}
                 open={open}
                 onToggle={() => setOpenKey(open ? null : key)}
                 onPick={goSearch}
               />
             );
-          }
-          const b = BOSSES[entry.i];
-          if (!b) return null;
-          return (
-            <BossCard
-              key={key}
-              title={b.name}
-              sub={b.sub}
-              icon={b.icon}
-              color={b.color}
-              team={b.team}
-              tip={b.tip}
-              open={open}
-              onToggle={() => setOpenKey(open ? null : key)}
-              onPick={goSearch}
-            />
-          );
-        })}
+          })}
+        </div>
       </div>
     </section>
   );

@@ -167,157 +167,161 @@ export function TmsRoute() {
   const allMissing = allTotal - allOwned;
 
   return (
-    <section aria-label="TMs and HMs page" className="flex flex-col gap-3">
-      <header className="flex items-baseline justify-between">
-        <h2 className="font-pixel text-sm text-text">TMs &amp; HMs</h2>
-      </header>
-
-      <label className="flex flex-col gap-1">
-        <span className="sr-only">Search TMs and HMs</span>
-        <input
-          type="search"
-          aria-label="Search TMs and HMs"
-          placeholder="TM number, move, or location…"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="min-h-11 rounded-card border border-border bg-card px-3 text-sm text-text"
-        />
-      </label>
-
-      <ScanButton
-        label="📷 SCAN TM CASE"
-        ariaLabel="Scan TM Case"
-        busy={scanBusy}
-        onFiles={onScanFiles}
-      />
-      {scanSummary && <TmScanSummaryRow summary={scanSummary} />}
-
-      <div
-        role="group"
-        aria-label="Filter by ownership"
-        className="flex gap-2 rounded-card border border-border bg-card p-1"
-      >
-        {(["all", "owned", "missing"] as const).map((f) => (
-          <button
-            key={f}
-            type="button"
-            aria-pressed={filter === f}
-            onClick={() => setFilter(f)}
-            className={`min-h-11 flex-1 rounded-card px-2 text-xs ${
-              filter === f ? "bg-card-2 text-text" : "text-text-2"
-            }`}
-          >
-            {f.toUpperCase()}{" "}
-            <span className="ml-1 text-text-3">
-              {f === "all" ? allTotal : f === "owned" ? allOwned : allMissing}
-            </span>
-          </button>
-        ))}
+    <section aria-label="TMs and HMs page" className="flex flex-col">
+      <div className="page-header-tms shrink-0 border-b border-border px-4 pt-3 pb-3">
+        <h2 className="mb-2 font-pixel text-[9px] tracking-wider text-blue">📀 TMs &amp; HMs</h2>
+        <div className="flex items-stretch gap-2">
+          <label className="flex min-w-0 flex-1 flex-col gap-1">
+            <span className="sr-only">Search TMs and HMs</span>
+            <input
+              type="search"
+              aria-label="Search TMs and HMs"
+              placeholder="Move name or TM number…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="min-h-11 w-full rounded-card border border-border-2 bg-card-2 px-3 text-sm text-text focus:border-blue focus:outline-none"
+            />
+          </label>
+          <ScanButton
+            label="📷 SCAN"
+            ariaLabel="Scan TM Case"
+            busy={scanBusy}
+            onFiles={onScanFiles}
+            className="min-h-11 shrink-0 rounded-card border border-[color-mix(in_srgb,var(--color-gold)_25%,transparent)] bg-[color-mix(in_srgb,var(--color-gold)_7%,transparent)] px-3 font-pixel text-[10px] text-gold disabled:opacity-50"
+          />
+        </div>
       </div>
 
-      {carrierRanking.length > 0 && (
+      <div className="flex flex-col gap-3 p-4">
+        {scanSummary && <TmScanSummaryRow summary={scanSummary} />}
+
         <div
-          aria-label="Recommended HM Carrier"
-          className="rounded-card border border-gold bg-card p-3"
+          role="group"
+          aria-label="Filter by ownership"
+          className="flex gap-2 rounded-card border border-border bg-card p-1"
         >
-          <div className="font-pixel text-xs text-gold">
-            🎒 HM CARRIER — BEST FIELD-MOVE HOLDERS
-          </div>
-          <div className="mt-1 text-[10px] text-text-3">
-            Keep a utility mon for HMs so your battlers don't burn moveslots.
-          </div>
-          <div className="mt-2 flex flex-col gap-2">
-            {carrierRanking.map((c, i) => (
-              <div
-                key={`${c.pm.n}-${i}`}
-                className="flex items-center gap-2 rounded-card bg-card-2 p-2"
-              >
-                <span className="w-6 text-[10px] font-pixel text-text-3">#{i + 1}</span>
-                <Sprite dex={c.pm.n} className="h-8 w-8" />
-                <div className="flex-1">
-                  <div className="text-sm text-text">{c.pm.name}</div>
-                  <div className="text-[10px] text-text-3">
-                    CARRIES {c.hmsLearnable}/{ownedHms.length} HMs
+          {(["all", "owned", "missing"] as const).map((f) => (
+            <button
+              key={f}
+              type="button"
+              aria-pressed={filter === f}
+              onClick={() => setFilter(f)}
+              className={`min-h-11 flex-1 rounded-card px-2 text-xs ${
+                filter === f ? "bg-card-2 text-text" : "text-text-2"
+              }`}
+            >
+              {f.toUpperCase()}{" "}
+              <span className="ml-1 text-text-3">
+                {f === "all" ? allTotal : f === "owned" ? allOwned : allMissing}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {carrierRanking.length > 0 && (
+          <div
+            aria-label="Recommended HM Carrier"
+            className="rounded-card border border-gold bg-card p-3"
+          >
+            <div className="font-pixel text-xs text-gold">
+              🎒 HM CARRIER — BEST FIELD-MOVE HOLDERS
+            </div>
+            <div className="mt-1 text-[10px] text-text-3">
+              Keep a utility mon for HMs so your battlers don't burn moveslots.
+            </div>
+            <div className="mt-2 flex flex-col gap-2">
+              {carrierRanking.map((c, i) => (
+                <div
+                  key={`${c.pm.n}-${i}`}
+                  className="flex items-center gap-2 rounded-card bg-card-2 p-2"
+                >
+                  <span className="w-6 text-[10px] font-pixel text-text-3">#{i + 1}</span>
+                  <Sprite dex={c.pm.n} className="h-8 w-8" />
+                  <div className="flex-1">
+                    <div className="text-sm text-text">{c.pm.name}</div>
+                    <div className="text-[10px] text-text-3">
+                      CARRIES {c.hmsLearnable}/{ownedHms.length} HMs
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {tms.length === 0 && hms.length === 0 && tutors.length === 0 ? (
-        <div className="p-4 text-center text-sm text-text-2">
-          <div className="text-2xl">📀</div>
-          NO RESULTS
-        </div>
-      ) : (
-        <>
-          {tms.length > 0 && (
-            <Section label={`TMs (${tms.length})`}>
-              {tms.map((t) => (
-                <TmCard
-                  key={t.num}
-                  entry={t}
-                  count={tmCount(t.num)}
-                  owned={tmOwned(t.num)}
-                  expanded={expanded.has(t.num)}
-                  onToggleExpand={toggleExpand}
-                  onSetCount={setCount}
-                  learners={learnersByMove[t.move] ?? EMPTY_LEARNERS}
-                  onOpenTeach={openTeach}
-                />
               ))}
-            </Section>
-          )}
-          {hms.length > 0 && (
-            <Section label={`HMs (${hms.length})`}>
-              {hms.map((t) => (
-                <TmCard
-                  key={t.num}
-                  entry={t}
-                  count={tmCount(t.num)}
-                  owned={tmOwned(t.num)}
-                  expanded={expanded.has(t.num)}
-                  onToggleExpand={toggleExpand}
-                  onSetCount={setCount}
-                  learners={learnersByMove[t.move] ?? EMPTY_LEARNERS}
-                  onOpenTeach={openTeach}
-                />
-              ))}
-            </Section>
-          )}
-          {tutors.length > 0 && (
-            <Section label={`MOVE TUTORS (${tutors.length})`}>
-              {tutors.map((t) => (
-                <TmCard
-                  key={t.num}
-                  entry={t}
-                  count={tmCount(t.num)}
-                  owned={tmOwned(t.num)}
-                  expanded={expanded.has(t.num)}
-                  onToggleExpand={toggleExpand}
-                  onSetCount={setCount}
-                  learners={learnersByMove[t.move] ?? EMPTY_LEARNERS}
-                  onOpenTeach={openTeach}
-                />
-              ))}
-            </Section>
-          )}
-        </>
-      )}
-
-      <Section label="UTILITY NPCs">
-        {UTILITY_NPCS.map((u) => (
-          <div key={u.label} className="rounded-card border border-border bg-card p-3">
-            <div className="font-pixel text-xs text-text">{u.label}</div>
-            <div className="mt-1 text-[10px] text-text-3">{u.loc}</div>
-            <div className="mt-1 text-xs text-text-2">
-              <span className="text-gold">{u.cost}</span> · {u.note}
             </div>
           </div>
-        ))}
-      </Section>
+        )}
+
+        {tms.length === 0 && hms.length === 0 && tutors.length === 0 ? (
+          <div className="p-4 text-center text-sm text-text-2">
+            <div className="text-2xl">📀</div>
+            NO RESULTS
+          </div>
+        ) : (
+          <>
+            {tms.length > 0 && (
+              <Section label={`TMs (${tms.length})`}>
+                {tms.map((t) => (
+                  <TmCard
+                    key={t.num}
+                    entry={t}
+                    count={tmCount(t.num)}
+                    owned={tmOwned(t.num)}
+                    expanded={expanded.has(t.num)}
+                    onToggleExpand={toggleExpand}
+                    onSetCount={setCount}
+                    learners={learnersByMove[t.move] ?? EMPTY_LEARNERS}
+                    onOpenTeach={openTeach}
+                  />
+                ))}
+              </Section>
+            )}
+            {hms.length > 0 && (
+              <Section label={`HMs (${hms.length})`}>
+                {hms.map((t) => (
+                  <TmCard
+                    key={t.num}
+                    entry={t}
+                    count={tmCount(t.num)}
+                    owned={tmOwned(t.num)}
+                    expanded={expanded.has(t.num)}
+                    onToggleExpand={toggleExpand}
+                    onSetCount={setCount}
+                    learners={learnersByMove[t.move] ?? EMPTY_LEARNERS}
+                    onOpenTeach={openTeach}
+                  />
+                ))}
+              </Section>
+            )}
+            {tutors.length > 0 && (
+              <Section label={`MOVE TUTORS (${tutors.length})`}>
+                {tutors.map((t) => (
+                  <TmCard
+                    key={t.num}
+                    entry={t}
+                    count={tmCount(t.num)}
+                    owned={tmOwned(t.num)}
+                    expanded={expanded.has(t.num)}
+                    onToggleExpand={toggleExpand}
+                    onSetCount={setCount}
+                    learners={learnersByMove[t.move] ?? EMPTY_LEARNERS}
+                    onOpenTeach={openTeach}
+                  />
+                ))}
+              </Section>
+            )}
+          </>
+        )}
+
+        <Section label="UTILITY NPCs">
+          {UTILITY_NPCS.map((u) => (
+            <div key={u.label} className="rounded-card border border-border bg-card p-3">
+              <div className="font-pixel text-xs text-text">{u.label}</div>
+              <div className="mt-1 text-[10px] text-text-3">{u.loc}</div>
+              <div className="mt-1 text-xs text-text-2">
+                <span className="text-gold">{u.cost}</span> · {u.note}
+              </div>
+            </div>
+          ))}
+        </Section>
+      </div>
     </section>
   );
 }

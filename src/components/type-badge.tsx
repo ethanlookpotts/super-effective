@@ -8,13 +8,13 @@ export function TypeBadge({
   type: TypeName;
   size?: "sm" | "md";
 }) {
-  const scale = size === "sm" ? "px-1.5 py-0.5 text-[9px]" : "px-2 py-1 text-[10px]";
+  const scale = size === "sm" ? "px-[7px] py-[2px] text-[8px]" : "px-2 py-[3px] text-[9px]";
   return (
     <span
-      className={`inline-block rounded font-pixel tracking-wider text-white ${scale}`}
+      className={`inline-block rounded-[5px] font-pixel leading-[1.5] tracking-[0.04em] text-white ${scale}`}
       style={{ backgroundColor: tc(type) }}
     >
-      {type.toUpperCase()}
+      {type}
     </span>
   );
 }
