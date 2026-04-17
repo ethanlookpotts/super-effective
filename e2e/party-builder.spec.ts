@@ -1,49 +1,33 @@
 // spec: e2e/specs/party-builder.md
-import { expect, test } from "./fixtures";
+import { expect, seedPlaythrough, test } from "./fixtures";
 
-// Helper: send N Pokémon to PC via the legacy JS API.
-// TODO(phase-8): re-port — the React build doesn't expose `window.addToPC`.
-// Helper should seed via localStorage `se_v1` when this spec is walked.
-interface LegacyWindow {
-  addToPC(n: number): void;
-  addToParty(n: number): void;
-  showPage(name: string): void;
-}
 async function seedPC(page: import("@playwright/test").Page, dexNums: number[]) {
-  await page.evaluate((nums: number[]) => {
-    const w = window as unknown as LegacyWindow;
-    for (const n of nums) w.addToPC(n);
-  }, dexNums);
+  await seedPlaythrough(page, { pc: dexNums.map((n) => ({ n })) });
 }
 
-test("send Pokémon to PC from search", async ({ page }) => {
-  await page.getByLabel("Search Pokémon").fill("Pikachu");
-  await page.getByRole("option", { name: "Pikachu" }).click();
-  await expect(page.getByRole("button", { name: "📦 SEND TO PC" })).toBeVisible();
-  await page.getByRole("button", { name: "📦 SEND TO PC" }).click();
-  // Button switches to inactive "IN PC BOX"
-  await expect(page.getByRole("button", { name: "📦 IN PC BOX" })).toBeVisible();
-});
+// The React rewrite does not expose a "Send to PC" button from the search
+// detail card — the only way to add a Pokémon to the PC Box is via the Party
+// route's PC Box "ADD NEW" tile. The three tests below are parked as fixme
+// pending a decision on whether to re-introduce the shortcut.
+test.fixme("send Pokémon to PC from search (feature absent in React rewrite)", async () => {});
+test.fixme(
+  "PC Box shows caught count after adding from search (feature absent in React rewrite)",
+  async () => {},
+);
+test.fixme(
+  "IN PC BOX button is inactive when Pokémon already in PC (feature absent in React rewrite)",
+  async () => {},
+);
 
-test("PC Box shows caught count after adding from search", async ({ page }) => {
-  await page.getByLabel("Search Pokémon").fill("Charizard");
-  await page.getByRole("option", { name: "Charizard" }).click();
-  await page.getByRole("button", { name: "📦 SEND TO PC" }).click();
-  await page.getByRole("button", { name: "🎒 MY PARTY" }).click();
+test("add new Pokémon to PC via PC Box ADD NEW tile", async ({ page }) => {
+  await page.getByRole("link", { name: "PARTY" }).click();
+  await page.getByRole("button", { name: "Add new Pokémon to PC" }).click();
+  const addModal = page.getByRole("dialog", { name: "ADD TO PC" });
+  await addModal.getByLabel("Search Pokémon").fill("Pikachu");
+  await page.getByRole("option", { name: "Pikachu" }).click();
+  await page.getByRole("button", { name: /ADD TO PC/ }).click();
   await expect(page.getByText("(1 CAUGHT)")).toBeVisible();
-  await expect(page.getByRole("region", { name: "PC Box" }).getByText("Charizard")).toBeVisible();
-});
-
-test("IN PC BOX button is inactive when Pokémon already in PC", async ({ page }) => {
-  await page.getByLabel("Search Pokémon").fill("Pikachu");
-  await page.getByRole("option", { name: "Pikachu" }).click();
-  await page.getByRole("button", { name: "📦 SEND TO PC" }).click();
-  // Re-open Pikachu detail
-  await page.getByLabel("Search Pokémon").fill("Pikachu");
-  await page.getByRole("option", { name: "Pikachu" }).click();
-  const inPcBtn = page.getByRole("button", { name: "📦 IN PC BOX" });
-  await expect(inPcBtn).toBeVisible();
-  await expect(inPcBtn).toBeDisabled();
+  await expect(page.getByRole("region", { name: "PC Box" }).getByText("Pikachu")).toBeVisible();
 });
 
 test("move Pokémon from PC to party (party not full)", async ({ page }) => {
@@ -61,13 +45,14 @@ test("remove Pokémon from PC — cancel then confirm", async ({ page }) => {
   await page.getByRole("link", { name: "PARTY" }).click();
   // Tap ✕ to enter confirm state
   await page.getByRole("button", { name: "Remove Pikachu from PC" }).click();
-  await expect(page.getByRole("button", { name: "YES" })).toBeVisible();
+  const confirm = page.getByRole("group", { name: "Confirm remove Pikachu" });
+  await expect(confirm).toBeVisible();
   // Cancel
-  await page.getByRole("button", { name: "NO" }).click();
+  await page.getByRole("button", { name: "Cancel remove" }).click();
   await expect(page.getByRole("region", { name: "PC Box" }).getByText("Pikachu")).toBeVisible();
   // Confirm removal
   await page.getByRole("button", { name: "Remove Pikachu from PC" }).click();
-  await page.getByRole("button", { name: "YES" }).click();
+  await page.getByRole("button", { name: "Confirm remove Pikachu" }).click();
   await expect(page.getByText("(0 CAUGHT)")).toBeVisible();
 });
 
@@ -96,12 +81,11 @@ test("suggestion strip cards appear with Pokémon in PC", async ({ page }) => {
 
 test("suggestion uses party + PC as combined pool", async ({ page }) => {
   // 3 in party, 3 in PC — should still produce a valid suggestion
-  await page.evaluate(() => {
-    const w = window as unknown as LegacyWindow;
-    for (const n of [6, 9, 3]) w.addToParty(n);
-    for (const n of [94, 65, 131]) w.addToPC(n);
-    w.showPage("party");
+  await seedPlaythrough(page, {
+    party: [{ n: 6 }, { n: 9 }, { n: 3 }],
+    pc: [{ n: 94 }, { n: 65 }, { n: 131 }],
   });
+  await page.getByRole("link", { name: "PARTY" }).click();
   await expect(page.getByRole("button", { name: /Suggestion 1/ })).toBeVisible();
   await page.getByRole("button", { name: /Suggestion 1/ }).click();
   await expect(page.getByText(/\d+\/18 COVERED/)).toBeVisible();

@@ -124,9 +124,12 @@ test("party matchup shows stat category note and move power/effect", async ({ pa
   // Add Flamethrower via edit modal
   await page.getByRole("link", { name: "PARTY" }).click();
   await page.getByRole("button", { name: "Edit Charizard" }).click();
-  await page.getByRole("button", { name: "Moves section" }).click();
-  await page.getByRole("textbox", { name: "Search moves..." }).fill("Flamethrower");
-  await page.getByRole("region", { name: "Move picker" }).getByText("Flamethrower").click();
+  await page.getByRole("button", { name: /Expand MOVES/ }).click();
+  await page.getByRole("textbox", { name: "Search moves" }).fill("Flamethrower");
+  await page
+    .getByRole("listbox", { name: "Move results" })
+    .getByRole("option", { name: "Add Flamethrower" })
+    .click();
   await page.getByRole("button", { name: /SAVE/ }).click();
   // Navigate back to search
   await page.getByRole("link", { name: "SEARCH" }).click();
