@@ -5,19 +5,30 @@ async function seedPC(page: import("@playwright/test").Page, dexNums: number[]) 
   await seedPlaythrough(page, { pc: dexNums.map((n) => ({ n })) });
 }
 
-// The React rewrite does not expose a "Send to PC" button from the search
-// detail card — the only way to add a Pokémon to the PC Box is via the Party
-// route's PC Box "ADD NEW" tile. The three tests below are parked as fixme
-// pending a decision on whether to re-introduce the shortcut.
-test.fixme("send Pokémon to PC from search (feature absent in React rewrite)", async () => {});
-test.fixme(
-  "PC Box shows caught count after adding from search (feature absent in React rewrite)",
-  async () => {},
-);
-test.fixme(
-  "IN PC BOX button is inactive when Pokémon already in PC (feature absent in React rewrite)",
-  async () => {},
-);
+test("send Pokémon to PC from search", async ({ page }) => {
+  await page.getByLabel("Search Pokémon").fill("Pikachu");
+  await page.getByRole("option", { name: "Pikachu" }).click();
+  await page.getByRole("button", { name: "Send Pikachu to PC" }).click();
+  await page.getByRole("link", { name: "PARTY" }).click();
+  await expect(page.getByRole("region", { name: "PC Box" }).getByText("Pikachu")).toBeVisible();
+});
+
+test("PC Box shows caught count after adding from search", async ({ page }) => {
+  await page.getByLabel("Search Pokémon").fill("Pikachu");
+  await page.getByRole("option", { name: "Pikachu" }).click();
+  await page.getByRole("button", { name: "Send Pikachu to PC" }).click();
+  await page.getByRole("link", { name: "PARTY" }).click();
+  await expect(page.getByText("(1 CAUGHT)")).toBeVisible();
+});
+
+test("IN PC BOX button is inactive when Pokémon already in PC", async ({ page }) => {
+  await seedPC(page, [25]); // Pikachu
+  await page.getByLabel("Search Pokémon").fill("Pikachu");
+  await page.getByRole("option", { name: "Pikachu" }).click();
+  const inPC = page.getByRole("button", { name: "Pikachu in PC box" });
+  await expect(inPC).toBeVisible();
+  await expect(inPC).toBeDisabled();
+});
 
 test("add new Pokémon to PC via PC Box ADD NEW tile", async ({ page }) => {
   await page.getByRole("link", { name: "PARTY" }).click();

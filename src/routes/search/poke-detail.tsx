@@ -14,22 +14,27 @@ export function PokeDetail({
   poke,
   gameId,
   party,
+  pc,
   onPick,
   onAddToParty,
+  onAddToPC,
   onEvolve,
   onBreakdown,
 }: {
   poke: Pokemon;
   gameId: string;
   party: readonly PartyMember[];
+  pc: readonly PartyMember[];
   onPick: (dex: number) => void;
   onAddToParty: (dex: number) => void;
+  onAddToPC: (dex: number) => void;
   onEvolve: (memberDex: number, targetDex: number) => void;
   onBreakdown?: (atkType: string) => void;
 }) {
   const obtain = useMemo(() => getObtain(poke.n, gameId), [poke.n, gameId]);
   const stats = STATS[poke.n];
   const inParty = party.some((pm) => pm.n === poke.n);
+  const inPC = pc.some((pm) => pm.n === poke.n);
   const abilityMod = getAbilityMod(String(poke.n));
 
   return (
@@ -97,25 +102,46 @@ export function PokeDetail({
 
       <TypeMatchup defenderDex={poke.n} defenderTypes={poke.types} onSelectType={onBreakdown} />
 
-      {inParty ? (
-        <button
-          type="button"
-          aria-label={`${poke.name} in party`}
-          className="min-h-11 rounded-[var(--radius-card)] border border-[var(--color-green)] bg-[var(--color-card-2)] px-3 py-2 font-[var(--font-pixel)] text-[10px] text-[var(--color-green)]"
-          disabled
-        >
-          ✓ IN PARTY
-        </button>
-      ) : (
-        <button
-          type="button"
-          aria-label={`Add ${poke.name} to party`}
-          onClick={() => onAddToParty(poke.n)}
-          className="min-h-11 rounded-[var(--radius-card)] border border-[var(--color-gold)] bg-[var(--color-gold)]/10 px-3 py-2 font-[var(--font-pixel)] text-[10px] text-[var(--color-gold)]"
-        >
-          ➕ ADD TO PARTY
-        </button>
-      )}
+      <div className="flex flex-col gap-2">
+        {inParty ? (
+          <button
+            type="button"
+            aria-label={`${poke.name} in party`}
+            className="min-h-11 rounded-[var(--radius-card)] border border-[var(--color-green)] bg-[var(--color-card-2)] px-3 py-2 font-[var(--font-pixel)] text-[10px] text-[var(--color-green)]"
+            disabled
+          >
+            ✓ IN PARTY
+          </button>
+        ) : (
+          <button
+            type="button"
+            aria-label={`Add ${poke.name} to party`}
+            onClick={() => onAddToParty(poke.n)}
+            className="min-h-11 rounded-[var(--radius-card)] border border-[var(--color-gold)] bg-[var(--color-gold)]/10 px-3 py-2 font-[var(--font-pixel)] text-[10px] text-[var(--color-gold)]"
+          >
+            ➕ ADD TO PARTY
+          </button>
+        )}
+        {inPC ? (
+          <button
+            type="button"
+            aria-label={`${poke.name} in PC box`}
+            className="min-h-11 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card-2)] px-3 py-2 font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]"
+            disabled
+          >
+            📦 IN PC BOX
+          </button>
+        ) : (
+          <button
+            type="button"
+            aria-label={`Send ${poke.name} to PC`}
+            onClick={() => onAddToPC(poke.n)}
+            className="min-h-11 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card-2)] px-3 py-2 font-[var(--font-pixel)] text-[10px] text-[var(--color-text)]"
+          >
+            📦 SEND TO PC
+          </button>
+        )}
+      </div>
 
       <PartyMatchupList enemyDex={poke.n} enemyTypes={poke.types} party={party} />
     </div>

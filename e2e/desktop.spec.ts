@@ -37,10 +37,14 @@ test("type filter pills are all reachable at desktop width", async ({ page }) =>
   }
 });
 
-test.fixme(
-  "party grid shows 3 columns at desktop width (React uses fixed 2-col grid)",
-  async () => {},
-);
+test("party grid shows 3 columns at desktop width", async ({ page }) => {
+  await page.getByRole("link", { name: "PARTY" }).click();
+  const grid = page.getByLabel("Party grid");
+  await expect(grid).toBeVisible();
+  const tracks = await grid.evaluate((el) => getComputedStyle(el).gridTemplateColumns);
+  // Three grid tracks means 3 columns.
+  expect(tracks.split(" ").filter(Boolean).length).toBe(3);
+});
 
 test("edit modal renders as a centered dialog", async ({ page }) => {
   await page.getByRole("link", { name: "PARTY" }).click();

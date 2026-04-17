@@ -21,6 +21,7 @@ export function SearchRoute() {
   const active = useActivePlaythrough();
   const gameId = active?.gameId ?? "frlg-fr";
   const party = active?.party ?? [];
+  const pc = active?.pc ?? [];
   const recents = active?.recents ?? [];
 
   const [params, setParams] = useSearchParams();
@@ -152,6 +153,28 @@ export function SearchRoute() {
     [active, updatePt],
   );
 
+  const handleAddToPC = useCallback(
+    (n: number) => {
+      if (!active) return;
+      const poke = pokeByDex(n);
+      if (!poke) return;
+      if (active.pc.some((pm) => pm.n === n)) return;
+      updatePt.mutate((pt) => ({
+        ...pt,
+        pc: [
+          ...pt.pc,
+          {
+            n: poke.n,
+            name: poke.name,
+            types: [...poke.types],
+            moves: [],
+          },
+        ],
+      }));
+    },
+    [active, updatePt],
+  );
+
   // Evolve a party member to a target dex.
   const handleEvolve = useCallback(
     (memberDex: number, targetDex: number) => {
@@ -207,8 +230,10 @@ export function SearchRoute() {
             poke={activePoke}
             gameId={gameId}
             party={party}
+            pc={pc}
             onPick={goPoke}
             onAddToParty={handleAddToParty}
+            onAddToPC={handleAddToPC}
             onEvolve={handleEvolve}
             onBreakdown={openTypeBreakdown}
           />
