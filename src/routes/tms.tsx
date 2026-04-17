@@ -1,11 +1,11 @@
 import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TypeBadge } from "~/components/type-badge";
-import { LEARNSETS } from "~/data/learnsets";
 import { TM_HM, type TmHmEntry } from "~/data/moves";
 import { MOVE_TUTORS, type MoveTutor, UTILITY_NPCS } from "~/data/tutors";
 import { ScanButton } from "~/features/scan/scan-button";
 import { ScanError, readTMCase } from "~/features/scan/vision-client";
+import { type LearnsetsMap, useLearnsets } from "~/hooks/use-learnsets";
 import { useUpdateActivePlaythrough } from "~/hooks/use-playthroughs";
 import { useActivePlaythrough } from "~/hooks/use-store";
 import { makePartyCalc } from "~/lib/party-calc";
@@ -31,9 +31,10 @@ function taggedPool(pt: Playthrough) {
   ];
 }
 
-function learnersOf(moveName: string, pt: Playthrough) {
+function learnersOf(moveName: string, pt: Playthrough, learnsets: LearnsetsMap | undefined) {
+  if (!learnsets) return { inParty: [], inPC: [] };
   const pool = taggedPool(pt);
-  const canLearn = (pm: PartyMember) => (LEARNSETS[pm.n] ?? []).includes(moveName);
+  const canLearn = (pm: PartyMember) => (learnsets[pm.n] ?? []).includes(moveName);
   return {
     inParty: pool.filter((e) => e.src === "party" && canLearn(e.pm)),
     inPC: pool.filter((e) => e.src === "pc" && canLearn(e.pm)),
@@ -44,6 +45,7 @@ export function TmsRoute() {
   const active = useActivePlaythrough();
   const updatePt = useUpdateActivePlaythrough();
   const navigate = useNavigate();
+  const learnsets = useLearnsets();
 
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
@@ -84,13 +86,13 @@ export function TmsRoute() {
   }, [query, filter, inv]);
 
   const carrierRanking = useMemo(() => {
-    if (!active || ownedHms.length < 2) return [];
+    if (!active || ownedHms.length < 2 || !learnsets) return [];
     const pool = [...active.party, ...active.pc];
     if (!pool.length) return [];
     return calc
-      .computeHMCarriers(pool, ownedHms, (dex, move) => (LEARNSETS[dex] ?? []).includes(move))
+      .computeHMCarriers(pool, ownedHms, (dex, move) => (learnsets[dex] ?? []).includes(move))
       .slice(0, 3);
-  }, [active, ownedHms]);
+  }, [active, ownedHms, learnsets]);
 
   const toggleExpand = (num: string) => {
     setExpanded((prev) => {
@@ -271,7 +273,7 @@ export function TmsRoute() {
                   expanded={expanded.has(t.num)}
                   onToggleExpand={toggleExpand}
                   onSetCount={setCount}
-                  learners={learnersOf(t.move, active)}
+                  learners={learnersOf(t.move, active, learnsets)}
                   onOpenTeach={openTeach}
                 />
               ))}
@@ -288,7 +290,7 @@ export function TmsRoute() {
                   expanded={expanded.has(t.num)}
                   onToggleExpand={toggleExpand}
                   onSetCount={setCount}
-                  learners={learnersOf(t.move, active)}
+                  learners={learnersOf(t.move, active, learnsets)}
                   onOpenTeach={openTeach}
                 />
               ))}
@@ -305,7 +307,7 @@ export function TmsRoute() {
                   expanded={expanded.has(t.num)}
                   onToggleExpand={toggleExpand}
                   onSetCount={setCount}
-                  learners={learnersOf(t.move, active)}
+                  learners={learnersOf(t.move, active, learnsets)}
                   onOpenTeach={openTeach}
                 />
               ))}

@@ -1,4 +1,3 @@
-import { LEARNSETS } from "~/data/learnsets";
 import { MOVE_DATA, type MoveStats } from "~/data/moves";
 import { type AttackerStats, STATS, computeAttackerStats, damageRangePct } from "~/data/stats";
 import { PHYS, TYPES, dmult, gm } from "~/data/types";
@@ -440,6 +439,3 @@ export function makePartyCalc(): PartyCalc {
     computeHMCarriers,
   };
 }
-
-/** Re-export LEARNSETS for convenience when callers implement canLearn. */
-export { LEARNSETS };

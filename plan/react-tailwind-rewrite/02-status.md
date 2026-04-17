@@ -109,11 +109,12 @@ Current repo (on branch):
 - `test/` — 3 files (73 tests: 4 repositories + 49 party-calc + 20 damage)
 - `plan/` — this directory
 
-Bundle (last measured, after route-level code-splitting):
+Bundle (last measured, after route-level + learnsets code-splitting):
 - `index.html` — 0.52 KB
 - CSS — 23.2 KB / 5.3 KB gzip
-- JS — 12 chunks, total ~608 KB / ~182 KB gzip
+- JS — 13 chunks, total ~608 KB / ~172 KB gzip
   - Initial entry: `index-*.js` 350 KB / 106 KB gzip (shell, router, providers, sync, vendor)
   - Per-route chunks: `search` 45 KB / 12 KB, `party` 47 KB / 12 KB, `gyms` 13 KB / 4 KB, `tms` 11 KB / 4 KB, `settings` 9 KB / 3 KB, `where-am-i` 7 KB / 2 KB gzip
-  - Shared data chunks lazy-pulled on demand: `sprites` 104 KB / 16 KB, `pokemon` 12 KB / 3 KB, `party-calc` 9 KB / 4 KB, `type-badge` 0.7 KB / 0.5 KB gzip
+  - Shared chunks pulled when a dependent route mounts: `sprites` (ALL_MOVES + MOVE_DATA) 35 KB / 10 KB, `pokemon` 12 KB / 3 KB, `party-calc` 9 KB / 4 KB, `type-badge` 0.7 KB / 0.5 KB gzip
+  - `learnsets` 69 KB / 7 KB gzip — lazy-fetched via `useLearnsets` (React Query); consumed only when a component that reads learnsets mounts (Search move-detail, Party edit modal, Party TM suggestions, TMs page). Users who never view a move's learners pay zero.
   - No more Vite 500 KB chunk warning.

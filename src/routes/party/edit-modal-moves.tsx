@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import { TypeBadge } from "~/components/type-badge";
-import { getLearnset } from "~/data/learnsets";
 import { ALL_MOVES, type Move } from "~/data/moves";
 import { TYPES } from "~/data/types";
+import { useLearnsets } from "~/hooks/use-learnsets";
 import { tc } from "~/lib/colors";
 import type { PartyMove, TypeName } from "~/schemas";
 
@@ -28,10 +28,15 @@ export function MovesSection({
   const [typeFilter, setTypeFilter] = useState<TypeName | null>(null);
   const [hpPicking, setHpPicking] = useState(false);
 
-  const learnset = useMemo(() => getLearnset(dexN), [dexN]);
+  const learnsets = useLearnsets();
+  const learnset = useMemo(() => {
+    const arr = learnsets?.[dexN];
+    return arr ? new Set(arr) : null;
+  }, [learnsets, dexN]);
   const q = query.trim().toLowerCase();
 
   const pool = useMemo(() => {
+    if (!learnset) return [];
     return ALL_MOVES.filter((m) => learnset.has(m.name));
   }, [learnset]);
 

@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import { TypeBadge } from "~/components/type-badge";
-import { LEARNSETS } from "~/data/learnsets";
 import { ALL_MOVES, MOVE_DATA, TM_HM } from "~/data/moves";
 import { POKEMON } from "~/data/pokemon";
 import { MOVE_TUTORS } from "~/data/tutors";
+import { useLearnsets } from "~/hooks/use-learnsets";
 
 export function MoveDetail({
   moveName,
@@ -16,10 +16,11 @@ export function MoveDetail({
   const md = mv ? MOVE_DATA[mv.name] : undefined;
   const tm = useMemo(() => TM_HM.find((t) => t.move === moveName), [moveName]);
   const tutor = useMemo(() => MOVE_TUTORS.find((t) => t.move === moveName), [moveName]);
+  const learnsets = useLearnsets();
   const learners = useMemo(() => {
-    if (!mv) return [];
-    return POKEMON.filter((p) => (LEARNSETS[p.n] ?? []).includes(mv.name));
-  }, [mv]);
+    if (!mv || !learnsets) return [];
+    return POKEMON.filter((p) => (learnsets[p.n] ?? []).includes(mv.name));
+  }, [mv, learnsets]);
 
   if (!mv) {
     return (

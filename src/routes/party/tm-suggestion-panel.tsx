@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { TypeBadge } from "~/components/type-badge";
-import { LEARNSETS } from "~/data/learnsets";
 import { TM_HM } from "~/data/moves";
 import { MOVE_TUTORS } from "~/data/tutors";
+import { type LearnsetsMap, useLearnsets } from "~/hooks/use-learnsets";
 import { makePartyCalc } from "~/lib/party-calc";
 import { spriteUrl } from "~/lib/sprites";
 import type { PartyMember, TypeName } from "~/schemas";
@@ -51,6 +51,7 @@ function ownedTeachSources(inventory: Record<string, number>): TeachSource[] {
 function computeSuggestions(
   party: readonly PartyMember[],
   inventory: Record<string, number>,
+  learnsets: LearnsetsMap,
   maxResults = 6,
 ): Suggestion[] {
   if (party.length === 0) return [];
@@ -60,7 +61,7 @@ function computeSuggestions(
   const results: Suggestion[] = [];
   for (const src of owned) {
     const learnable = new Set(
-      party.filter((pm) => (LEARNSETS[pm.n] ?? []).includes(src.move)).map((pm) => pm.n),
+      party.filter((pm) => (learnsets[pm.n] ?? []).includes(src.move)).map((pm) => pm.n),
     );
     if (learnable.size === 0) continue;
     const ranked = calc.rankTeachTargets(party, { name: src.move, type: src.type }, learnable);
@@ -91,7 +92,11 @@ export function TmSuggestionPanel({
   inventory: Record<string, number>;
 }) {
   const navigate = useNavigate();
-  const suggestions = useMemo(() => computeSuggestions(party, inventory), [party, inventory]);
+  const learnsets = useLearnsets();
+  const suggestions = useMemo(
+    () => (learnsets ? computeSuggestions(party, inventory, learnsets) : []),
+    [party, inventory, learnsets],
+  );
 
   if (suggestions.length === 0) return null;
 
