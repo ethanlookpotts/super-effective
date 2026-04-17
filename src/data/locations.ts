@@ -1,0 +1,248 @@
+/**
+ * FRLG encounter data for the "Where Am I" feature.
+ * Hand-curated for Gen III (FireRed/LeafGreen) accuracy — do not regenerate.
+ */
+
+export interface Encounter {
+  label: string;
+  p: readonly string[];
+}
+
+export interface Location {
+  name: string;
+  methods: readonly Encounter[];
+}
+
+export const LOCATIONS: readonly Location[] = [
+  { name: "Route 1", methods: [{ label: "🌿 Grass", p: ["Pidgey", "Rattata"] }] },
+  {
+    name: "Route 2",
+    methods: [
+      {
+        label: "🌿 Grass",
+        p: ["Pidgey", "Rattata", "Caterpie", "Metapod", "Weedle", "Kakuna"],
+      },
+    ],
+  },
+  {
+    name: "Viridian Forest",
+    methods: [{ label: "🌿 Grass", p: ["Caterpie", "Metapod", "Weedle", "Kakuna", "Pikachu"] }],
+  },
+  {
+    name: "Route 3",
+    methods: [{ label: "🌿 Grass", p: ["Pidgey", "Jigglypuff", "Mankey", "Spearow"] }],
+  },
+  {
+    name: "Route 4",
+    methods: [
+      { label: "🌿 Grass", p: ["Spearow", "Ekans", "Sandshrew", "Mankey"] },
+      { label: "🎣 Rod", p: ["Magikarp", "Tentacool"] },
+    ],
+  },
+  {
+    name: "Mt. Moon",
+    methods: [{ label: "🌿 Cave", p: ["Zubat", "Geodude", "Clefairy", "Paras"] }],
+  },
+  {
+    name: "Route 5",
+    methods: [{ label: "🌿 Grass", p: ["Pidgey", "Meowth", "Mankey", "Oddish", "Bellsprout"] }],
+  },
+  {
+    name: "Route 6",
+    methods: [{ label: "🌿 Grass", p: ["Pidgey", "Meowth", "Mankey", "Oddish", "Bellsprout"] }],
+  },
+  {
+    name: "Route 7",
+    methods: [
+      {
+        label: "🌿 Grass",
+        p: ["Pidgey", "Meowth", "Oddish", "Bellsprout", "Growlithe", "Vulpix"],
+      },
+    ],
+  },
+  {
+    name: "Route 8",
+    methods: [
+      {
+        label: "🌿 Grass",
+        p: ["Pidgey", "Meowth", "Oddish", "Bellsprout", "Growlithe", "Vulpix"],
+      },
+    ],
+  },
+  {
+    name: "Route 9",
+    methods: [
+      {
+        label: "🌿 Grass",
+        p: ["Rattata", "Spearow", "Ekans", "Sandshrew", "Nidoran♀", "Nidoran♂"],
+      },
+    ],
+  },
+  {
+    name: "Route 10",
+    methods: [
+      { label: "🌿 Grass", p: ["Rattata", "Spearow", "Voltorb", "Magnemite"] },
+      { label: "🎣 Rod", p: ["Magikarp", "Poliwag"] },
+    ],
+  },
+  {
+    name: "Rock Tunnel",
+    methods: [{ label: "🌿 Cave", p: ["Zubat", "Geodude", "Machop", "Onix", "Mankey"] }],
+  },
+  {
+    name: "Route 11",
+    methods: [{ label: "🌿 Grass", p: ["Ekans", "Sandshrew", "Spearow", "Drowzee"] }],
+  },
+  {
+    name: "Route 12",
+    methods: [
+      { label: "🌿 Grass", p: ["Pidgey", "Gloom", "Weepinbell", "Snorlax"] },
+      { label: "🎣 Rod", p: ["Magikarp", "Poliwag", "Goldeen"] },
+    ],
+  },
+  {
+    name: "Route 13",
+    methods: [
+      {
+        label: "🌿 Grass",
+        p: ["Pidgey", "Pidgeotto", "Gloom", "Weepinbell", "Ditto"],
+      },
+      { label: "🎣 Rod", p: ["Magikarp", "Poliwag", "Goldeen"] },
+    ],
+  },
+  {
+    name: "Route 14",
+    methods: [
+      {
+        label: "🌿 Grass",
+        p: ["Pidgey", "Pidgeotto", "Gloom", "Weepinbell", "Ditto"],
+      },
+    ],
+  },
+  {
+    name: "Route 15",
+    methods: [
+      {
+        label: "🌿 Grass",
+        p: ["Pidgey", "Pidgeotto", "Gloom", "Weepinbell", "Ditto"],
+      },
+    ],
+  },
+  {
+    name: "Route 16",
+    methods: [{ label: "🌿 Grass", p: ["Spearow", "Doduo", "Rattata", "Snorlax"] }],
+  },
+  {
+    name: "Route 17 (Cycling Road)",
+    methods: [{ label: "🌿 Grass", p: ["Spearow", "Doduo", "Rattata", "Fearow", "Dodrio"] }],
+  },
+  {
+    name: "Route 18",
+    methods: [{ label: "🌿 Grass", p: ["Spearow", "Doduo", "Fearow", "Dodrio"] }],
+  },
+  {
+    name: "Safari Zone",
+    methods: [
+      {
+        label: "🌿 Zone 1",
+        p: ["Nidoran♀", "Nidoran♂", "Nidorina", "Nidorino", "Paras", "Parasect", "Rhyhorn"],
+      },
+      {
+        label: "🌿 Zone 2",
+        p: ["Exeggcute", "Kangaskhan", "Scyther", "Pinsir", "Tauros"],
+      },
+      { label: "🌿 Zone 3", p: ["Venomoth", "Chansey", "Tangela", "Dragonair"] },
+      { label: "🌿 Zone 4", p: ["Dratini", "Dragonair"] },
+      {
+        label: "🎣 Rod",
+        p: ["Magikarp", "Psyduck", "Slowpoke", "Goldeen", "Seaking"],
+      },
+    ],
+  },
+  {
+    name: "Pokémon Mansion",
+    methods: [
+      {
+        label: "🌿 Inside",
+        p: ["Grimer", "Koffing", "Weezing", "Muk", "Rattata", "Ditto"],
+      },
+    ],
+  },
+  {
+    name: "Seafoam Islands",
+    methods: [
+      { label: "🌿 Cave", p: ["Zubat", "Golbat", "Seel", "Dewgong", "Slowpoke"] },
+      { label: "🏊 Surf", p: ["Tentacool", "Seel", "Slowpoke", "Horsea"] },
+    ],
+  },
+  {
+    name: "Victory Road",
+    methods: [
+      {
+        label: "🌿 Cave",
+        p: ["Zubat", "Golbat", "Geodude", "Graveler", "Onix", "Machop", "Machoke", "Marowak"],
+      },
+    ],
+  },
+  {
+    name: "Route 21",
+    methods: [
+      { label: "🌿 Grass", p: ["Tangela", "Pidgey", "Pidgeotto"] },
+      { label: "🏊 Surf", p: ["Tentacool", "Tentacruel"] },
+    ],
+  },
+  {
+    name: "Route 22",
+    methods: [
+      {
+        label: "🌿 Grass",
+        p: ["Rattata", "Spearow", "Nidoran♀", "Nidoran♂", "Mankey"],
+      },
+    ],
+  },
+  {
+    name: "Route 23",
+    methods: [
+      { label: "🌿 Grass", p: ["Ekans", "Sandshrew", "Spearow", "Fearow"] },
+      { label: "🏊 Surf", p: ["Poliwag", "Poliwhirl"] },
+    ],
+  },
+  {
+    name: "Route 24",
+    methods: [
+      { label: "🌿 Grass", p: ["Caterpie", "Weedle", "Oddish", "Bellsprout", "Abra"] },
+      { label: "🎣 Rod", p: ["Magikarp", "Poliwag"] },
+    ],
+  },
+  {
+    name: "Route 25",
+    methods: [
+      { label: "🌿 Grass", p: ["Caterpie", "Weedle", "Oddish", "Bellsprout", "Abra"] },
+      { label: "🎣 Rod", p: ["Magikarp", "Psyduck", "Staryu"] },
+    ],
+  },
+  {
+    name: "Cerulean Cave",
+    methods: [
+      { label: "🌿 Cave", p: ["Arbok", "Rhydon", "Chansey", "Golbat", "Parasect"] },
+      { label: "🏊 Surf", p: ["Psyduck", "Golduck", "Ditto", "Slowpoke"] },
+    ],
+  },
+  {
+    name: "Power Plant",
+    methods: [
+      {
+        label: "🌿 Inside",
+        p: ["Magnemite", "Magneton", "Voltorb", "Electrode", "Electabuzz", "Zapdos"],
+      },
+    ],
+  },
+  {
+    name: "Diglett's Cave",
+    methods: [{ label: "🌿 Cave", p: ["Diglett", "Dugtrio"] }],
+  },
+  {
+    name: "Water Routes (Surfing)",
+    methods: [{ label: "🏊 Surf", p: ["Tentacool", "Tentacruel"] }],
+  },
+];
