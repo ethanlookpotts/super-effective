@@ -35,3 +35,28 @@ Full teams with levels, types, and tactical tips for every gym leader, rival enc
 Browse wild encounters by location. Tap any Pokémon to look it up.
 
 ![Where Am I page showing Safari Zone encounters by zone](screenshots/where-am-i-safari.png)
+
+---
+
+## Stack
+
+- **Vite 6** + **React 19** + **TypeScript 5.7** (strict)
+- **Tailwind CSS v4** with theme tokens
+- **TanStack Query v5** over a **Zod**-validated, backend-agnostic Repository layer (static / localStorage / GitHub Gist)
+- **Biome 1.9** — lint + format + import-sort
+- **Vitest 2** (unit) + **Playwright** (E2E)
+
+## Run locally
+
+```bash
+npm install
+npm run dev        # http://localhost:5173
+npm run build      # production build to dist/
+npm test           # Vitest
+npm run lint       # Biome check
+npm run typecheck  # tsc --noEmit
+```
+
+## Deploy
+
+Served statically from the `gh-pages` branch, published by GitHub Actions on every push to `main`. PRs get a live preview at `/pr-preview/pr-N/` (commented on the PR automatically). See `AGENTS.md` for the full build guide.
