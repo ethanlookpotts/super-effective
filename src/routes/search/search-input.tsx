@@ -72,6 +72,7 @@ export function SearchInput({
         <div
           role="listbox"
           aria-label="Search results dropdown"
+          tabIndex={-1}
           className="absolute left-0 right-0 top-[calc(100%+4px)] z-30 max-h-[60vh] overflow-y-auto rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] shadow-lg"
         >
           {pokes.length > 0 && (

@@ -40,11 +40,7 @@ export function PokeDetail({
             <span className="font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]">
               #{String(poke.n).padStart(3, "0")}
             </span>
-            <h2
-              className="font-[var(--font-pixel)] text-base text-[var(--color-text)]"
-              role="heading"
-              aria-level={2}
-            >
+            <h2 className="font-[var(--font-pixel)] text-base text-[var(--color-text)]">
               {poke.name}
             </h2>
             <div className="mt-1 flex gap-1">

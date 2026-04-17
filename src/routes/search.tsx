@@ -166,7 +166,7 @@ export function SearchRoute() {
   );
 
   return (
-    <section role="region" aria-label="Search page" className="flex min-h-full flex-col gap-3">
+    <section aria-label="Search page" className="flex min-h-full flex-col gap-3">
       <SearchInput
         value={query}
         onChangeValue={setQuery}

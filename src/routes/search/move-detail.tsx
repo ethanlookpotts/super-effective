@@ -46,13 +46,7 @@ export function MoveDetail({
     <div className="flex flex-col gap-3">
       <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] p-3">
         <div className="flex items-start justify-between gap-2">
-          <h3
-            className="font-[var(--font-pixel)] text-sm text-[var(--color-text)]"
-            role="heading"
-            aria-level={2}
-          >
-            {mv.name}
-          </h3>
+          <h2 className="font-[var(--font-pixel)] text-sm text-[var(--color-text)]">{mv.name}</h2>
           <div className="flex items-center gap-1">
             <TypeBadge type={mv.type} />
             <span
