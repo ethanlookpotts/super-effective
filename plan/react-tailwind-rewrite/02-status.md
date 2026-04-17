@@ -70,7 +70,7 @@ See [03-phases.md](./03-phases.md) Phase 5. Subcomponents status:
 - [x] `routes/party/coverage-bar.tsx` — offensive type coverage strip (18 types)
 - [ ] `routes/party/edit-modal.tsx` — biggest piece: Pokémon picker, level, nature, moves, advanced stats
 - [ ] `routes/party/pc-box.tsx` — PC scroll grid + full-party-swap modal
-- [ ] `routes/party/suggestion-panel.tsx` — top-5 team suggestions from `calc.computeSuggestions`
+- [x] `routes/party/suggestion-panel.tsx` — top-5 team suggestions from `calc.computeSuggestions` (strip + dialog + apply writes active playthrough)
 - [ ] `routes/party/tm-suggestion-panel.tsx` — "best moves to teach now"
 - [ ] Teach modal deep-link (`?teach=<dex>:<move>`)
 

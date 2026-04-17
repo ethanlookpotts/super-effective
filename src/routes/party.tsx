@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useActivePlaythrough } from "~/hooks/use-store";
 import { CoverageBar } from "./party/coverage-bar";
 import { PARTY_MAX, PartyGrid } from "./party/party-grid";
+import { SuggestionPanel } from "./party/suggestion-panel";
 
 export function PartyRoute() {
   const active = useActivePlaythrough();
@@ -44,6 +45,8 @@ export function PartyRoute() {
       <PartyGrid party={party} onEdit={editMember} onAdd={goPickPokemon} />
 
       <CoverageBar party={party} />
+
+      <SuggestionPanel party={party} pc={active.pc} />
     </section>
   );
 }
