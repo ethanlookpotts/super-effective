@@ -9,7 +9,24 @@ Evolving into a multi-game companion app with playthrough support.
 
 ## Backlog
 
-### High Priority
+### High Priority — React migration port
+
+The vanilla app was deleted in Session 29 as part of a big-bang rewrite to Vite + React + TS + Tailwind + Biome + React Query + Zod. Only the Settings route is functional end-to-end. Everything below must be ported to the new stack before feature parity returns.
+
+- [ ] Port `data-types.js` → `src/data/types.ts` (Zod schema + Gen III CHART + gm/dmult helpers)
+- [ ] Port `data-pokemon.js` → `src/data/pokemon.ts` (POKEMON 151, HOW obtain, getObtain)
+- [ ] Port `data-moves.js`, `data-tutors.js`, `data-abilities.js`, `data-learnsets.js`, `data-locations.js`, `data-bosses.js`, `data-stats.js` → typed modules in `src/data/`
+- [ ] Port `party-calc.js` scoring engine → `src/lib/party-calc.ts` (pure, re-tested under Vitest)
+- [ ] Port `state.js` + `data-manager.js` gist-sync behaviour into `GistStoreRepository` (currently stubbed)
+- [ ] Port `search.js` → `src/routes/search.tsx` (pokemon + move search, type filter pills, move detail)
+- [ ] Port `party.js` → `src/routes/party.tsx` (party grid, edit modal, PC swap modal, suggestions)
+- [ ] Port `gyms.js` → `src/routes/gyms.tsx` (gym + E4 + rival scouting)
+- [ ] Port Where Am I + TMs pages (`pages.js`) into dedicated route files
+- [ ] Port `playthroughs.js` → playthrough menu component + hooks
+- [ ] Port `breakdown.js` sprite helpers + breakdown overlay
+- [ ] Port `ocr.js` Claude Vision scan into `src/features/scan/`
+- [ ] Re-port every `e2e/*.spec.ts` against the React DOM (accessible locators already; selectors just need a smoke pass once routes render real content)
+- [ ] `scripts/screenshot-readme.ts` to regenerate the 4 tracked README screenshots via Playwright against Vite preview
 
 ### Medium Priority
 - [ ] IV/EV input — add back once accessible in-game (Gen III has no in-game IV/EV display; consider IV range calculator from scanned stats + nature + level, or EV tracking from battle history)
@@ -28,6 +45,28 @@ Evolving into a multi-game companion app with playthrough support.
 ---
 
 ## Progress
+
+### Session 29 — Big-Bang Rewrite to React + TS + Tailwind + Biome + React Query + Zod
+
+**Completed**
+- [x] Stack chosen: Vite 6 + React 19 + TypeScript 5.7 (strict, `erasableSyntaxOnly`, `verbatimModuleSyntax`) + Tailwind v4 + React Router 7 HashRouter + TanStack Query v5 + Zod 3 + Biome 1.9 + Vitest 2. Flat repo layout (no `web/` subfolder — big-bang on feature branch, main safe).
+- [x] Theme tokens ported from `style.css` CSS variables to Tailwind `@theme` block in `src/styles/index.css`; dark mode via `[data-theme="dark"]` on `<html>`; mobile-first `#root { max-width: 480px }` preserved.
+- [x] Zod schemas for `Store`, `Playthrough`, `PartyMember`, `PartyMove`, `Settings` in `src/schemas/index.ts` — parsed at every repository boundary so invalid data never reaches components.
+- [x] Backend-agnostic data layer in `src/repositories/`: `StoreRepository` / `SettingsRepository` interfaces (`types.ts`), `LocalStorageStoreRepository` (default, validates via Zod), `InMemoryStoreRepository` (tests), stubbed `GistStoreRepository` (port of `js/data-manager.js` pending). `RepositoryProvider` context + `useRepositories` / `useStoreRepository` / `useSettingsRepository` hooks. Swapping backends is a single prop change on the provider.
+- [x] React Query hooks over the Repository layer in `src/hooks/`: `useStore`, `useSaveStore`, `useActivePlaythrough`, `useSettings`, `useSaveSettings`. Default `staleTime: 30_000`, `refetchOnWindowFocus: false`. Every mutation invalidates its query key.
+- [x] Shell + HashRouter with route stubs for Search / Party / Gyms / Where / TMs / Settings. Settings route is the proof-of-concept end-to-end (theme toggle persists through the Repository + React Query round trip).
+- [x] Vitest unit tests: 4 round-trip tests for `InMemoryStoreRepository` + `InMemorySettingsRepository`. Zod boundary rejection verified.
+- [x] Biome as the only linter/formatter (lint + format + import-sort in one binary). `biome.json` at root; `e2e/`, `docs/`, `screenshots/` ignored until e2e ports.
+- [x] `.github/workflows/ci.yml` — runs Biome + tsc + Vitest + Vite build on every PR and main push. Biome uses `--reporter=github` for inline PR annotations.
+- [x] GitHub Pages deployment flipped to `gh-pages` branch + Actions. `pages-deploy.yml` on main push publishes to `gh-pages` root; `pages-preview.yml` on PR publishes to `gh-pages/pr-preview/pr-N/` via `rossjrw/pr-preview-action` and posts the preview URL as a PR comment. `keep_files: true` on main deploys so PR previews survive. Workflows handle both vanilla and Vite states so they could coexist during rollout.
+- [x] Big-bang: deleted vanilla `index.html`, `style.css`, `js/`, root `test/*.test.js`, `playwright.config.js`, `screenshot-readme.js`, old `package.json`. Everything that survives is the React stack at repo root.
+- [x] Rewrote `AGENTS.md` for the new stack (file map, rules, commit style, testing, recurring patterns). `README.md` updated with stack + run commands. `CLAUDE.md` unchanged (still `@AGENTS.md`).
+
+**Repo setup required after merging this PR (one-time, owner does in UI)**
+- Settings → Actions → General → Workflow permissions: **Read and write**
+- Settings → Pages → Source: **Deploy from a branch** → `gh-pages`, folder `/`
+
+**Not yet ported** (see Backlog → High Priority). Only Settings is functional end-to-end. The next session picks one route (Search, simplest), ports its data dependencies (types + pokemon), and ships it behind the new stack.
 
 ### Session 28 — Accessible E2E Locators
 
