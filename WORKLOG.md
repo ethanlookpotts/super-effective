@@ -11,7 +11,7 @@ Evolving into a multi-game companion app with playthrough support.
 
 ### High Priority — React migration port
 
-🚧 **In progress on long-lived branch `refactor/react-tailwind`. See [`plan/`](./plan/) for the full rewrite plan — phases, status, risks, architecture, deployment.** Do not merge the tracking PR until every phase in [`plan/03-phases.md`](./plan/03-phases.md) is `DONE`.
+🚧 **In progress on long-lived branch `refactor/react-tailwind`. See [`plan/react-tailwind-rewrite/`](./plan/react-tailwind-rewrite/) for the full rewrite plan — phases, status, risks, architecture, deployment.** Do not merge the tracking PR until every phase in [`plan/react-tailwind-rewrite/03-phases.md`](./plan/react-tailwind-rewrite/03-phases.md) is `DONE`.
 
 ### Medium Priority
 - [ ] IV/EV input — add back once accessible in-game (Gen III has no in-game IV/EV display; consider IV range calculator from scanned stats + nature + level, or EV tracking from battle history)
@@ -33,7 +33,7 @@ Evolving into a multi-game companion app with playthrough support.
 
 ### Session 29 — React + Tailwind Rewrite (ongoing, long-lived branch)
 
-**Branch**: `refactor/react-tailwind` (long-lived). **Plan**: [`plan/`](./plan/). **Tracking PR**: open against `main`, not to be merged until every phase in [`plan/03-phases.md`](./plan/03-phases.md) is `DONE`.
+**Branch**: `refactor/react-tailwind` (long-lived). **Plan**: [`plan/react-tailwind-rewrite/`](./plan/react-tailwind-rewrite/). **Tracking PR**: open against `main`, not to be merged until every phase in [`plan/react-tailwind-rewrite/03-phases.md`](./plan/react-tailwind-rewrite/03-phases.md) is `DONE`.
 
 **Highlights so far**
 - Full infra + data layer + repositories + sync client + playthrough hooks done
@@ -41,7 +41,7 @@ Evolving into a multi-game companion app with playthrough support.
 - Party route in progress (subagent drafted subcomponents; assembly pending)
 - Breakdown overlay, OCR UI wiring, E2E re-port, screenshots all outstanding
 
-For the authoritative status snapshot, see [`plan/02-status.md`](./plan/02-status.md).
+For the authoritative status snapshot, see [`plan/react-tailwind-rewrite/02-status.md`](./plan/react-tailwind-rewrite/02-status.md).
 
 Detailed per-commit progress lives in git log on `refactor/react-tailwind` (not mirrored here — the plan and git log are the two sources of truth).
 
