@@ -446,7 +446,11 @@ function TmCard({
           <button
             type="button"
             aria-pressed={owned}
-            aria-label={`${owned ? "Taught" : "Not taught"} ${entry.move} tutor`}
+            aria-label={
+              entry.tmType === "hm"
+                ? `${owned ? "Have" : "Need"} ${entry.num}`
+                : `${owned ? "Taught" : "Not taught"} ${entry.move} tutor`
+            }
             onClick={() => onSetCount(entry.num, owned ? 0 : 1)}
             className={`min-h-11 rounded-[var(--radius-card)] border px-3 text-xs ${
               owned
