@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { BreakdownOverlay, type BreakdownTarget } from "~/components/breakdown-overlay";
 import { TypeBadge } from "~/components/type-badge";
@@ -36,10 +36,7 @@ export function SearchRoute() {
   const activeType: TypeName | null =
     typeParam && isTypeName(typeParam) ? (typeParam as TypeName) : null;
 
-  const activePoke = useMemo(
-    () => (activeDex !== null ? (pokeByDex(activeDex) ?? null) : null),
-    [activeDex],
-  );
+  const activePoke = activeDex !== null ? (pokeByDex(activeDex) ?? null) : null;
 
   const [query, setQuery] = useState("");
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -76,131 +73,80 @@ export function SearchRoute() {
     });
   }, [active, activePoke, updatePt]);
 
-  const goPoke = useCallback(
-    (n: number) => {
-      setParams({ n: String(n) });
-    },
-    [setParams],
-  );
+  function goPoke(n: number) {
+    setParams({ n: String(n) });
+  }
 
-  const goMove = useCallback(
-    (name: string) => {
-      setParams({ m: name });
-    },
-    [setParams],
-  );
+  function goMove(name: string) {
+    setParams({ m: name });
+  }
 
-  const clearAll = useCallback(() => {
+  function clearAll() {
     setParams({});
-  }, [setParams]);
+  }
 
-  const toggleType = useCallback(
-    (t: TypeName) => {
-      if (activeType === t) {
-        setParams({});
-      } else {
-        setParams({ type: t });
-      }
-    },
-    [activeType, setParams],
-  );
+  function toggleType(t: TypeName) {
+    setParams(activeType === t ? {} : { type: t });
+  }
 
-  const handlePick = useCallback(
-    (pick: SearchPick) => {
-      if (pick.kind === "pokemon") goPoke(pick.dex);
-      else goMove(pick.name);
-    },
-    [goPoke, goMove],
-  );
+  function handlePick(pick: SearchPick) {
+    if (pick.kind === "pokemon") goPoke(pick.dex);
+    else goMove(pick.name);
+  }
 
-  // Add-to-party with simple confirm when the party is full.
-  const handleAddToParty = useCallback(
-    (n: number) => {
-      if (!active) return;
-      const poke = pokeByDex(n);
-      if (!poke) return;
-      if (active.party.length >= 6) {
-        // Simple confirm-and-swap: replace the last member.
-        const confirm = window.confirm(
-          `Party is full. Replace ${active.party[active.party.length - 1].name} with ${poke.name}?`,
-        );
-        if (!confirm) return;
-        updatePt.mutate((pt) => {
-          const next: PartyMember[] = pt.party.slice(0, -1);
-          next.push({
-            n: poke.n,
-            name: poke.name,
-            types: [...poke.types],
-            moves: [],
-          });
-          return { ...pt, party: next };
-        });
-        return;
-      }
+  function newMemberFromPoke(poke: {
+    n: number;
+    name: string;
+    types: readonly TypeName[];
+  }): PartyMember {
+    return { n: poke.n, name: poke.name, types: [...poke.types], moves: [] };
+  }
+
+  function handleAddToParty(n: number) {
+    if (!active) return;
+    const poke = pokeByDex(n);
+    if (!poke) return;
+    if (active.party.length >= 6) {
+      const confirm = window.confirm(
+        `Party is full. Replace ${active.party[active.party.length - 1].name} with ${poke.name}?`,
+      );
+      if (!confirm) return;
       updatePt.mutate((pt) => ({
         ...pt,
-        party: [
-          ...pt.party,
-          {
-            n: poke.n,
-            name: poke.name,
-            types: [...poke.types],
-            moves: [],
-          },
-        ],
+        party: [...pt.party.slice(0, -1), newMemberFromPoke(poke)],
       }));
-    },
-    [active, updatePt],
-  );
+      return;
+    }
+    updatePt.mutate((pt) => ({ ...pt, party: [...pt.party, newMemberFromPoke(poke)] }));
+  }
 
-  const handleAddToPC = useCallback(
-    (n: number) => {
-      if (!active) return;
-      const poke = pokeByDex(n);
-      if (!poke) return;
-      if (active.pc.some((pm) => pm.n === n)) return;
-      updatePt.mutate((pt) => ({
-        ...pt,
-        pc: [
-          ...pt.pc,
-          {
-            n: poke.n,
-            name: poke.name,
-            types: [...poke.types],
-            moves: [],
-          },
-        ],
-      }));
-    },
-    [active, updatePt],
-  );
+  function handleAddToPC(n: number) {
+    if (!active) return;
+    const poke = pokeByDex(n);
+    if (!poke) return;
+    if (active.pc.some((pm) => pm.n === n)) return;
+    updatePt.mutate((pt) => ({ ...pt, pc: [...pt.pc, newMemberFromPoke(poke)] }));
+  }
 
-  // Evolve a party member to a target dex.
-  const handleEvolve = useCallback(
-    (memberDex: number, targetDex: number) => {
-      const tp = pokeByDex(targetDex);
-      if (!tp) return;
-      updatePt.mutate((pt) => ({
-        ...pt,
-        party: pt.party.map((pm) =>
-          pm.n === memberDex ? { ...pm, n: tp.n, name: tp.name, types: [...tp.types] } : pm,
-        ),
-      }));
-    },
-    [updatePt],
-  );
+  function handleEvolve(memberDex: number, targetDex: number) {
+    const tp = pokeByDex(targetDex);
+    if (!tp) return;
+    updatePt.mutate((pt) => ({
+      ...pt,
+      party: pt.party.map((pm) =>
+        pm.n === memberDex ? { ...pm, n: tp.n, name: tp.name, types: [...tp.types] } : pm,
+      ),
+    }));
+  }
 
   const [breakdown, setBreakdown] = useState<BreakdownTarget | null>(null);
-  const openTypeBreakdown = useCallback(
-    (atkType: string) => {
-      if (!activePoke || !isTypeName(atkType)) return;
-      setBreakdown({
-        kind: "matchup",
-        data: matchupBreakdown(atkType as TypeName, activePoke),
-      });
-    },
-    [activePoke],
-  );
+  function openTypeBreakdown(atkType: string) {
+    if (!activePoke || !isTypeName(atkType)) return;
+    setBreakdown({
+      kind: "matchup",
+      data: matchupBreakdown(atkType as TypeName, activePoke),
+    });
+  }
 
   return (
     <section aria-label="Search page" className="flex min-h-full flex-col gap-3">

@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { Sprite } from "~/components/sprite";
 import { TypeBadge } from "~/components/type-badge";
 import { getAbilityMod } from "~/data/abilities";
@@ -31,7 +30,7 @@ export function PokeDetail({
   onEvolve: (memberDex: number, targetDex: number) => void;
   onBreakdown?: (atkType: string) => void;
 }) {
-  const obtain = useMemo(() => getObtain(poke.n, gameId), [poke.n, gameId]);
+  const obtain = getObtain(poke.n, gameId);
   const stats = STATS[poke.n];
   const inParty = party.some((pm) => pm.n === poke.n);
   const inPC = pc.some((pm) => pm.n === poke.n);

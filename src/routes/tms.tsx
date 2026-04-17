@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Sprite } from "~/components/sprite";
 import { TypeBadge } from "~/components/type-badge";
@@ -6,11 +6,11 @@ import { TM_HM, type TmHmEntry } from "~/data/moves";
 import { MOVE_TUTORS, type MoveTutor, UTILITY_NPCS } from "~/data/tutors";
 import { ScanButton } from "~/features/scan/scan-button";
 import { ScanError, readTMCase } from "~/features/scan/vision-client";
-import { type LearnsetsMap, useLearnsets } from "~/hooks/use-learnsets";
+import { useLearnsets } from "~/hooks/use-learnsets";
 import { useUpdateActivePlaythrough } from "~/hooks/use-playthroughs";
 import { useActivePlaythrough } from "~/hooks/use-store";
 import { makePartyCalc } from "~/lib/party-calc";
-import type { PartyMember, Playthrough } from "~/schemas";
+import type { PartyMember } from "~/schemas";
 
 interface TmScanSummary {
   updated: number;
@@ -24,22 +24,8 @@ type AnyEntry = TmHmEntry | MoveTutor;
 
 const calc = makePartyCalc();
 
-function taggedPool(pt: Playthrough) {
-  return [
-    ...pt.party.map((pm, idx) => ({ pm, src: "party" as const, idx })),
-    ...pt.pc.map((pm, idx) => ({ pm, src: "pc" as const, idx })),
-  ];
-}
-
-function learnersOf(moveName: string, pt: Playthrough, learnsets: LearnsetsMap | undefined) {
-  if (!learnsets) return { inParty: [], inPC: [] };
-  const pool = taggedPool(pt);
-  const canLearn = (pm: PartyMember) => (learnsets[pm.n] ?? []).includes(moveName);
-  return {
-    inParty: pool.filter((e) => e.src === "party" && canLearn(e.pm)),
-    inPC: pool.filter((e) => e.src === "pc" && canLearn(e.pm)),
-  };
-}
+type Learners = { inParty: { pm: PartyMember }[]; inPC: { pm: PartyMember }[] };
+const EMPTY_LEARNERS: Learners = { inParty: [], inPC: [] };
 
 export function TmsRoute() {
   const active = useActivePlaythrough();
@@ -85,6 +71,27 @@ export function TmsRoute() {
     };
   }, [query, filter, inv]);
 
+  // Build a move-name → learners index once per (active, learnsets) so the
+  // per-card lookup in render is O(1) instead of a pool-filter per card.
+  const learnersByMove = useMemo(() => {
+    const map: Record<string, Learners> = {};
+    if (!active || !learnsets) return map;
+    const allMoves = new Set<string>([
+      ...TM_HM.map((t) => t.move),
+      ...MOVE_TUTORS.map((t) => t.move),
+    ]);
+    for (const move of allMoves) {
+      const inParty = active.party
+        .filter((pm) => (learnsets[pm.n] ?? []).includes(move))
+        .map((pm) => ({ pm }));
+      const inPC = active.pc
+        .filter((pm) => (learnsets[pm.n] ?? []).includes(move))
+        .map((pm) => ({ pm }));
+      map[move] = { inParty, inPC };
+    }
+    return map;
+  }, [active, learnsets]);
+
   const carrierRanking = useMemo(() => {
     if (!active || ownedHms.length < 2 || !learnsets) return [];
     const pool = [...active.party, ...active.pc];
@@ -107,47 +114,44 @@ export function TmsRoute() {
     navigate(`/party?teach=${dex}:${encodeURIComponent(move)}`);
   };
 
-  const onScanFiles = useCallback(
-    async (files: File[], apiKey: string) => {
-      if (!active) return;
-      setScanBusy(true);
-      setScanSummary(null);
-      let updated = 0;
-      let inputTokens = 0;
-      let outputTokens = 0;
-      let error: string | null = null;
-      const merged: Record<string, number> = { ...(active.tmInventory ?? {}) };
-      for (const file of files) {
-        try {
-          const result = await readTMCase(apiKey, file);
-          inputTokens += result._inputTokens;
-          outputTokens += result._outputTokens;
-          for (const row of result.tms) {
-            const prev = merged[row.num] ?? 0;
-            if (row.count > prev) {
-              merged[row.num] = row.count;
-              updated++;
-            }
+  async function onScanFiles(files: File[], apiKey: string) {
+    if (!active) return;
+    setScanBusy(true);
+    setScanSummary(null);
+    let updated = 0;
+    let inputTokens = 0;
+    let outputTokens = 0;
+    let error: string | null = null;
+    const merged: Record<string, number> = { ...(active.tmInventory ?? {}) };
+    for (const file of files) {
+      try {
+        const result = await readTMCase(apiKey, file);
+        inputTokens += result._inputTokens;
+        outputTokens += result._outputTokens;
+        for (const row of result.tms) {
+          const prev = merged[row.num] ?? 0;
+          if (row.count > prev) {
+            merged[row.num] = row.count;
+            updated++;
           }
-        } catch (e) {
-          if (e instanceof ScanError && (e.code === "no_key" || e.code === "bad_key")) {
-            navigate("/settings");
-            setScanBusy(false);
-            return;
-          }
-          error = e instanceof Error ? e.message : "Scan failed";
         }
+      } catch (e) {
+        if (e instanceof ScanError && (e.code === "no_key" || e.code === "bad_key")) {
+          navigate("/settings");
+          setScanBusy(false);
+          return;
+        }
+        error = e instanceof Error ? e.message : "Scan failed";
       }
-      if (updated > 0) {
-        updatePt.mutate((pt) => ({ ...pt, tmInventory: merged }));
-      }
-      const totalTokens = inputTokens + outputTokens;
-      const cost = inputTokens * 0.000001 + outputTokens * 0.000005;
-      setScanSummary({ updated, tokens: totalTokens, cost, error });
-      setScanBusy(false);
-    },
-    [active, navigate, updatePt],
-  );
+    }
+    if (updated > 0) {
+      updatePt.mutate((pt) => ({ ...pt, tmInventory: merged }));
+    }
+    const totalTokens = inputTokens + outputTokens;
+    const cost = inputTokens * 0.000001 + outputTokens * 0.000005;
+    setScanSummary({ updated, tokens: totalTokens, cost, error });
+    setScanBusy(false);
+  }
 
   if (!active) {
     return (
@@ -260,7 +264,7 @@ export function TmsRoute() {
                   expanded={expanded.has(t.num)}
                   onToggleExpand={toggleExpand}
                   onSetCount={setCount}
-                  learners={learnersOf(t.move, active, learnsets)}
+                  learners={learnersByMove[t.move] ?? EMPTY_LEARNERS}
                   onOpenTeach={openTeach}
                 />
               ))}
@@ -277,7 +281,7 @@ export function TmsRoute() {
                   expanded={expanded.has(t.num)}
                   onToggleExpand={toggleExpand}
                   onSetCount={setCount}
-                  learners={learnersOf(t.move, active, learnsets)}
+                  learners={learnersByMove[t.move] ?? EMPTY_LEARNERS}
                   onOpenTeach={openTeach}
                 />
               ))}
@@ -294,7 +298,7 @@ export function TmsRoute() {
                   expanded={expanded.has(t.num)}
                   onToggleExpand={toggleExpand}
                   onSetCount={setCount}
-                  learners={learnersOf(t.move, active, learnsets)}
+                  learners={learnersByMove[t.move] ?? EMPTY_LEARNERS}
                   onOpenTeach={openTeach}
                 />
               ))}
