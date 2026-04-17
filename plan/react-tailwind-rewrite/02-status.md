@@ -97,8 +97,10 @@ See [03-phases.md](./03-phases.md) Phase 8.
 - [x] Accessible-label touch-ups on React components to support role/label selectors: `aria-label="Current game"` on the masthead; `aria-label="Party page" / "Gyms page" / "TMs and HMs page" / "Where Am I page"` on route sections; `aria-label="Rival starter"` on the Gyms starter region; `aria-pressed` on starter buttons; `aria-label="Computed stats"` on the edit-modal summary; HM toggle label clarified to `Need HM01` / `Have HM01`
 - [x] `.github/workflows/ci.yml` — new `e2e` job runs `npx playwright install --with-deps chromium`, builds, and invokes `npx playwright test`; uploads `playwright-report/` + `test-results/` on failure
 
-### README screenshots
-See [03-phases.md](./03-phases.md) Phase 9. Add `scripts/screenshot-readme.ts` to regenerate the 4 tracked PNGs via Playwright against Vite preview.
+### README screenshots ✅ DONE
+See [03-phases.md](./03-phases.md) Phase 9.
+- [x] `scripts/screenshot-readme.ts` + `npm run screenshots` — spawns `vite preview` on port 4174, seeds a full-party FireRed run into `se_v1`, and walks the React app at a 390×844 @2× mobile viewport in light mode
+- [x] Regenerated all 4 tracked PNGs (`search-party-matchup.png`, `search-gengar-detail.png`, `gyms-misty-expanded.png`, `where-am-i-safari.png`); README image references resolve
 
 ## File inventory
 

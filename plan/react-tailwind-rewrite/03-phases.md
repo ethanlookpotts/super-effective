@@ -87,11 +87,11 @@ Vision client already existed at `features/scan/vision-client.ts`.
 - [x] Add new scenarios where React differs (e.g. `creating a new FireRed run from empty state updates the masthead` replaces the vanilla "first-run game gate")
 - [x] Re-enable in CI with Playwright install step — `.github/workflows/ci.yml` `e2e` job runs `npx playwright install --with-deps chromium` + `npx playwright test` and uploads failure artifacts
 
-## Phase 9 — README screenshots  ⏳ TODO
+## Phase 9 — README screenshots  ✅ DONE
 
-- [ ] `scripts/screenshot-readme.ts` — Playwright against `npm run preview`
-- [ ] Regenerate the 4 tracked PNGs (search-party-matchup, search-gengar-detail, gyms-misty-expanded, where-am-i-safari)
-- [ ] Update README.md with the new stack mention (already done) + verify image references still resolve
+- [x] `scripts/screenshot-readme.ts` — spawns `vite preview` on port 4174, seeds a full-party run into `se_v1`, and walks the React app at a 390×844 @2× mobile viewport. Exposed as `npm run screenshots`.
+- [x] Regenerated the 4 tracked PNGs (search-party-matchup, search-gengar-detail, gyms-misty-expanded, where-am-i-safari)
+- [x] README image references all resolve against the regenerated files
 
 ## Phase 10 — Parity sweep + merge  ⏳ TODO
 
