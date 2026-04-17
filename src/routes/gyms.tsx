@@ -75,7 +75,11 @@ export function GymsRoute() {
         </h2>
       </header>
 
-      <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] p-3">
+      <div
+        role="region"
+        aria-label="Rival starter"
+        className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] p-3"
+      >
         <div className="mb-2 font-[var(--font-pixel)] text-xs text-[var(--color-gold)]">
           🏁 GARY — YOUR STARTER
         </div>
@@ -84,6 +88,7 @@ export function GymsRoute() {
             <button
               key={s}
               type="button"
+              aria-pressed={rivalStarter === s}
               onClick={() => setStarter(s)}
               className={`min-h-11 flex-1 rounded-[var(--radius-card)] border px-2 text-xs ${
                 rivalStarter === s
