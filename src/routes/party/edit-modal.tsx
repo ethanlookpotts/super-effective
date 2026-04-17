@@ -4,7 +4,8 @@ import { POKEMON, type Pokemon } from "~/data/pokemon";
 import { NATURE_NAMES, computeAttackerStats, natureSummary } from "~/data/stats";
 import { useUpdateActivePlaythrough } from "~/hooks/use-playthroughs";
 import { spriteUrl } from "~/lib/sprites";
-import type { PartyMember } from "~/schemas";
+import type { PartyMember, PartyMove } from "~/schemas";
+import { MovesSection } from "./edit-modal-moves";
 
 export type EditMode = "party" | "pc";
 
@@ -190,12 +191,23 @@ export function EditModal({
         </header>
 
         <div className="flex flex-col gap-3 overflow-y-auto p-3">
-          <PokemonPicker draft={draft} onPick={(poke) => patch({ poke })} />
+          <PokemonPicker draft={draft} onPick={(poke) => patch({ poke, moves: [] })} />
 
           {draft.poke && (
             <>
               <SelectedPokeCard poke={draft.poke} shiny={draft.shiny} />
               <LevelAndNature draft={draft} onPatch={patch} />
+              <CollapsibleSection
+                title="MOVES"
+                summary={`${draft.moves.length}/4 SET`}
+                defaultOpen={draft.moves.length > 0}
+              >
+                <MovesSection
+                  dexN={draft.poke.n}
+                  moves={draft.moves}
+                  onChange={(moves: PartyMove[]) => patch({ moves })}
+                />
+              </CollapsibleSection>
             </>
           )}
         </div>
@@ -221,6 +233,42 @@ export function EditModal({
           )}
         </footer>
       </div>
+    </div>
+  );
+}
+
+function CollapsibleSection({
+  title,
+  summary,
+  defaultOpen,
+  children,
+}: {
+  title: string;
+  summary?: string;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen ?? false);
+  return (
+    <div className="flex flex-col gap-2 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card-2)] p-2">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        aria-label={`${open ? "Collapse" : "Expand"} ${title}`}
+        className="flex min-h-11 w-full items-center gap-2 text-left"
+      >
+        <span className="font-[var(--font-pixel)] text-[10px] text-[var(--color-text)]">
+          {title}
+        </span>
+        {summary && (
+          <span className="font-[var(--font-pixel)] text-[10px] text-[var(--color-text-3)]">
+            {summary}
+          </span>
+        )}
+        <span className="ml-auto text-[var(--color-text-3)]">{open ? "▾" : "▶"}</span>
+      </button>
+      {open && children}
     </div>
   );
 }
