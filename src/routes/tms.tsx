@@ -1,14 +1,23 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TypeBadge } from "~/components/type-badge";
 import { LEARNSETS } from "~/data/learnsets";
 import { TM_HM, type TmHmEntry } from "~/data/moves";
 import { MOVE_TUTORS, type MoveTutor, UTILITY_NPCS } from "~/data/tutors";
+import { ScanButton } from "~/features/scan/scan-button";
+import { ScanError, readTMCase } from "~/features/scan/vision-client";
 import { useUpdateActivePlaythrough } from "~/hooks/use-playthroughs";
 import { useActivePlaythrough } from "~/hooks/use-store";
 import { makePartyCalc } from "~/lib/party-calc";
 import { spriteUrl } from "~/lib/sprites";
 import type { PartyMember, Playthrough } from "~/schemas";
+
+interface TmScanSummary {
+  updated: number;
+  tokens: number;
+  cost: number;
+  error: string | null;
+}
 
 type Filter = "all" | "owned" | "missing";
 type AnyEntry = TmHmEntry | MoveTutor;
@@ -39,6 +48,8 @@ export function TmsRoute() {
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [scanBusy, setScanBusy] = useState(false);
+  const [scanSummary, setScanSummary] = useState<TmScanSummary | null>(null);
 
   const inv = active?.tmInventory ?? {};
   const tmCount = (num: string) => inv[num] ?? 0;
@@ -94,6 +105,48 @@ export function TmsRoute() {
     navigate(`/party?teach=${dex}:${encodeURIComponent(move)}`);
   };
 
+  const onScanFiles = useCallback(
+    async (files: File[], apiKey: string) => {
+      if (!active) return;
+      setScanBusy(true);
+      setScanSummary(null);
+      let updated = 0;
+      let inputTokens = 0;
+      let outputTokens = 0;
+      let error: string | null = null;
+      const merged: Record<string, number> = { ...(active.tmInventory ?? {}) };
+      for (const file of files) {
+        try {
+          const result = await readTMCase(apiKey, file);
+          inputTokens += result._inputTokens;
+          outputTokens += result._outputTokens;
+          for (const row of result.tms) {
+            const prev = merged[row.num] ?? 0;
+            if (row.count > prev) {
+              merged[row.num] = row.count;
+              updated++;
+            }
+          }
+        } catch (e) {
+          if (e instanceof ScanError && (e.code === "no_key" || e.code === "bad_key")) {
+            navigate("/settings");
+            setScanBusy(false);
+            return;
+          }
+          error = e instanceof Error ? e.message : "Scan failed";
+        }
+      }
+      if (updated > 0) {
+        updatePt.mutate((pt) => ({ ...pt, tmInventory: merged }));
+      }
+      const totalTokens = inputTokens + outputTokens;
+      const cost = inputTokens * 0.000001 + outputTokens * 0.000005;
+      setScanSummary({ updated, tokens: totalTokens, cost, error });
+      setScanBusy(false);
+    },
+    [active, navigate, updatePt],
+  );
+
   if (!active) {
     return (
       <section>
@@ -126,6 +179,14 @@ export function TmsRoute() {
           className="min-h-11 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] px-3 text-sm text-[var(--color-text)]"
         />
       </label>
+
+      <ScanButton
+        label="📷 SCAN TM CASE"
+        ariaLabel="Scan TM Case"
+        busy={scanBusy}
+        onFiles={onScanFiles}
+      />
+      {scanSummary && <TmScanSummaryRow summary={scanSummary} />}
 
       <div
         role="group"
@@ -270,6 +331,41 @@ export function TmsRoute() {
         ))}
       </Section>
     </section>
+  );
+}
+
+function TmScanSummaryRow({ summary }: { summary: TmScanSummary }) {
+  const costStr = summary.cost < 0.0001 ? "<$0.0001" : `~$${summary.cost.toFixed(4)}`;
+  const message = summary.error
+    ? summary.error
+    : summary.updated > 0
+      ? `Scanned: ${summary.updated} entries updated`
+      : "No TMs recognised";
+  return (
+    <div
+      role={summary.error ? "alert" : "status"}
+      aria-label="TM scan result"
+      className={`rounded-[var(--radius-card)] border px-3 py-2 text-xs ${
+        summary.error
+          ? "border-[var(--color-red)] text-[var(--color-red)]"
+          : "border-[color-mix(in_srgb,var(--color-gold)_25%,transparent)] bg-[color-mix(in_srgb,var(--color-gold)_5%,transparent)] text-[var(--color-text)]"
+      }`}
+    >
+      <div>{message}</div>
+      {!summary.error && summary.tokens > 0 && (
+        <div className="mt-1 font-[var(--font-pixel)] text-[9px] text-[var(--color-text-3)]">
+          {summary.tokens} tok · {costStr} ·{" "}
+          <a
+            href="https://console.anthropic.com/settings/usage"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
+            exact usage ↗
+          </a>
+        </div>
+      )}
+    </div>
   );
 }
 

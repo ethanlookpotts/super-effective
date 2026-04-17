@@ -49,7 +49,11 @@ As of the last commit on `refactor/react-tailwind`. Update this doc in the same 
 
 ### OCR
 - [x] `features/scan/vision-client.ts` — `readGameScreen`, `readTMCase`, `fuzzyMatchMove`, `ScanError`
-- [ ] UI wiring — Scan button on Party + TMs routes; scan result display; token-guard redirect
+- [x] `features/scan/scan-button.tsx` — shared button + hidden file input + `useSettings` token guard (redirects to `/settings` if no key)
+- [x] `features/scan/game-screen.ts` — pure `mergeGameScreen` + `GameScreenAggregate` accumulator (first-found wins; tracks tokens)
+- [x] `features/scan/scan-result-box.tsx` — rows + token/cost line + "↺ RESET TO SCAN"
+- [x] Party edit modal: scan button + result box above the picker; batch merges fresh fields into draft and accumulates across shots
+- [x] TMs route: `📷 SCAN TM CASE` merges `readTMCase` rows into `tmInventory` (max count wins); inline success/error summary with token cost
 
 ### UI — shell + navigation
 - [x] `components/shell.tsx` — masthead + nav tabs + playthrough button + sync badge
@@ -85,13 +89,6 @@ See [03-phases.md](./03-phases.md) Phase 5.
 - [x] `routes/party/tm-suggestion-panel.tsx` — top-6 `rankTeachTargets` rows (owned TMs/HMs/tutors, replaced→TM, cov/score delta, deep-link URL primed for edit modal)
 - [x] Teach modal deep-link (`?teach=<dex>:<move>`) — TM suggestion rows navigate, PartyRoute consumes param, EditModal pre-queues the move
 
-### OCR UI wiring
-See [03-phases.md](./03-phases.md) Phase 7. Vision client exists; routes don't yet invoke it. Needs:
-- "Scan" button on Party edit modal (INFO / SKILLS / MOVES screens)
-- "Scan TM Case" button on TMs route
-- Scan result box UI (persist across re-renders, accumulate across multi-shot)
-- Token-guard: redirect to Settings if no key configured
-
 ### E2E tests
 See [03-phases.md](./03-phases.md) Phase 8. Existing `e2e/*.spec.ts` target the vanilla DOM and are disabled in CI for now (Biome ignores `e2e/`). After routes stabilise:
 - Verify each spec file still expresses the right scenario
@@ -104,12 +101,12 @@ See [03-phases.md](./03-phases.md) Phase 9. Add `scripts/screenshot-readme.ts` t
 ## File inventory
 
 Current repo (on branch):
-- `src/` — ~47 files
+- `src/` — ~50 files (+scan button/result-box/game-screen accumulator)
 - `test/` — 3 files (73 tests: 4 repositories + 49 party-calc + 20 damage)
 - `plan/` — this directory
 
 Bundle (last measured):
 - `index.html` — 0.52 KB
-- CSS — 22.2 KB / 5.1 KB gzip
-- JS — 590 KB / 155 KB gzip
+- CSS — 23.2 KB / 5.3 KB gzip
+- JS — 603 KB / 160 KB gzip
   - Above the 500 KB warning threshold. Code-splitting on routes is a Phase 10 follow-up (not blocking parity).

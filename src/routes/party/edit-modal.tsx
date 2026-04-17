@@ -1,7 +1,16 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { TypeBadge } from "~/components/type-badge";
 import { POKEMON, type Pokemon } from "~/data/pokemon";
 import { NATURE_NAMES, computeAttackerStats, natureSummary } from "~/data/stats";
+import {
+  EMPTY_AGGREGATE,
+  type GameScreenAggregate,
+  mergeGameScreen,
+} from "~/features/scan/game-screen";
+import { ScanButton } from "~/features/scan/scan-button";
+import { ScanResultBox } from "~/features/scan/scan-result-box";
+import { ScanError, readGameScreen } from "~/features/scan/vision-client";
 import { useUpdateActivePlaythrough } from "~/hooks/use-playthroughs";
 import { spriteUrl } from "~/lib/sprites";
 import type { PartyMember, PartyMove, PartyStats } from "~/schemas";
@@ -153,6 +162,11 @@ export function EditModal({
     return d;
   });
   const update = useUpdateActivePlaythrough();
+  const navigate = useNavigate();
+
+  const [scanAgg, setScanAgg] = useState<GameScreenAggregate | null>(null);
+  const [scanBusy, setScanBusy] = useState(false);
+  const [scanError, setScanError] = useState<string | null>(null);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -164,6 +178,97 @@ export function EditModal({
 
   function patch(p: Partial<Draft>) {
     setDraft((d) => ({ ...d, ...p }));
+  }
+
+  const applyFreshToDraft = useCallback(
+    (fresh: Partial<GameScreenAggregate>, freshMoves: readonly PartyMove[]) => {
+      setDraft((prev) => {
+        const next = { ...prev };
+        if (fresh.poke && !prev.poke) {
+          next.poke = fresh.poke;
+          next.moves = [];
+          next.nature = "";
+        }
+        if (fresh.level != null) next.level = String(fresh.level);
+        if (fresh.nature) next.nature = fresh.nature;
+        if (fresh.ability) next.ability = fresh.ability;
+        if (fresh.hasItem) next.item = fresh.item ?? "";
+        if (fresh.stats) next.stats = fresh.stats;
+        if (fresh.gender) next.gender = fresh.gender;
+        if (typeof fresh.shiny === "boolean") next.shiny = fresh.shiny;
+        if (fresh.otName) next.otName = fresh.otName;
+        if (fresh.otId != null) next.otId = String(fresh.otId);
+        if (fresh.pokeball) next.pokeball = fresh.pokeball;
+        if (fresh.trainerMemo) next.trainerMemo = fresh.trainerMemo;
+        if (freshMoves.length) {
+          const names = new Set(next.moves.map((m) => m.name));
+          const merged = [...next.moves];
+          for (const m of freshMoves) {
+            if (merged.length >= 4) break;
+            if (names.has(m.name)) continue;
+            merged.push(m);
+            names.add(m.name);
+          }
+          next.moves = merged;
+        }
+        return next;
+      });
+    },
+    [],
+  );
+
+  const onScanFiles = useCallback(
+    async (files: File[], apiKey: string) => {
+      setScanBusy(true);
+      setScanError(null);
+      try {
+        let agg = scanAgg ?? { ...EMPTY_AGGREGATE };
+        let fresh: Partial<GameScreenAggregate> = {};
+        const freshMoves: PartyMove[] = [];
+        for (const file of files) {
+          try {
+            const result = await readGameScreen(apiKey, file);
+            const merged = mergeGameScreen(agg, result);
+            agg = merged.aggregate;
+            fresh = { ...fresh, ...merged.fresh };
+            if (merged.fresh.moves) freshMoves.push(...merged.fresh.moves);
+          } catch (e) {
+            if (e instanceof ScanError && (e.code === "no_key" || e.code === "bad_key")) {
+              onClose();
+              navigate("/settings");
+              return;
+            }
+            setScanError(e instanceof Error ? e.message : "Scan failed");
+          }
+        }
+        setScanAgg(agg);
+        applyFreshToDraft(fresh, freshMoves);
+      } finally {
+        setScanBusy(false);
+      }
+    },
+    [scanAgg, onClose, navigate, applyFreshToDraft],
+  );
+
+  function resetToScan() {
+    if (!scanAgg) return;
+    setDraft((prev) => {
+      const next = { ...prev };
+      if (scanAgg.poke) next.poke = scanAgg.poke;
+      if (scanAgg.level != null) next.level = String(scanAgg.level);
+      if (scanAgg.nature) next.nature = scanAgg.nature;
+      if (scanAgg.ability) next.ability = scanAgg.ability;
+      if (scanAgg.hasItem) next.item = scanAgg.item ?? "";
+      if (scanAgg.stats) next.stats = scanAgg.stats;
+      if (scanAgg.gender) next.gender = scanAgg.gender;
+      if (typeof scanAgg.shiny === "boolean") next.shiny = scanAgg.shiny;
+      if (scanAgg.otName) next.otName = scanAgg.otName;
+      if (scanAgg.otId != null) next.otId = String(scanAgg.otId);
+      if (scanAgg.pokeball) next.pokeball = scanAgg.pokeball;
+      if (scanAgg.trainerMemo) next.trainerMemo = scanAgg.trainerMemo;
+      if (scanAgg.moves.length) next.moves = [...scanAgg.moves];
+      return next;
+    });
   }
 
   function save() {
@@ -243,6 +348,14 @@ export function EditModal({
 
         <div className="flex flex-col gap-3 overflow-y-auto p-3">
           <PokemonPicker draft={draft} onPick={(poke) => patch({ poke, moves: [] })} />
+
+          <ScanButton
+            label="📷 SCAN GAME SCREENS"
+            ariaLabel="Scan game screens"
+            busy={scanBusy}
+            onFiles={onScanFiles}
+          />
+          <ScanResultBox aggregate={scanAgg} error={scanError} onReset={resetToScan} />
 
           {draft.poke && (
             <>

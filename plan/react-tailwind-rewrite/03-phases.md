@@ -69,14 +69,15 @@ The biggest route (959 lines of vanilla). Split into subcomponents:
 - [x] Wire from Search detail's type-matchup rows (opens matchup breakdown)
 - [x] Wire from Party matchup's move chips (opens move breakdown with STAB)
 
-## Phase 7 — OCR scan UI  ⏳ TODO
+## Phase 7 — OCR scan UI  ✅ DONE
 
-Vision client already exists at `features/scan/vision-client.ts`.
+Vision client already existed at `features/scan/vision-client.ts`.
 
-- [ ] `features/scan/scan-button.tsx` — shared button, token-guard (redirect to Settings if no key)
-- [ ] Party edit modal: scan INFO / SKILLS / MOVES screens; accumulate scan result across shots; "↺ RESET TO SCAN" to re-apply
-- [ ] TMs route: scan TM Case; merge results by max count per num
-- [ ] Scan result box UI showing parsed fields + token count + cost estimate
+- [x] `features/scan/scan-button.tsx` — shared button, token-guard (redirect to Settings if no key)
+- [x] `features/scan/game-screen.ts` — pure aggregate + `mergeGameScreen` (first-found wins, fresh fields returned for per-scan draft patching)
+- [x] Party edit modal: scan INFO / SKILLS / MOVES screens; accumulate scan result across shots; "↺ RESET TO SCAN" to re-apply
+- [x] TMs route: scan TM Case; merge results by max count per num
+- [x] Scan result box UI showing parsed fields + token count + cost estimate
 
 ## Phase 8 — E2E test re-port  ⏳ TODO
 
