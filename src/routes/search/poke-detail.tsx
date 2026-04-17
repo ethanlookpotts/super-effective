@@ -1,9 +1,9 @@
 import { useMemo } from "react";
+import { Sprite } from "~/components/sprite";
 import { TypeBadge } from "~/components/type-badge";
 import { getAbilityMod } from "~/data/abilities";
 import { POKEMON, type Pokemon, getObtain } from "~/data/pokemon";
 import { STATS } from "~/data/stats";
-import { artUrl } from "~/lib/sprites";
 import type { PartyMember } from "~/schemas";
 import { EvolutionChain } from "./evolution-chain";
 import { PartyMatchupList } from "./party-matchup";
@@ -52,14 +52,7 @@ export function PokeDetail({
               ))}
             </div>
           </div>
-          <img
-            src={artUrl(poke.n)}
-            alt=""
-            className="h-24 w-24 shrink-0 object-contain opacity-90"
-            onError={(e) => {
-              (e.currentTarget as HTMLImageElement).style.display = "none";
-            }}
-          />
+          <Sprite dex={poke.n} art className="h-24 w-24 shrink-0 object-contain opacity-90" />
         </div>
 
         <div className="mt-3 border-t border-border pt-3">

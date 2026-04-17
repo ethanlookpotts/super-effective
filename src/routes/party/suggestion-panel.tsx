@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
+import { Sprite } from "~/components/sprite";
 import { TypeBadge } from "~/components/type-badge";
 import { TYPES, dmult, gm } from "~/data/types";
 import { useUpdateActivePlaythrough } from "~/hooks/use-playthroughs";
 import { tc } from "~/lib/colors";
 import { type CalcMember, type TeamSuggestion, makePartyCalc } from "~/lib/party-calc";
-import { spriteUrl } from "~/lib/sprites";
 import type { PartyMember, TypeName } from "~/schemas";
 
 type Src = "party" | "pc";
@@ -113,13 +113,10 @@ function SuggestionCard({
       <span className="font-pixel text-[10px] text-text-3">#{idx + 1}</span>
       <span className="flex flex-1 items-center gap-1 overflow-hidden">
         {suggestion.members.map((pm) => (
-          <img
+          <Sprite
             key={`${pm._src}-${pm._srcIdx}-${pm.n}`}
-            src={spriteUrl(pm.n, { shiny: pm.shiny })}
-            alt=""
-            onError={(e) => {
-              e.currentTarget.style.display = "none";
-            }}
+            dex={pm.n}
+            shiny={pm.shiny}
             className="h-8 w-8 shrink-0 object-contain"
           />
         ))}
@@ -210,14 +207,7 @@ function SuggestionModal({
                 key={`${pm._src}-${pm._srcIdx}-${pm.n}`}
                 className="flex flex-col items-center gap-1 rounded-card bg-card-2 p-2 text-center"
               >
-                <img
-                  src={spriteUrl(pm.n, { shiny: pm.shiny })}
-                  alt=""
-                  onError={(e) => {
-                    e.currentTarget.style.display = "none";
-                  }}
-                  className="h-12 w-12 object-contain"
-                />
+                <Sprite dex={pm.n} shiny={pm.shiny} className="h-12 w-12 object-contain" />
                 <span className="font-pixel text-[9px] text-text">{shortName}</span>
                 <span className="flex flex-wrap justify-center gap-0.5">
                   {pm.types.map((t) => (

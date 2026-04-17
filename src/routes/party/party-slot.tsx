@@ -1,5 +1,5 @@
+import { Sprite } from "~/components/sprite";
 import { TypeBadge } from "~/components/type-badge";
-import { spriteUrl } from "~/lib/sprites";
 import type { PartyMember } from "~/schemas";
 
 export function PartySlot({
@@ -19,14 +19,7 @@ export function PartySlot({
       className="flex min-h-11 w-full flex-col items-start gap-1 rounded-card border border-border bg-card p-2 text-left"
     >
       <div className="flex w-full items-start gap-2">
-        <img
-          src={spriteUrl(member.n, { shiny: member.shiny })}
-          alt=""
-          onError={(e) => {
-            e.currentTarget.style.display = "none";
-          }}
-          className="h-10 w-10 shrink-0 object-contain"
-        />
+        <Sprite dex={member.n} shiny={member.shiny} className="h-10 w-10 shrink-0 object-contain" />
         <div className="flex flex-1 flex-col gap-0.5">
           <div className="flex items-center justify-between gap-1">
             <span className="font-pixel text-[9px] text-text-3">

@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Sprite } from "~/components/sprite";
 import { TypeBadge } from "~/components/type-badge";
 import { TM_HM, type TmHmEntry } from "~/data/moves";
 import { MOVE_TUTORS, type MoveTutor, UTILITY_NPCS } from "~/data/tutors";
@@ -9,7 +10,6 @@ import { type LearnsetsMap, useLearnsets } from "~/hooks/use-learnsets";
 import { useUpdateActivePlaythrough } from "~/hooks/use-playthroughs";
 import { useActivePlaythrough } from "~/hooks/use-store";
 import { makePartyCalc } from "~/lib/party-calc";
-import { spriteUrl } from "~/lib/sprites";
 import type { PartyMember, Playthrough } from "~/schemas";
 
 interface TmScanSummary {
@@ -229,14 +229,7 @@ export function TmsRoute() {
                 className="flex items-center gap-2 rounded-card bg-card-2 p-2"
               >
                 <span className="w-6 text-[10px] font-pixel text-text-3">#{i + 1}</span>
-                <img
-                  src={spriteUrl(c.pm.n)}
-                  alt=""
-                  className="h-8 w-8"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = "none";
-                  }}
-                />
+                <Sprite dex={c.pm.n} className="h-8 w-8" />
                 <div className="flex-1">
                   <div className="text-sm text-text">{c.pm.name}</div>
                   <div className="text-[10px] text-text-3">
@@ -512,14 +505,7 @@ function LearnerGroup({
             onClick={() => onPick(pm)}
             className="flex min-h-11 items-center gap-1 rounded-full bg-card-2 p-1 pr-3"
           >
-            <img
-              src={spriteUrl(pm.n)}
-              alt=""
-              className="h-8 w-8"
-              onError={(e) => {
-                (e.target as HTMLImageElement).style.display = "none";
-              }}
-            />
+            <Sprite dex={pm.n} className="h-8 w-8" />
             <span className="text-xs text-text">{pm.name}</span>
           </button>
         ))}

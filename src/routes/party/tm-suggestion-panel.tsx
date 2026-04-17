@@ -1,11 +1,11 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { Sprite } from "~/components/sprite";
 import { TypeBadge } from "~/components/type-badge";
 import { TM_HM } from "~/data/moves";
 import { MOVE_TUTORS } from "~/data/tutors";
 import { type LearnsetsMap, useLearnsets } from "~/hooks/use-learnsets";
 import { makePartyCalc } from "~/lib/party-calc";
-import { spriteUrl } from "~/lib/sprites";
 import type { PartyMember, TypeName } from "~/schemas";
 
 const calc = makePartyCalc();
@@ -115,12 +115,9 @@ export function TmSuggestionPanel({
               aria-label={`Teach ${s.source.move} to ${s.target.name}`}
               className="flex min-h-11 w-full items-center gap-2 rounded-card border border-border bg-card p-2 text-left"
             >
-              <img
-                src={spriteUrl(s.target.n, { shiny: s.target.shiny })}
-                alt=""
-                onError={(e) => {
-                  e.currentTarget.style.display = "none";
-                }}
+              <Sprite
+                dex={s.target.n}
+                shiny={s.target.shiny}
                 className="h-10 w-10 shrink-0 object-contain"
               />
               <div className="flex flex-1 flex-col gap-0.5 overflow-hidden">

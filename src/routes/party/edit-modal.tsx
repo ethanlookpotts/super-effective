@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Sprite } from "~/components/sprite";
 import { TypeBadge } from "~/components/type-badge";
 import { POKEMON, type Pokemon } from "~/data/pokemon";
 import { NATURE_NAMES, computeAttackerStats, natureSummary } from "~/data/stats";
@@ -12,7 +13,6 @@ import { ScanButton } from "~/features/scan/scan-button";
 import { ScanResultBox } from "~/features/scan/scan-result-box";
 import { ScanError, readGameScreen } from "~/features/scan/vision-client";
 import { useUpdateActivePlaythrough } from "~/hooks/use-playthroughs";
-import { spriteUrl } from "~/lib/sprites";
 import type { PartyMember, PartyMove, PartyStats } from "~/schemas";
 import { AdvancedInfoSection } from "./edit-modal-info";
 import { MovesSection } from "./edit-modal-moves";
@@ -538,14 +538,7 @@ function PokemonPicker({
 function SelectedPokeCard({ poke, shiny }: { poke: Pokemon; shiny: boolean }) {
   return (
     <div className="flex items-center gap-3 rounded-card bg-card-2 p-3">
-      <img
-        src={spriteUrl(poke.n, { shiny })}
-        alt=""
-        onError={(e) => {
-          e.currentTarget.style.display = "none";
-        }}
-        className="h-14 w-14 shrink-0 object-contain"
-      />
+      <Sprite dex={poke.n} className="h-14 w-14 shrink-0 object-contain" />
       <div className="flex flex-col gap-1">
         <div className="font-pixel text-[9px] text-text-3">
           #{String(poke.n).padStart(3, "0")}

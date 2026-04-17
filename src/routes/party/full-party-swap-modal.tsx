@@ -1,6 +1,6 @@
 import { useEffect } from "react";
+import { Sprite } from "~/components/sprite";
 import { TypeBadge } from "~/components/type-badge";
-import { spriteUrl } from "~/lib/sprites";
 import type { PartyMember } from "~/schemas";
 
 /**
@@ -58,12 +58,9 @@ export function FullPartySwapModal({
         </p>
 
         <div className="flex items-center gap-2 rounded-card bg-card-2 p-2">
-          <img
-            src={spriteUrl(incoming.n, { shiny: incoming.shiny })}
-            alt=""
-            onError={(e) => {
-              e.currentTarget.style.display = "none";
-            }}
+          <Sprite
+            dex={incoming.n}
+            shiny={incoming.shiny}
             className="h-10 w-10 shrink-0 object-contain"
           />
           <span className="font-pixel text-[10px] text-text">{incoming.name}</span>
@@ -84,14 +81,7 @@ export function FullPartySwapModal({
                 aria-label={`Replace ${pm.name}`}
                 className="flex min-h-11 w-full items-center gap-2 rounded-card border border-border bg-card-2 p-2 text-left"
               >
-                <img
-                  src={spriteUrl(pm.n, { shiny: pm.shiny })}
-                  alt=""
-                  onError={(e) => {
-                    e.currentTarget.style.display = "none";
-                  }}
-                  className="h-10 w-10 shrink-0 object-contain"
-                />
+                <Sprite dex={pm.n} shiny={pm.shiny} className="h-10 w-10 shrink-0 object-contain" />
                 <span className="flex-1 font-pixel text-[10px] text-text">
                   {pm.name}
                   {pm.level ? <span className="ml-1 text-text-3">Lv.{pm.level}</span> : null}

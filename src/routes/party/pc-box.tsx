@@ -1,7 +1,7 @@
 import { useState } from "react";
+import { Sprite } from "~/components/sprite";
 import { TypeBadge } from "~/components/type-badge";
 import { useUpdateActivePlaythrough } from "~/hooks/use-playthroughs";
-import { spriteUrl } from "~/lib/sprites";
 import type { PartyMember } from "~/schemas";
 import { FullPartySwapModal } from "./full-party-swap-modal";
 import { PARTY_MAX } from "./party-grid";
@@ -169,14 +169,7 @@ function PcSlot({
         aria-label={`Edit ${member.name}`}
         className="flex flex-col items-center gap-1 text-left"
       >
-        <img
-          src={spriteUrl(member.n, { shiny: member.shiny })}
-          alt=""
-          onError={(e) => {
-            e.currentTarget.style.display = "none";
-          }}
-          className="h-10 w-10 object-contain"
-        />
+        <Sprite dex={member.n} shiny={member.shiny} className="h-10 w-10 object-contain" />
         <span className="font-pixel text-[9px] text-text-3">
           #{String(member.n).padStart(3, "0")}
           {member.shiny ? <span className="ml-1 text-gold">✦</span> : null}
