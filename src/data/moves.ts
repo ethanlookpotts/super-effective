@@ -81,7 +81,7 @@ export const ALL_MOVES: readonly Move[] = [
   { name: "Cross Chop", type: "Fighting", cat: "phys" },
   { name: "Crunch", type: "Dark", cat: "spec" },
   { name: "Crush Claw", type: "Normal", cat: "phys" },
-  { name: "Curse", type: "???" as TypeName, cat: "stat" },
+  { name: "Curse", type: "Ghost", cat: "stat" },
   { name: "Cut", type: "Normal", cat: "phys" },
   { name: "Defense Curl", type: "Normal", cat: "stat" },
   { name: "Destiny Bond", type: "Ghost", cat: "stat" },
