@@ -1,0 +1,61 @@
+name: Pages PR Preview
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, closed]
+
+concurrency:
+  group: pages-preview-${{ github.event.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  preview:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detect stack
+        id: stack
+        if: github.event.action != 'closed'
+        run: |
+          if [ -f package.json ] && grep -q '"vite"' package.json; then
+            echo "kind=vite" >> "$GITHUB_OUTPUT"
+          else
+            echo "kind=static" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-node@v4
+        if: github.event.action != 'closed' && steps.stack.outputs.kind == 'vite'
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Build Vite
+        if: github.event.action != 'closed' && steps.stack.outputs.kind == 'vite'
+        env:
+          VITE_BASE: /super-effective/pr-preview/pr-${{ github.event.number }}/
+        run: |
+          npm ci
+          npm run build -- --base="$VITE_BASE"
+          mv dist _site
+
+      - name: Stage vanilla static site
+        if: github.event.action != 'closed' && steps.stack.outputs.kind == 'static'
+        run: |
+          mkdir -p _site
+          cp index.html style.css _site/
+          cp -r js _site/
+          if [ -d screenshots ]; then cp -r screenshots _site/; fi
+
+      - name: Deploy preview
+        uses: rossjrw/pr-preview-action@v1
+        with:
+          source-dir: ./_site
+          preview-branch: gh-pages
+          umbrella-dir: pr-preview
+          action: auto
