@@ -31,6 +31,24 @@ Evolving into a multi-game companion app with playthrough support.
 
 ## Progress
 
+### Session 30 — LoC Simplification Pass on `refactor/react-tailwind`
+
+Reviewer-driven source shrink (-443 net LoC, 5 focused commits):
+
+- [x] **Tailwind `@theme` tokens consumed everywhere** — 467 raw `var(--color-…)` / `var(--radius-…)` / `var(--font-…)` arbitrary values across 30+ `.tsx` files replaced with the short utility classes that `@theme` already generates (`bg-card`, `text-text-3`, `rounded-card`, `font-pixel`, etc.). Biome re-wrap collapsed long multi-line classNames. 31 files, **−219 LoC**.
+- [x] **`<Sprite>` primitive** (`src/components/sprite.tsx`) replaces 11 duplicated `<img src={spriteUrl(...) } onError={(e) => ...hide}>` blocks. **−65 LoC**.
+- [x] **Generic `useStoreMutation<T>(reducer)`** inside `hooks/use-playthroughs.ts` replaces 5 near-identical mutation hooks (create/switch/rename/delete/updateActive). Public API unchanged. **−56 LoC**.
+- [x] **Dropped unjustified `useCallback`/`useMemo`** in `routes/search.tsx`, `routes/search/move-detail.tsx`, `routes/search/poke-detail.tsx`, `routes/tms.tsx`. No consumer was `React.memo`'d; stable refs were noise.
+- [x] **`tms.tsx` N+1 fix** — `learnersByMove` map built once per `(active, learnsets)` change; per-card render lookup goes from O(pool) to O(1). **−54 LoC combined with the `useCallback` sweep.**
+- [x] **`lib/party-calc.ts` cleanup** — dropped the `PartyCalc` interface boilerplate and the factory-closure pattern in favour of top-level named exports (`makePartyCalc()` kept as a thin back-compat wrapper so existing callers and the 49-test suite stay untouched). Exported `coveredSuper`/`exposedWeak` so `suggestion-panel.tsx` stopped redefining them, and `computeTeachImpact` now reuses `coveredSuper` instead of rebuilding two coverage sets by hand. **−66 LoC**.
+
+**Deferred (judgement call):**
+- `<FilterPill>` / `<ApiKeyFieldset>` primitives — the variants differ too much (coloured type pills vs text pills; Claude key section vs GitHub sync section with extra buttons + status line). Would have traded readability for a modest line count.
+- Inlining single-use sub-components in `edit-modal.tsx` / `settings.tsx` / `tms.tsx` — ~150 LoC on paper but hurts readability of the already-large files.
+- Collapsing the `repositories/` layer (`types.ts` + `index.tsx` + `local-storage.ts` + `in-memory.ts` = 228 LoC) to free functions — touches sync, tests, providers; ~100 LoC for noticeable risk during a parity sweep. Deferred until after merge.
+
+Bundle regenerates slightly smaller (`search` 45 KB → 41 KB, `party` 47 KB → 43 KB gzip unchanged). 77 unit tests, TS strict, Biome, and production build all green after each commit.
+
 ### Session 29 — React + Tailwind Rewrite (ongoing, long-lived branch)
 
 **Branch**: `refactor/react-tailwind` (long-lived). **Plan**: [`plan/react-tailwind-rewrite/`](./plan/react-tailwind-rewrite/). **Tracking PR**: open against `main`, not to be merged until every phase in [`plan/react-tailwind-rewrite/03-phases.md`](./plan/react-tailwind-rewrite/03-phases.md) is `DONE`.

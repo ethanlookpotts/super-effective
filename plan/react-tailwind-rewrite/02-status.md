@@ -105,9 +105,21 @@ See [03-phases.md](./03-phases.md) Phase 9.
 ## File inventory
 
 Current repo (on branch):
-- `src/` — ~50 files (+scan button/result-box/game-screen accumulator)
+- `src/` — ~51 files (+`components/sprite.tsx` — image primitive with shared onError fallback)
 - `test/` — 4 files (77 tests: 4 repositories + 49 party-calc + 20 damage + 4 local-storage migration)
 - `plan/` — this directory
+
+### LoC simplification pass (Session 30)
+
+Reviewer-driven sweep shrank `src/` by **443 lines** (~5% of the React source):
+- Consumed the `@theme` Tailwind tokens everywhere (`bg-card`/`text-text-3`/`rounded-card`/`font-pixel` etc.) — 467 raw `var(--…)` arbitrary values swapped, Biome re-wrap collapsed long classNames.
+- Extracted `<Sprite>` for the 11 duplicate `<img>+onError` patterns.
+- Collapsed 5 playthrough mutation hooks into one generic `useStoreMutation`.
+- Dropped unjustified `useCallback`/`useMemo` (no `React.memo` consumers).
+- Fixed a render-time N+1 in `tms.tsx` with a `learnersByMove` memo.
+- Flattened `party-calc.ts` (dropped `PartyCalc` interface boilerplate; exposed `coveredSuper`/`exposedWeak`; `makePartyCalc()` kept as a compat wrapper).
+
+See WORKLOG Session 30 for the full list and deferred items.
 
 Bundle (last measured, after route-level + learnsets code-splitting):
 - `index.html` — 0.52 KB
