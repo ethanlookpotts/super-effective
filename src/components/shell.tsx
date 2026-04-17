@@ -35,8 +35,8 @@ export function Shell({ children }: { children: ReactNode }) {
           <h1 className="font-[var(--font-pixel)] text-xs tracking-wider text-[var(--color-text)]">
             SUPER EFFECTIVE
           </h1>
-          <span className="text-[10px] text-[var(--color-text-3)]">
-            {active ? gameName(active.gameId) : "No playthrough"}
+          <span aria-label="Current game" className="text-[10px] text-[var(--color-text-3)]">
+            {active ? gameName(active.gameId).toUpperCase() : "NO PLAYTHROUGH"}
           </span>
         </div>
         <div className="flex items-center gap-2">

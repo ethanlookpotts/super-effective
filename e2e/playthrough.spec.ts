@@ -4,24 +4,28 @@ import { expect, test } from "./fixtures";
 
 test("rename a playthrough updates the masthead", async ({ page }) => {
   await page.getByRole("button", { name: "Switch playthrough" }).click();
-  await page.getByRole("button", { name: /Rename/ }).click();
-  await page.getByLabel("Rename playthrough").fill("NUZLOCKE");
-  await page.getByLabel("Rename playthrough").press("Enter");
-  await page.getByRole("button", { name: /CLOSE/ }).click();
+  const menu = page.getByRole("dialog", { name: "Playthrough menu" });
+  await menu.getByRole("button", { name: /Rename/ }).click();
+  await menu.getByLabel("Rename playthrough").fill("NUZLOCKE");
+  await menu.getByLabel("Rename playthrough").press("Enter");
+  await page.getByLabel("Close playthrough menu").click();
   await expect(page.getByRole("button", { name: "Switch playthrough" })).toContainText("NUZLOCKE");
 });
 
-test("first-run game gate shows on empty localStorage", async ({ page }) => {
+test("empty localStorage shows no-playthrough state", async ({ page }) => {
+  // The React rewrite does not render a first-run game gate — the party/search
+  // views simply show empty state and the user creates a run via ＋ NEW.
   await page.evaluate(() => localStorage.clear());
   await page.reload();
-  await expect(page.getByText("CHOOSE YOUR GAME TO BEGIN")).toBeVisible();
-  await expect(page.getByRole("button", { name: /FIRERED/ })).toBeVisible();
-  await expect(page.getByRole("button", { name: /LEAFGREEN/ })).toBeVisible();
+  await expect(page.getByLabel("Current game")).toContainText("NO PLAYTHROUGH");
+  await expect(page.getByRole("button", { name: "Switch playthrough" })).toContainText("＋ NEW");
 });
 
-test("selecting a game from the gate loads the app", async ({ page }) => {
+test("creating a new FireRed run from empty state updates the masthead", async ({ page }) => {
   await page.evaluate(() => localStorage.clear());
   await page.reload();
+  await page.getByRole("button", { name: "Switch playthrough" }).click();
+  await page.getByRole("button", { name: "＋ NEW RUN" }).click();
   await page.getByRole("button", { name: /FIRERED/ }).click();
   await expect(page.getByLabel("Search Pokémon")).toBeVisible();
   await expect(page.getByLabel("Current game")).toContainText("FIRERED");
