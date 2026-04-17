@@ -57,7 +57,7 @@ The biggest route (959 lines of vanilla). Split into subcomponents:
 - [x] `routes/party/pc-box.tsx` — scrolling grid + "ADD NEW" tile
 - [x] `routes/party/full-party-swap-modal.tsx` — when adding to full party
 - [x] `routes/party/suggestion-panel.tsx` — top-5 from `calc.computeSuggestions`
-- [ ] `routes/party/tm-suggestion-panel.tsx` — `calc.rankTeachTargets` best moves to teach
+- [x] `routes/party/tm-suggestion-panel.tsx` — `calc.rankTeachTargets` best moves to teach
 
 **Blocker**: none. Straightforward port, but large. Estimated 2–3 focused sessions.
 

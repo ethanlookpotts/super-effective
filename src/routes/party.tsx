@@ -4,6 +4,7 @@ import { CoverageBar } from "./party/coverage-bar";
 import { PARTY_MAX, PartyGrid } from "./party/party-grid";
 import { PcBox } from "./party/pc-box";
 import { SuggestionPanel } from "./party/suggestion-panel";
+import { TmSuggestionPanel } from "./party/tm-suggestion-panel";
 
 export function PartyRoute() {
   const active = useActivePlaythrough();
@@ -46,6 +47,8 @@ export function PartyRoute() {
       <PartyGrid party={party} onEdit={editMember} onAdd={goPickPokemon} />
 
       <CoverageBar party={party} />
+
+      <TmSuggestionPanel party={party} inventory={active.tmInventory} />
 
       <SuggestionPanel party={party} pc={active.pc} />
 

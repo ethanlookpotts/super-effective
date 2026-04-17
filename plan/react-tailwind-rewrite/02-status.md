@@ -72,7 +72,7 @@ See [03-phases.md](./03-phases.md) Phase 5. Subcomponents status:
 - [x] `routes/party/pc-box.tsx` — PC grid (collapsible, ADD NEW, remove w/ confirm, → party swap)
 - [x] `routes/party/full-party-swap-modal.tsx` — reusable swap picker when party is full
 - [x] `routes/party/suggestion-panel.tsx` — top-5 team suggestions from `calc.computeSuggestions` (strip + dialog + apply writes active playthrough)
-- [ ] `routes/party/tm-suggestion-panel.tsx` — "best moves to teach now"
+- [x] `routes/party/tm-suggestion-panel.tsx` — top-6 `rankTeachTargets` rows (owned TMs/HMs/tutors, replaced→TM, cov/score delta, deep-link URL primed for edit modal)
 - [ ] Teach modal deep-link (`?teach=<dex>:<move>`)
 
 Grid currently redirects taps (both filled and empty slots) to `/search` as a placeholder until the edit modal lands.
