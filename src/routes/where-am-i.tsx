@@ -1,10 +1,99 @@
+import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { LOCATIONS, type Location } from "~/data/locations";
+
 export function WhereAmIRoute() {
+  const navigate = useNavigate();
+  const [query, setQuery] = useState("");
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
+
+  const q = query.toLowerCase().trim();
+  const list = useMemo(() => filterLocations(LOCATIONS, q), [q]);
+
+  function goSearch(name: string) {
+    navigate(`/search?q=${encodeURIComponent(name)}`);
+  }
+
   return (
-    <section>
-      <h2 className="font-[var(--font-pixel)] text-sm text-[var(--color-text)]">WHERE AM I</h2>
-      <p className="mt-2 text-sm text-[var(--color-text-2)]">
-        Route not yet ported from js/pages.js.
-      </p>
+    <section className="flex flex-col gap-3">
+      <header>
+        <h2 className="font-[var(--font-pixel)] text-sm text-[var(--color-text)]">WHERE AM I</h2>
+      </header>
+
+      <label className="flex flex-col gap-1">
+        <span className="sr-only">Filter locations</span>
+        <input
+          type="search"
+          aria-label="Filter locations"
+          placeholder="Route, cave, or Pokémon…"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="min-h-11 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] px-3 text-sm text-[var(--color-text)]"
+        />
+      </label>
+
+      {list.length === 0 ? (
+        <div className="p-4 text-center text-sm text-[var(--color-text-2)]">
+          <div className="text-2xl">🗺️</div>
+          NO RESULTS
+        </div>
+      ) : (
+        <ul className="flex flex-col gap-2">
+          {list.map((loc, i) => {
+            const open = q ? true : openIdx === i;
+            return (
+              <li
+                key={loc.name}
+                className="overflow-hidden rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)]"
+              >
+                <button
+                  type="button"
+                  onClick={() => setOpenIdx(open ? null : i)}
+                  aria-expanded={open}
+                  className="flex min-h-11 w-full items-center justify-between px-3 py-2 text-left"
+                >
+                  <span className="text-sm text-[var(--color-text)]">{loc.name}</span>
+                  <span className={`text-[var(--color-text-3)] ${open ? "rotate-180" : ""}`}>
+                    ▾
+                  </span>
+                </button>
+                {open && (
+                  <div className="flex flex-col gap-2 border-t border-[var(--color-border)] p-3">
+                    {loc.methods.map((m) => (
+                      <div key={m.label}>
+                        <div className="mb-1 text-[10px] font-[var(--font-pixel)] text-[var(--color-text-3)]">
+                          {m.label}
+                        </div>
+                        <div className="flex flex-wrap gap-1">
+                          {m.p.map((name) => (
+                            <button
+                              key={name}
+                              type="button"
+                              onClick={() => goSearch(name)}
+                              className="min-h-11 rounded-full bg-[var(--color-card-2)] px-3 text-xs text-[var(--color-text)]"
+                            >
+                              {name}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </section>
+  );
+}
+
+function filterLocations(all: readonly Location[], q: string): readonly Location[] {
+  if (!q) return all;
+  return all.filter(
+    (l) =>
+      l.name.toLowerCase().includes(q) ||
+      l.methods.some((m) => m.p.some((p) => p.toLowerCase().includes(q))),
   );
 }
