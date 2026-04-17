@@ -63,15 +63,18 @@ As of the last commit on `refactor/react-tailwind`. Update this doc in the same 
 ## Outstanding
 
 ### Party route (in progress)
-See [03-phases.md](./03-phases.md) Phase 5. The subagent was drafted but hit a quota limit before finishing. Subcomponents to build:
-- `routes/party.tsx` — composition root (~80 lines)
-- `routes/party/party-grid.tsx` — 6-slot grid
-- `routes/party/party-slot.tsx` — single slot card
-- `routes/party/edit-modal.tsx` — biggest piece: Pokémon picker, level, nature, moves, advanced stats
-- `routes/party/pc-box.tsx` — PC scroll grid + full-party-swap modal
-- `routes/party/suggestion-panel.tsx` — top-5 team suggestions from `calc.computeSuggestions`
-- `routes/party/tm-suggestion-panel.tsx` — "best moves to teach now"
-- Teach modal deep-link (`?teach=<dex>:<move>`)
+See [03-phases.md](./03-phases.md) Phase 5. Subcomponents status:
+- [x] `routes/party.tsx` — composition root (reads active playthrough, wires grid + coverage)
+- [x] `routes/party/party-grid.tsx` — 6-slot grid with stable slot keys
+- [x] `routes/party/party-slot.tsx` — filled + empty slot cards (sprite, name, level, types, move chips)
+- [x] `routes/party/coverage-bar.tsx` — offensive type coverage strip (18 types)
+- [ ] `routes/party/edit-modal.tsx` — biggest piece: Pokémon picker, level, nature, moves, advanced stats
+- [ ] `routes/party/pc-box.tsx` — PC scroll grid + full-party-swap modal
+- [ ] `routes/party/suggestion-panel.tsx` — top-5 team suggestions from `calc.computeSuggestions`
+- [ ] `routes/party/tm-suggestion-panel.tsx` — "best moves to teach now"
+- [ ] Teach modal deep-link (`?teach=<dex>:<move>`)
+
+Grid currently redirects taps (both filled and empty slots) to `/search` as a placeholder until the edit modal lands.
 
 ### Breakdown overlay
 See [03-phases.md](./03-phases.md) Phase 6. Type-matchup rows in Search detail link to a breakdown component that explains the final multiplier (STAB × type product × ability mod). Pure component — depends only on `data/types`, `data/abilities`, `lib/damage`.

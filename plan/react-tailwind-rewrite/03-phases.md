@@ -42,9 +42,10 @@ Each phase should produce a push-ready state: lint ✓ typecheck ✓ tests ✓ b
 
 The biggest route (959 lines of vanilla). Split into subcomponents:
 
-- [ ] `routes/party.tsx` composition root
-- [ ] `routes/party/party-grid.tsx` — 6-slot grid with empty "+" tile
-- [ ] `routes/party/party-slot.tsx` — sprite, name, level, types, move chips
+- [x] `routes/party.tsx` composition root
+- [x] `routes/party/party-grid.tsx` — 6-slot grid with empty "+" tile
+- [x] `routes/party/party-slot.tsx` — sprite, name, level, types, move chips
+- [x] `routes/party/coverage-bar.tsx` — offensive type coverage strip
 - [ ] `routes/party/edit-modal.tsx` — the biggest piece:
   - [ ] Pokémon search + pick
   - [ ] Level input (1–100)
