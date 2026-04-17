@@ -21,12 +21,13 @@ Each phase should produce a push-ready state: lint ✓ typecheck ✓ tests ✓ b
 - [x] In-memory impl for tests
 - [x] `RepositoryProvider`, `useStore`, `useSettings`, playthrough mutation hooks
 
-## Phase 3 — Sync  ✅ DONE (client + conflict UI)
+## Phase 3 — Sync  ✅ DONE
 
 - [x] `features/sync/gist-client.ts`
 - [x] `features/sync/use-sync.ts` (pull, push, debounce, poll, conflict state)
+- [x] `features/sync/sync-context.tsx` — singleton `SyncProvider` + `useSyncContext` / `useMarkLocalChanged`
 - [x] `features/sync/conflict-modal.tsx`
-- [ ] Wire `markLocalChanged` into every mutation that writes the store (currently only available; not yet called from hooks)
+- [x] `markLocalChanged` wired into every store-mutating hook (`useSaveStore`, `useCreatePlaythrough`, `useSwitchPlaythrough`, `useRenamePlaythrough`, `useDeletePlaythrough`, `useUpdateActivePlaythrough`)
 
 ## Phase 4 — Shell + simple routes  ✅ DONE
 

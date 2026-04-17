@@ -1,7 +1,7 @@
 import { type ReactNode, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { gameName } from "~/data/games";
-import { useSync } from "~/features/sync/use-sync";
+import { useSyncContext } from "~/features/sync/sync-context";
 import { useActivePlaythrough } from "~/hooks/use-store";
 import { PlaythroughMenu } from "./playthrough-menu";
 
@@ -16,7 +16,7 @@ const navItems = [
 
 export function Shell({ children }: { children: ReactNode }) {
   const active = useActivePlaythrough();
-  const sync = useSync();
+  const sync = useSyncContext();
   const [menuOpen, setMenuOpen] = useState(false);
 
   // Sync indicator drives the top-right status pill.
@@ -81,7 +81,7 @@ export function Shell({ children }: { children: ReactNode }) {
   );
 }
 
-function buildSyncLabel(status: ReturnType<typeof useSync>["status"]) {
+function buildSyncLabel(status: ReturnType<typeof useSyncContext>["status"]) {
   if (!status.hasToken) return null;
   if (status.syncing) return { text: "syncing…", cls: "text-[var(--color-text-3)]" };
   if (status.error) return { text: "sync error", cls: "text-[var(--color-red)]" };

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ConflictModal } from "~/features/sync/conflict-modal";
-import { useSync } from "~/features/sync/use-sync";
+import { useSyncContext } from "~/features/sync/sync-context";
 import { useSaveSettings, useSettings } from "~/hooks/use-settings";
 import { useStoreRepository } from "~/repositories";
 import type { Settings } from "~/schemas";
@@ -11,7 +11,7 @@ export function SettingsRoute() {
   const { data: settings, isLoading } = useSettings();
   const save = useSaveSettings();
   const storeRepo = useStoreRepository();
-  const sync = useSync();
+  const sync = useSyncContext();
 
   useEffect(() => {
     if (!settings) return;
@@ -187,7 +187,7 @@ function GitHubSyncSection({
   settings,
   onPatch,
 }: {
-  sync: ReturnType<typeof useSync>;
+  sync: ReturnType<typeof useSyncContext>;
   settings: Settings;
   onPatch: (update: Partial<Settings>) => void;
 }) {
@@ -277,7 +277,7 @@ function SyncStatusLine({
   testState,
   testMsg,
 }: {
-  sync: ReturnType<typeof useSync>;
+  sync: ReturnType<typeof useSyncContext>;
   testState: "idle" | "ok" | "error";
   testMsg: string;
 }) {

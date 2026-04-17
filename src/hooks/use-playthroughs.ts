@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DEFAULT_GAME_ID } from "~/data/games";
+import { useMarkLocalChanged } from "~/features/sync/sync-context";
 import { useStoreRepository } from "~/repositories";
 import type { Playthrough, Store } from "~/schemas";
 import { useStore } from "./use-store";
@@ -24,6 +25,7 @@ function saveAndInvalidate(store: Store) {
 export function useCreatePlaythrough() {
   const repo = useStoreRepository();
   const qc = useQueryClient();
+  const markLocalChanged = useMarkLocalChanged();
   const { data: store } = useStore();
   return useMutation({
     mutationFn: async ({ name, gameId }: { name?: string; gameId?: string }) => {
@@ -37,13 +39,17 @@ export function useCreatePlaythrough() {
       await repo.saveStore(next);
       return saveAndInvalidate(next);
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["store"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["store"] });
+      markLocalChanged();
+    },
   });
 }
 
 export function useSwitchPlaythrough() {
   const repo = useStoreRepository();
   const qc = useQueryClient();
+  const markLocalChanged = useMarkLocalChanged();
   const { data: store } = useStore();
   return useMutation({
     mutationFn: async (id: string) => {
@@ -52,13 +58,17 @@ export function useSwitchPlaythrough() {
       await repo.saveStore(next);
       return next;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["store"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["store"] });
+      markLocalChanged();
+    },
   });
 }
 
 export function useRenamePlaythrough() {
   const repo = useStoreRepository();
   const qc = useQueryClient();
+  const markLocalChanged = useMarkLocalChanged();
   const { data: store } = useStore();
   return useMutation({
     mutationFn: async ({ id, name }: { id: string; name: string }) => {
@@ -72,13 +82,17 @@ export function useRenamePlaythrough() {
       await repo.saveStore(next);
       return next;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["store"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["store"] });
+      markLocalChanged();
+    },
   });
 }
 
 export function useDeletePlaythrough() {
   const repo = useStoreRepository();
   const qc = useQueryClient();
+  const markLocalChanged = useMarkLocalChanged();
   const { data: store } = useStore();
   return useMutation({
     mutationFn: async (id: string) => {
@@ -90,7 +104,10 @@ export function useDeletePlaythrough() {
       await repo.saveStore(next);
       return next;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["store"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["store"] });
+      markLocalChanged();
+    },
   });
 }
 
@@ -101,6 +118,7 @@ export function useDeletePlaythrough() {
 export function useUpdateActivePlaythrough() {
   const repo = useStoreRepository();
   const qc = useQueryClient();
+  const markLocalChanged = useMarkLocalChanged();
   const { data: store } = useStore();
   return useMutation({
     mutationFn: async (update: (pt: Playthrough) => Playthrough) => {
@@ -114,6 +132,9 @@ export function useUpdateActivePlaythrough() {
       await repo.saveStore(next);
       return next;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["store"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["store"] });
+      markLocalChanged();
+    },
   });
 }

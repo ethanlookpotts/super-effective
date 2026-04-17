@@ -42,7 +42,9 @@ As of the last commit on `refactor/react-tailwind`. Update this doc in the same 
 ### Sync
 - [x] `features/sync/gist-client.ts` — `fetchGist`, `pushGist`, `createGist`, `deleteGist`, `testToken`
 - [x] `features/sync/use-sync.ts` — hook with pull/push/debounce/poll/conflict/disconnect
+- [x] `features/sync/sync-context.tsx` — `SyncProvider` (singleton mount) + `useSyncContext` + `useMarkLocalChanged`
 - [x] `features/sync/conflict-modal.tsx`
+- [x] `markLocalChanged` wired into every store-mutating hook (`useSaveStore`, `useCreatePlaythrough`, `useSwitchPlaythrough`, `useRenamePlaythrough`, `useDeletePlaythrough`, `useUpdateActivePlaythrough`) — debounced push fires automatically when a GitHub token is configured
 
 ### OCR
 - [x] `features/scan/vision-client.ts` — `readGameScreen`, `readTMCase`, `fuzzyMatchMove`, `ScanError`

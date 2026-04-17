@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMarkLocalChanged } from "~/features/sync/sync-context";
 import { useStoreRepository } from "~/repositories";
 import type { Playthrough, Store } from "~/schemas";
 
@@ -15,9 +16,13 @@ export function useStore() {
 export function useSaveStore() {
   const repo = useStoreRepository();
   const qc = useQueryClient();
+  const markLocalChanged = useMarkLocalChanged();
   return useMutation({
     mutationFn: (store: Store) => repo.saveStore(store),
-    onSuccess: () => qc.invalidateQueries({ queryKey: STORE_KEY }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: STORE_KEY });
+      markLocalChanged();
+    },
   });
 }
 
