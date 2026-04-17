@@ -3,7 +3,7 @@
 ## Working Principles
 
 - **Ask questions** — if anything is ambiguous, ask before implementing
-- **Small, focused commits** — one logical change per commit using conventional commit messages. Commit messages are single-line only — no body, no Co-Authored-By trailer.
+- **Small, focused commits** — one logical change per commit using conventional commit messages. Commit messages are single-line only — no body, no Co-Authored-By trailer, no Claude Code footer/URL. All commits are authored by Ethan Look-Potts <ethanlookpotts@gmail.com>; never set the author to Claude or any other identity, and never add a co-author trailer.
 - **WORKLOG flow** — use the `worklogger` skill (or `skills/worklogger.md`) to execute any Active Todo or manage the backlog; it owns the implement → test → mark → commit sequence and all WORKLOG structure rules.
 - **Keep docs current** — update README, WORKLOG, and CLAUDE.md alongside code changes
 - **WORKLOG.md** tracks progress, active todos, backlog, and session notes — update it every session so the next agent can pick up instantly
@@ -127,7 +127,9 @@ Use conventional commits:
 - `data: description` — game data additions or corrections
 - `style: description` — CSS-only changes
 
-Keep commits small and focused — one logical change per commit. Commit messages must be a single line only — no body, no Co-Authored-By trailer.
+Keep commits small and focused — one logical change per commit. Commit messages must be a single line only — no body, no Co-Authored-By trailer, and no "Generated with Claude Code" / `https://claude.ai/code/...` footer.
+
+**Authorship:** every commit must be authored by `Ethan Look-Potts <ethanlookpotts@gmail.com>`. Do not commit as `Claude <noreply@anthropic.com>` (or any other identity) and do not add a co-author trailer — Ethan is the sole author on the record. If `git config user.name` / `user.email` is not already set to this identity, set it locally (not globally) before committing, or pass `--author="Ethan Look-Potts <ethanlookpotts@gmail.com>"` to `git commit`.
 
 ## Skills
 

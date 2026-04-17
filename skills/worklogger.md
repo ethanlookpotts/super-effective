@@ -34,7 +34,7 @@ Before picking, check:
 8. Run `npm test` (runs unit + E2E tests) — fix any failures before proceeding; do not commit with broken tests. If the feature adds a pure-logic module, add unit tests in `test/` alongside the E2E tests.
 9. Present a summary of changes to the user and **ask for confirmation** that the task is complete before proceeding
 10. After user confirms: move the task from the Backlog into the current session heading under **Progress** (mark it `[x]`); if no session heading exists for this session, create one: `### Session N — <title>` and prepend it at the top of the Progress section
-11. Commit all changed files — including the WORKLOG update — in one commit: `feat: <description>` (single line, no body)
+11. Commit all changed files — including the WORKLOG update — in one commit: `feat: <description>` (single line, no body, no Co-Authored-By trailer, no Claude Code footer). The commit must be authored by `Ethan Look-Potts <ethanlookpotts@gmail.com>` — never commit as Claude or any other identity, and never add a co-author. If needed, pass `--author="Ethan Look-Potts <ethanlookpotts@gmail.com>"` to `git commit`.
 12. Push to the remote branch
 
 **Exit criteria:**
@@ -114,4 +114,5 @@ Always maintain this exact section order. Never add new top-level sections witho
 - Do not modify `HOW`, `CHART`, `BOSSES`, or `LOCATIONS` in `js/data.js` without explicit instruction
 - Do not create new top-level WORKLOG sections
 - Do not rewrite or reformat tasks that were not part of the current request
-- Do not add a Co-Authored-By trailer or multi-line commit body
+- Do not add a Co-Authored-By trailer, a "Generated with Claude Code" footer, or a multi-line commit body
+- Do not author commits as Claude or any other identity — every commit is authored by `Ethan Look-Potts <ethanlookpotts@gmail.com>`
