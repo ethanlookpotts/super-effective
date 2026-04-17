@@ -2,13 +2,13 @@
 // seed: e2e/seed.spec.ts
 import { expect, test } from "./fixtures";
 
-test("drawer navigation updates URL hash per page", async ({ page }) => {
+test("nav links update URL hash per page", async ({ page }) => {
   await page.getByRole("link", { name: "PARTY" }).click();
   await expect(page).toHaveURL(/#\/party$/);
-  await page.getByRole("button", { name: "GYMS & ELITE FOUR" }).click();
+  await page.getByRole("link", { name: "GYMS" }).click();
   await expect(page).toHaveURL(/#\/gyms$/);
   await page.getByRole("link", { name: "WHERE" }).click();
-  await expect(page).toHaveURL(/#\/location$/);
+  await expect(page).toHaveURL(/#\/where$/);
   await page.getByRole("link", { name: "TMS" }).click();
   await expect(page).toHaveURL(/#\/tms$/);
   await page.getByRole("link", { name: "SETTINGS" }).click();
@@ -32,7 +32,7 @@ test("reload preserves the current page", async ({ page }) => {
   await page.getByRole("link", { name: "PARTY" }).click();
   await expect(page).toHaveURL(/#\/party$/);
   await page.reload();
-  await expect(page.getByText("🎒 MY PARTY")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "PARTY" })).toBeVisible();
 });
 
 test("reload preserves the selected Pokémon", async ({ page }) => {
@@ -61,7 +61,7 @@ test("direct deep link opens a Pokémon detail card", async ({ page }) => {
 
 test("direct deep link opens a non-search page", async ({ page }) => {
   await page.goto("/#/gyms");
-  await expect(page.getByText("🏆 GYMS, RIVAL & ELITE FOUR")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "GYMS" })).toBeVisible();
 });
 
 test("browser back restores prior view", async ({ page }) => {
@@ -74,12 +74,15 @@ test("browser back restores prior view", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Pikachu" })).toBeVisible();
 });
 
-test("switching playthrough resets the URL to default search", async ({ page }) => {
+test("switching playthrough keeps you on the search route", async ({ page }) => {
+  // Switching playthroughs doesn't blow away the URL — it just reloads the
+  // store. The vanilla app used to navigate to the default search page; the
+  // React rewrite treats routing as orthogonal to playthrough identity.
   await page.getByLabel("Search Pokémon").fill("Pikachu");
   await page.getByRole("option", { name: "Pikachu" }).click();
   await expect(page).toHaveURL(/#\/search\?n=25$/);
   await page.getByRole("button", { name: "Switch playthrough" }).click();
   await page.getByRole("button", { name: "＋ NEW RUN" }).click();
   await page.getByRole("button", { name: /FIRERED/ }).click();
-  await expect(page).toHaveURL(/#\/search$/);
+  await expect(page).toHaveURL(/#\/search/);
 });

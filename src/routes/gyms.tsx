@@ -68,7 +68,7 @@ export function GymsRoute() {
   }
 
   return (
-    <section className="flex flex-col gap-3">
+    <section aria-label="Gyms page" className="flex flex-col gap-3">
       <header>
         <h2 className="font-[var(--font-pixel)] text-sm text-[var(--color-text)]">
           GYMS &amp; ELITE FOUR
