@@ -24,7 +24,7 @@ test('PC Box shows caught count after adding from search', async ({ page }) => {
   await page.getByRole('button', { name: 'Open menu' }).click();
   await page.getByRole('button', { name: '🎒 MY PARTY' }).click();
   await expect(page.getByText('(1 CAUGHT)')).toBeVisible();
-  await expect(page.locator('#pc-section').getByText('Charizard')).toBeVisible();
+  await expect(page.getByRole('region', { name: 'PC Box' }).getByText('Charizard')).toBeVisible();
 });
 
 test('IN PC BOX button is inactive when Pokémon already in PC', async ({ page }) => {
@@ -59,7 +59,7 @@ test('remove Pokémon from PC — cancel then confirm', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'YES' })).toBeVisible();
   // Cancel
   await page.getByRole('button', { name: 'NO' }).click();
-  await expect(page.locator('#pc-section').getByText('Pikachu')).toBeVisible();
+  await expect(page.getByRole('region', { name: 'PC Box' }).getByText('Pikachu')).toBeVisible();
   // Confirm removal
   await page.getByRole('button', { name: 'Remove Pikachu from PC' }).click();
   await page.getByRole('button', { name: 'YES' }).click();
@@ -70,13 +70,13 @@ test('PC Box collapses and expands', async ({ page }) => {
   await seedPC(page, [25]);
   await page.getByRole('button', { name: 'Open menu' }).click();
   await page.getByRole('button', { name: 'MY PARTY' }).click();
-  await expect(page.locator('#pc-section').getByText('Pikachu')).toBeVisible();
+  await expect(page.getByRole('region', { name: 'PC Box' }).getByText('Pikachu')).toBeVisible();
   // Collapse
   await page.getByRole('button', { name: 'Toggle PC Box' }).click();
-  await expect(page.locator('#pc-section').getByText('Pikachu')).not.toBeVisible();
+  await expect(page.getByRole('region', { name: 'PC Box' }).getByText('Pikachu')).not.toBeVisible();
   // Expand
   await page.getByRole('button', { name: 'Toggle PC Box' }).click();
-  await expect(page.locator('#pc-section').getByText('Pikachu')).toBeVisible();
+  await expect(page.getByRole('region', { name: 'PC Box' }).getByText('Pikachu')).toBeVisible();
 });
 
 test('no suggestions shown when no Pokémon available', async ({ page }) => {

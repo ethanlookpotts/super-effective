@@ -12,7 +12,6 @@ Evolving into a multi-game companion app with playthrough support.
 ### High Priority
 
 ### Medium Priority
-- [ ] Audit and replace E2E locators that use CSS id/class selectors (e.g. #move-section) with accessible role/heading/label alternatives so tests behave like real users — add appropriate aria labels to HTML where needed to enable this
 - [ ] IV/EV input — add back once accessible in-game (Gen III has no in-game IV/EV display; consider IV range calculator from scanned stats + nature + level, or EV tracking from battle history)
 
 ### Future Games
@@ -29,6 +28,11 @@ Evolving into a multi-game companion app with playthrough support.
 ---
 
 ## Progress
+
+### Session 28 — Accessible E2E Locators
+
+**Completed**
+- [x] Audit and replace E2E locators that use CSS id/class selectors with accessible role/label alternatives — added `role="region"` + `aria-label` to each of the 6 `#page-*` containers in `index.html`; `role="dialog"` + `aria-label`/`aria-labelledby` to 7 modal overlays (party edit, PC swap, playthrough menu, breakdown, party suggestion, stats info, sync conflict); `role="listbox"` on `#s-drop`; `role="list"` on `#party-grid`; `aria-label` on `#s-scroll`, `#pc-section`, `#tm-sugg-wrap`, `#mast-game`; empty party pslot now `role="button" aria-label="Add Pokémon to party"` (`js/party.js`); `#move-section` container `role="region" aria-label="Move picker"`; `#adv-computed` `aria-label="Computed stats"`; `.stats-section` `role="region" aria-label="Base stats"` (`js/search.js`); `.tm-card` `role="listitem" aria-label="<num> <move>"` and `.tm-learners` `role="region" aria-label="Learners for <move>"` (`js/pages.js`). Updated all 10 E2E spec files to replace class selectors (`.drawer-nav`, `.pslot.empty-s`, `.party-grid`, `.stats-section`, `.tm-card`, `.tm-learners`, `#overlay .modal`) and most id selectors (`#move-section`, `#pc-section`, `#tm-sugg-wrap`, `#adv-computed`, `#s-in`, `#s-scroll`, `#s-drop`, `#mast-pt-btn`, `#mast-pt-label`, `#mast-game`, `#sidebar-pt-label`, `#stats-info-overlay`, `#pt-overlay`, `#drawer-overlay`, `#page-*`) with `getByRole`, `getByLabel`, and region-scoped queries. 72 unit + 97 E2E = 169 tests pass.
 
 ### Session 27 — Move Search + Move Detail
 

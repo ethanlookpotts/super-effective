@@ -9,13 +9,13 @@ test.beforeEach(async ({ page }) => {
 
 test('where am I tab renders location list', async ({ page }) => {
   await expect(page.getByText('Viridian Forest')).toBeVisible();
-  await expect(page.locator('#page-location').getByText('Safari Zone')).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Where Am I page' }).getByText('Safari Zone')).toBeVisible();
 });
 
 test('TMs page is reachable from drawer', async ({ page }) => {
   await page.getByRole('button', { name: 'Open menu' }).click();
   await page.getByRole('button', { name: /TMs/ }).click();
-  await expect(page.locator('#page-tms').getByText('TMs & HMs')).toBeVisible();
+  await expect(page.getByRole('region', { name: 'TMs and HMs page' }).getByText('TMs & HMs')).toBeVisible();
   await expect(page.getByText('TM01')).toBeVisible();
 });
 

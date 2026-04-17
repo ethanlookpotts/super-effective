@@ -192,7 +192,7 @@ function renderPokeDetail(){
       : physFav ? `⚔ Physical attacker — ATK ${atk} > SpA ${spa}`
       : `✦ Special attacker — SpA ${spa} > ATK ${atk}`;
     html += `<div class="sec-head">📊 BASE STATS <button class="stat-info-btn" aria-label="Base stats help" onclick="showStatsInfo(${atk},${spa})">ℹ</button></div>
-    <div class="stats-section">
+    <div class="stats-section" role="region" aria-label="Base stats">
       <div class="stat-row">${lhi('HP',false)}${nhi(hp,false)}<div class="stat-bar"><div class="stat-fill hp" style="width:${pct(hp)}"></div></div></div>
       <div class="stat-row">${lhi('ATK',physFav&&!even)}${nhi(atk,physFav&&!even)}<div class="stat-bar"><div class="stat-fill atk" style="width:${pct(atk)}"></div></div></div>
       <div class="stat-row">${lhi('DEF',false)}${nhi(def,false)}<div class="stat-bar"><div class="stat-fill def" style="width:${pct(def)}"></div></div></div>

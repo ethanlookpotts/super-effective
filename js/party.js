@@ -110,7 +110,7 @@ function renderParty(){
     </div>`;
   });
   for(let i=pt.party.length; i<6; i++){
-    html += `<div class="pslot empty-s" onclick="openModal(-1)"><div class="ps-icon">＋</div><div class="ps-add">ADD POKEMON</div></div>`;
+    html += `<div class="pslot empty-s" role="button" aria-label="Add Pokémon to party" onclick="openModal(-1)"><div class="ps-icon">＋</div><div class="ps-add">ADD POKEMON</div></div>`;
   }
   g.innerHTML = html;
   document.getElementById('party-ct').textContent = pt.party.length ? `${pt.party.length} / 6 IN PARTY` : '';
@@ -240,7 +240,7 @@ function renderModal(){
     <span class="modal-sec-arr">${mMovesOpen?'▾':'▶'}</span>
   </div>
   <div class="modal-sec-body" style="display:${mMovesOpen&&mPoke?'block':'none'}">
-    <div id="move-section"></div>
+    <div id="move-section" role="region" aria-label="Move picker"></div>
   </div>`;
 
   // Info section — ability / item / gender / full stats / shiny / OT / memo (collapsible)
@@ -334,7 +334,7 @@ function renderModal(){
       </div>
     </div>
     ${natNote}
-    <div class="adv-computed" id="adv-computed">${computed}</div>`;
+    <div class="adv-computed" id="adv-computed" aria-label="Computed stats">${computed}</div>`;
   }
 
   const isEditing = mMode==='pc' ? (mSlot>=0&&mSlot<pt.pc.length) : (mSlot>=0&&mSlot<pt.party.length);

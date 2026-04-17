@@ -17,7 +17,7 @@
       <div class="drawer-hd">
         <!-- Game context: shown in sidebar header on desktop; shown in open drawer on mobile -->
         <div class="drawer-hd-game">
-          <div class="mast-title" id="mast-game">🔴 FIRERED / LEAFGREEN</div>
+          <div class="mast-title" id="mast-game" aria-label="Current game">🔴 FIRERED / LEAFGREEN</div>
           <div class="mast-sub" id="mast-pt">BATTLE AIDE · GEN III · KANTO</div>
           <div class="sync-status" id="sync-status"></div>
         </div>
@@ -72,7 +72,7 @@
   </div>
 
   <!-- ══ SEARCH PAGE ══ -->
-  <div id="page-search" class="page active">
+  <div id="page-search" class="page active" role="region" aria-label="Search page">
     <div class="search-ph">
       <div class="search-ph-top">
         <div class="ph-title">🔍 SEARCH</div>
@@ -85,12 +85,12 @@
       </div>
       <div class="type-filter-row" id="type-filter-row"></div>
     </div>
-    <div class="pdrop" id="s-drop" style="display:none"></div>
-    <div class="scroll" id="s-scroll"></div>
+    <div class="pdrop" id="s-drop" role="listbox" aria-label="Search results dropdown" style="display:none"></div>
+    <div class="scroll" id="s-scroll" role="region" aria-label="Search content"></div>
   </div>
 
   <!-- ══ PARTY PAGE ══ -->
-  <div id="page-party" class="page">
+  <div id="page-party" class="page" role="region" aria-label="Party page">
     <div class="party-ph">
       <div class="party-ph-title">🎒 MY PARTY</div>
       <div class="party-ph-sub">TAP SLOT TO ADD OR EDIT · UP TO 6</div>
@@ -100,18 +100,18 @@
         <div class="cov-label">TYPE COVERAGE — TAP A DOT TO BROWSE THAT TYPE</div>
         <div class="cov-bar" id="cov-bar"></div>
       </div>
-      <div class="party-grid" id="party-grid"></div>
+      <div class="party-grid" id="party-grid" role="list" aria-label="Party slots"></div>
       <div class="party-ct-wrap">
         <div id="party-ct" class="party-ct"></div>
       </div>
       <div id="suggest-wrap"></div>
-      <div id="tm-sugg-wrap"></div>
-      <div id="pc-section"></div>
+      <div id="tm-sugg-wrap" role="region" aria-label="TM suggestions"></div>
+      <div id="pc-section" role="region" aria-label="PC Box"></div>
     </div>
   </div>
 
   <!-- ══ GYMS PAGE ══ -->
-  <div id="page-gyms" class="page">
+  <div id="page-gyms" class="page" role="region" aria-label="Gyms page">
     <div class="gyms-ph">
       <div class="gyms-ph-title">🏆 GYMS, RIVAL &amp; ELITE FOUR</div>
       <div class="gyms-ph-sub">TAP ANY POKÉMON TO SEARCH IT · SELECT YOUR STARTER ABOVE</div>
@@ -120,7 +120,7 @@
   </div>
 
   <!-- ══ WHERE AM I PAGE ══ -->
-  <div id="page-location" class="page">
+  <div id="page-location" class="page" role="region" aria-label="Where Am I page">
     <div class="loc-ph">
       <div class="loc-ph-title">🗺 WHERE AM I?</div>
       <input class="si gf" id="loc-in" placeholder="Location or Pokémon name…"
@@ -131,7 +131,7 @@
   </div>
 
   <!-- ══ SETTINGS PAGE ══ -->
-  <div id="page-settings" class="page">
+  <div id="page-settings" class="page" role="region" aria-label="Settings page">
     <div class="settings-ph">
       <div class="settings-ph-title">⚙ SETTINGS</div>
     </div>
@@ -141,7 +141,7 @@
   </div>
 
   <!-- ══ TMs & HMs PAGE ══ -->
-  <div id="page-tms" class="page">
+  <div id="page-tms" class="page" role="region" aria-label="TMs and HMs page">
     <div class="tms-ph">
       <div class="tms-ph-title">📀 TMs &amp; HMs</div>
       <div class="tms-top-row">
@@ -158,7 +158,7 @@
 
   <!-- ══ PARTY EDIT MODAL ══ -->
   <div class="overlay" id="overlay" onclick="oClick(event)">
-    <div class="modal">
+    <div class="modal" role="dialog" aria-labelledby="modal-ttl">
       <div class="modal-hd">
         <div class="modal-ttl" id="modal-ttl">ADD POKÉMON</div>
         <button class="modal-x" onclick="closeModal()">✕ CLOSE</button>
@@ -169,7 +169,7 @@
 
   <!-- ══ PC SWAP MODAL ══ -->
   <div class="overlay" id="swap-overlay" onclick="swapOvClick(event)">
-    <div class="modal">
+    <div class="modal" role="dialog" aria-label="PC deposit">
       <div class="modal-hd">
         <div class="modal-ttl">📦 PC DEPOSIT</div>
         <button class="modal-x" onclick="closeSwapModal()">✕ CLOSE</button>
@@ -180,7 +180,7 @@
 
   <!-- ══ PLAYTHROUGH MENU ══ -->
   <div class="overlay" id="pt-overlay" onclick="ptOvClick(event)">
-    <div class="modal">
+    <div class="modal" role="dialog" aria-label="Playthroughs">
       <div class="modal-hd">
         <div class="modal-ttl">⚡ PLAYTHROUGHS</div>
         <button class="modal-x" onclick="closePtMenu()">✕ CLOSE</button>
@@ -191,7 +191,7 @@
 
   <!-- ══ TYPE/MOVE BREAKDOWN SHEET ══ -->
   <div class="overlay" id="bd-overlay" onclick="bdOvClick(event)">
-    <div class="modal">
+    <div class="modal" role="dialog" aria-labelledby="bd-ttl">
       <div class="modal-hd">
         <div class="modal-ttl" id="bd-ttl">WHY?</div>
         <button class="modal-x" onclick="closeBreakdown()">✕ CLOSE</button>
@@ -202,7 +202,7 @@
 
   <!-- ══ PARTY SUGGESTION MODAL ══ -->
   <div class="overlay" id="suggest-overlay" onclick="suggestOvClick(event)">
-    <div class="modal">
+    <div class="modal" role="dialog" aria-labelledby="suggest-modal-ttl">
       <div class="modal-hd">
         <div class="modal-ttl" id="suggest-modal-ttl">✨ PARTY SUGGESTIONS</div>
         <button class="modal-x" onclick="closeSuggestModal()">✕ CLOSE</button>
@@ -213,7 +213,7 @@
 
   <!-- ══ STATS INFO ══ -->
   <div class="overlay" id="stats-info-overlay" onclick="statsInfoOvClick(event)">
-    <div class="modal">
+    <div class="modal" role="dialog" aria-label="Base Stats Explained">
       <div class="modal-hd">
         <div class="modal-ttl">📊 BASE STATS EXPLAINED</div>
         <button class="modal-x" onclick="closeStatsInfo()">✕ CLOSE</button>
@@ -224,7 +224,7 @@
 
   <!-- ══ SYNC CONFLICT MODAL ══ -->
   <div class="overlay" id="sync-conflict-overlay" onclick="if(event.target===this)this.classList.remove('open')">
-    <div class="modal">
+    <div class="modal" role="dialog" aria-label="Sync conflict">
       <div class="modal-hd">
         <div class="modal-ttl">SYNC CONFLICT</div>
         <button class="modal-x" onclick="document.getElementById('sync-conflict-overlay').classList.remove('open')">✕ CLOSE</button>

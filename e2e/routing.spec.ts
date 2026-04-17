@@ -55,9 +55,9 @@ test('reload preserves the selected Pokémon', async ({ page }) => {
 
 test('reload preserves the type filter', async ({ page }) => {
   await page.getByRole('button', { name: 'Fire' }).click();
-  await expect(page.locator('#page-search').getByText('Charmander', { exact: true })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Search page' }).getByText('Charmander', { exact: true })).toBeVisible();
   await page.reload();
-  await expect(page.locator('#page-search').getByText('Charmander', { exact: true })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Search page' }).getByText('Charmander', { exact: true })).toBeVisible();
 });
 
 test('direct deep link opens a Pokémon detail card', async ({ page }) => {
@@ -75,7 +75,7 @@ test('browser back restores prior view', async ({ page }) => {
   await page.getByRole('option', { name: 'Pikachu' }).click();
   await expect(page.getByRole('heading', { name: 'Pikachu' })).toBeVisible();
   await page.getByRole('button', { name: 'Open menu' }).click();
-  await page.locator('.drawer-nav').getByRole('button', { name: 'MY PARTY' }).click();
+  await page.getByRole('navigation').getByRole('button', { name: 'MY PARTY' }).click();
   await expect(page).toHaveURL(/#\/party$/);
   await page.goBack();
   await expect(page.getByRole('heading', { name: 'Pikachu' })).toBeVisible();
@@ -85,7 +85,7 @@ test('switching playthrough resets the URL to default search', async ({ page }) 
   await page.getByLabel('Search Pokémon').fill('Pikachu');
   await page.getByRole('option', { name: 'Pikachu' }).click();
   await expect(page).toHaveURL(/#\/search\?n=25$/);
-  await page.locator('#mast-pt-btn').click();
+  await page.getByRole('button', { name: 'Switch playthrough' }).click();
   await page.getByRole('button', { name: '＋ NEW RUN' }).click();
   await page.getByRole('button', { name: /FIRERED/ }).click();
   await expect(page).toHaveURL(/#\/search$/);

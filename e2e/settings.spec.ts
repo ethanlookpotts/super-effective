@@ -43,7 +43,7 @@ test('scan button with no key navigates to settings', async ({ page }) => {
   await page.evaluate(() => localStorage.removeItem('se_claude_key'));
   await page.getByLabel('Open menu').click();
   await page.getByRole('button', { name: 'MY PARTY' }).click();
-  await page.locator('.pslot.empty-s').first().click();
+  await page.getByRole('button', { name: 'Add Pokémon to party' }).first().click();
   await page.getByLabel('Scan game screens').click();
   await expect(page.getByText('⚙ SETTINGS')).toBeVisible();
 });

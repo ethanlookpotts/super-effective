@@ -142,7 +142,7 @@ function _tmCardHtml(t){
   const learnersCount = learners.inParty.length + learners.inPC.length;
   const learnersHtml = isExpanded ? _renderLearnersHtml(t.move, learners) : '';
 
-  return `<div class="tm-card${owned?' tm-owned':''}${t.tmType==='tutor'&&owned?' tm-faded':''}">
+  return `<div class="tm-card${owned?' tm-owned':''}${t.tmType==='tutor'&&owned?' tm-faded':''}" role="listitem" aria-label="${t.num} ${t.move}">
     <div class="tm-card-top">
       <span class="tm-card-num">${t.num}</span>
       <span class="tm-card-move">${t.move}</span>
@@ -165,7 +165,7 @@ function _renderLearnersHtml(moveName, { inParty, inPC }){
     <span class="tm-learner-name">${pm.name}</span>
     <span class="tm-learner-types">${pm.types.map(t=>`<span class="tb sm t-${t}">${t}</span>`).join('')}</span>
   </button>`;
-  let html = `<div class="tm-learners">`;
+  let html = `<div class="tm-learners" role="region" aria-label="Learners for ${moveName}">`;
   if(inParty.length) html += `<div class="tm-learn-lbl">IN PARTY</div><div class="tm-learn-list">${inParty.map(row).join('')}</div>`;
   if(inPC.length)    html += `<div class="tm-learn-lbl">IN PC</div><div class="tm-learn-list">${inPC.map(row).join('')}</div>`;
   html += `</div>`;

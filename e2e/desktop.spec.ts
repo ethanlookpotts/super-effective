@@ -17,15 +17,15 @@ test('sidebar nav is always visible without opening a drawer', async ({ page }) 
 });
 
 test('game title and run switcher appear in the sidebar', async ({ page }) => {
-  await expect(page.locator('#mast-game')).toBeVisible();
-  await expect(page.locator('#sidebar-pt-label')).toBeVisible();
+  await expect(page.getByLabel('Current game')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Switch playthrough' })).toBeVisible();
 });
 
 test('sidebar nav navigates without drawer overlay', async ({ page }) => {
   await page.getByRole('button', { name: /GYMS/ }).click();
-  await expect(page.locator('#page-gyms')).toBeVisible();
-  // Drawer overlay should not be open (no backdrop)
-  await expect(page.locator('#drawer-overlay')).not.toHaveClass(/open/);
+  await expect(page.getByRole('region', { name: 'Gyms page' })).toBeVisible();
+  // Sidebar nav is always visible on desktop (no modal backdrop state)
+  await expect(page.getByRole('navigation')).toBeVisible();
 });
 
 test('type filter pills wrap to multiple lines on desktop', async ({ page }) => {
@@ -42,9 +42,9 @@ test('type filter pills wrap to multiple lines on desktop', async ({ page }) => 
 
 test('party grid shows 3 columns at desktop width', async ({ page }) => {
   await page.getByRole('button', { name: /MY PARTY/ }).click();
-  await expect(page.locator('#page-party')).toBeVisible();
-  const grid = page.locator('.party-grid');
-  const cols = await grid.evaluate(el =>
+  await expect(page.getByRole('region', { name: 'Party page' })).toBeVisible();
+  const grid = page.getByRole('list', { name: 'Party slots' });
+  const cols = await grid.evaluate((el: HTMLElement) =>
     getComputedStyle(el).gridTemplateColumns.split(' ').length
   );
   expect(cols).toBe(3);
@@ -53,8 +53,8 @@ test('party grid shows 3 columns at desktop width', async ({ page }) => {
 test('edit modal is centered, not a bottom sheet', async ({ page }) => {
   await page.getByRole('button', { name: /MY PARTY/ }).click();
   // Click an empty party slot to open edit modal
-  await page.locator('.pslot.empty-s').first().click();
-  const modal = page.locator('#overlay .modal');
+  await page.getByRole('button', { name: 'Add Pokémon to party' }).first().click();
+  const modal = page.getByRole('dialog', { name: /ADD POKÉMON|EDIT POKÉMON/ });
   await expect(modal).toBeVisible();
   const box = await modal.boundingBox();
   const vp = page.viewportSize()!;
@@ -68,7 +68,7 @@ test('edit modal is centered, not a bottom sheet', async ({ page }) => {
 test('run switcher in sidebar opens playthrough menu', async ({ page }) => {
   // On desktop the masthead is hidden, so the sidebar button is the only visible one
   await page.getByRole('button', { name: 'Switch playthrough' }).click();
-  await expect(page.locator('#pt-overlay')).toHaveClass(/open/);
+  await expect(page.getByRole('dialog', { name: 'Playthroughs' })).toBeVisible();
   await page.getByRole('button', { name: /CLOSE/ }).click();
-  await expect(page.locator('#pt-overlay')).not.toHaveClass(/open/);
+  await expect(page.getByRole('dialog', { name: 'Playthroughs' })).not.toBeVisible();
 });

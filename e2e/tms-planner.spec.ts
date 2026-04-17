@@ -73,9 +73,10 @@ test('WHO CAN LEARN expansion shows party + PC members who learn the move', asyn
   await openTmsPage(page);
   // TM24 Thunderbolt — Pikachu + many party mons can learn
   // Expand via the card's WHO CAN LEARN button. It's unique because only one is open at a time
-  await page.locator('.tm-card').filter({ hasText: 'Thunderbolt' }).getByText('WHO CAN LEARN').click();
+  const thunderboltCard = page.getByRole('listitem', { name: /Thunderbolt/ });
+  await thunderboltCard.getByText('WHO CAN LEARN').click();
   // Party section
-  const learnersBlock = page.locator('.tm-card').filter({ hasText: 'Thunderbolt' }).locator('.tm-learners');
+  const learnersBlock = page.getByRole('region', { name: 'Learners for Thunderbolt' });
   await expect(learnersBlock).toBeVisible();
   await expect(learnersBlock.getByText('IN PC')).toBeVisible();
 });
@@ -115,8 +116,8 @@ test('MISSING filter hides owned entries', async ({ page }) => {
   await openTmsPage(page);
   await page.getByRole('button', { name: /MISSING/ }).click();
   // Focus Punch (TM01) should NOT be in the list; another TM should
-  await expect(page.locator('.tm-card').filter({ hasText: 'Focus Punch' })).toHaveCount(0);
-  await expect(page.locator('.tm-card').filter({ hasText: 'Dragon Claw' })).toBeVisible();
+  await expect(page.getByRole('listitem', { name: /Focus Punch/ })).toHaveCount(0);
+  await expect(page.getByRole('listitem', { name: /Dragon Claw/ })).toBeVisible();
 });
 
 test('TM scan button is visible in the TMs page header', async ({ page }) => {
@@ -133,7 +134,7 @@ test('TM Suggestions section appears on Party page when a TM is owned', async ({
   await page.getByRole('button', { name: 'Open menu' }).click();
   await page.getByRole('button', { name: /MY PARTY/ }).click();
   await expect(page.getByText('TM SUGGESTIONS')).toBeVisible();
-  await expect(page.locator('#tm-sugg-wrap').getByText('Earthquake')).toBeVisible();
+  await expect(page.getByRole('region', { name: 'TM suggestions' }).getByText('Earthquake')).toBeVisible();
 });
 
 test('TM Suggestion row opens the teach modal with move pre-queued', async ({ page }) => {
@@ -144,7 +145,7 @@ test('TM Suggestion row opens the teach modal with move pre-queued', async ({ pa
   await seedInventory(page, { 'TM26': 1 }); // Earthquake
   await page.getByRole('button', { name: 'Open menu' }).click();
   await page.getByRole('button', { name: /MY PARTY/ }).click();
-  await page.locator('#tm-sugg-wrap').getByRole('button', { name: /Teach Earthquake/ }).click();
+  await page.getByRole('region', { name: 'TM suggestions' }).getByRole('button', { name: /Teach Earthquake/ }).click();
   // Modal is open with Charizard
   await expect(page.getByText('EDIT POKÉMON')).toBeVisible();
   // Earthquake is now in the moves list
