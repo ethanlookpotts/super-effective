@@ -163,7 +163,7 @@ export function TmsRoute() {
   const allMissing = allTotal - allOwned;
 
   return (
-    <section className="flex flex-col gap-3">
+    <section aria-label="TMs and HMs page" className="flex flex-col gap-3">
       <header className="flex items-baseline justify-between">
         <h2 className="font-[var(--font-pixel)] text-sm text-[var(--color-text)]">TMs &amp; HMs</h2>
       </header>

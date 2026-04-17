@@ -15,7 +15,7 @@ export function WhereAmIRoute() {
   }
 
   return (
-    <section className="flex flex-col gap-3">
+    <section aria-label="Where Am I page" className="flex flex-col gap-3">
       <header>
         <h2 className="font-[var(--font-pixel)] text-sm text-[var(--color-text)]">WHERE AM I</h2>
       </header>

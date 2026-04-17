@@ -13,8 +13,8 @@ test("where am I tab renders location list", async ({ page }) => {
   ).toBeVisible();
 });
 
-test("TMs page is reachable from drawer", async ({ page }) => {
-  await page.getByRole("button", { name: /TMs/ }).click();
+test("TMs page is reachable from nav", async ({ page }) => {
+  await page.getByRole("link", { name: "TMS" }).click();
   await expect(
     page.getByRole("region", { name: "TMs and HMs page" }).getByText("TMs & HMs"),
   ).toBeVisible();
@@ -22,15 +22,15 @@ test("TMs page is reachable from drawer", async ({ page }) => {
 });
 
 test("TM search by move name shows TM card", async ({ page }) => {
-  await page.getByRole("button", { name: /TMs/ }).click();
-  await page.getByPlaceholder("Move name or TM number…").fill("earthquake");
+  await page.getByRole("link", { name: "TMS" }).click();
+  await page.getByLabel("Search TMs and HMs").fill("earthquake");
   await expect(page.getByText("TM26")).toBeVisible();
-  await expect(page.getByText("Earthquake")).toBeVisible();
+  await expect(page.getByText("Earthquake").first()).toBeVisible();
   await expect(page.getByText(/Viridian Gym/)).toBeVisible();
 });
 
 test("TM search by number shows TM card", async ({ page }) => {
-  await page.getByRole("button", { name: /TMs/ }).click();
-  await page.getByPlaceholder("Move name or TM number…").fill("tm26");
-  await expect(page.getByText("Earthquake")).toBeVisible();
+  await page.getByRole("link", { name: "TMS" }).click();
+  await page.getByLabel("Search TMs and HMs").fill("tm26");
+  await expect(page.getByText("Earthquake").first()).toBeVisible();
 });
