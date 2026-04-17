@@ -1,44 +1,26 @@
 import { useEffect, useMemo, useState } from "react";
 import { Sprite } from "~/components/sprite";
 import { TypeBadge } from "~/components/type-badge";
-import { TYPES, dmult, gm } from "~/data/types";
+import { TYPES } from "~/data/types";
 import { useUpdateActivePlaythrough } from "~/hooks/use-playthroughs";
 import { tc } from "~/lib/colors";
-import { type CalcMember, type TeamSuggestion, makePartyCalc } from "~/lib/party-calc";
-import type { PartyMember, TypeName } from "~/schemas";
+import {
+  type TeamSuggestion,
+  computeSuggestions,
+  coveredSuper,
+  exposedWeak,
+} from "~/lib/party-calc";
+import type { PartyMember } from "~/schemas";
 
 type Src = "party" | "pc";
 
 type TaggedMember = PartyMember & { _src: Src; _srcIdx: number };
-
-const calc = makePartyCalc();
 
 function buildPool(party: readonly PartyMember[], pc: readonly PartyMember[]): TaggedMember[] {
   return [
     ...party.map((pm, i) => ({ ...pm, _src: "party" as const, _srcIdx: i })),
     ...pc.map((pm, i) => ({ ...pm, _src: "pc" as const, _srcIdx: i })),
   ];
-}
-
-function coveredSuper(members: readonly CalcMember[]): Set<TypeName> {
-  const covered = new Set<TypeName>();
-  for (const pm of members) {
-    const at: TypeName[] = [...pm.types, ...(pm.moves ?? []).map((m) => m.type)];
-    for (const def of TYPES) {
-      if (at.some((t) => gm(t, def) >= 2)) covered.add(def);
-    }
-  }
-  return covered;
-}
-
-function exposedWeak(members: readonly CalcMember[]): Set<TypeName> {
-  const exposed = new Set<TypeName>();
-  for (const pm of members) {
-    for (const at of TYPES) {
-      if (dmult(at, pm.types) >= 2) exposed.add(at);
-    }
-  }
-  return exposed;
 }
 
 export function SuggestionPanel({
@@ -51,7 +33,7 @@ export function SuggestionPanel({
   const suggestions = useMemo<TeamSuggestion<TaggedMember>[]>(() => {
     const pool = buildPool(party, pc);
     if (pool.length === 0) return [];
-    return calc.computeSuggestions(pool, 5);
+    return computeSuggestions(pool, 5);
   }, [party, pc]);
 
   const [openIdx, setOpenIdx] = useState<number | null>(null);
