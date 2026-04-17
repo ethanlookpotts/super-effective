@@ -90,10 +90,11 @@ See [03-phases.md](./03-phases.md) Phase 5.
 - [x] Teach modal deep-link (`?teach=<dex>:<move>`) — TM suggestion rows navigate, PartyRoute consumes param, EditModal pre-queues the move
 
 ### E2E tests
-See [03-phases.md](./03-phases.md) Phase 8. Existing `e2e/*.spec.ts` target the vanilla DOM and are disabled in CI for now (Biome ignores `e2e/`). After routes stabilise:
-- Verify each spec file still expresses the right scenario
-- Update selectors where React changed DOM structure (accessible locators should mostly survive)
-- Re-enable in CI
+See [03-phases.md](./03-phases.md) Phase 8. Progress so far:
+- [x] `@playwright/test` installed as a devDependency
+- [x] `e2e/` no longer in Biome's ignore list — the 13 legacy specs format / lint-clean (vanilla-global seed helpers retyped with a `LegacyWindow` interface + `TODO(phase-8)` markers; they will be rewritten to seed `se_v1` directly when each spec is walked)
+- [ ] Walk each spec against the running React app (`npm run preview`), update selectors where the React DOM differs, rewrite seed helpers
+- [ ] Re-enable the Playwright job in CI (needs `npx playwright install chromium` + a webServer step)
 
 ### README screenshots
 See [03-phases.md](./03-phases.md) Phase 9. Add `scripts/screenshot-readme.ts` to regenerate the 4 tracked PNGs via Playwright against Vite preview.

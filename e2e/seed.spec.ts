@@ -1,7 +1,7 @@
-import { test, expect, SEED_STORE } from './fixtures';
+import { expect, test } from "./fixtures";
 
-test.describe('Test group', () => {
-  test('seed', async ({ page }) => {
-    await expect(page.getByLabel('Search Pokémon')).toBeVisible();
+test.describe("Test group", () => {
+  test("seed", async ({ page }) => {
+    await expect(page.getByLabel("Search Pokémon")).toBeVisible();
   });
 });
