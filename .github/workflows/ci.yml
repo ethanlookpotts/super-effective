@@ -1,11 +1,12 @@
-name: E2E Tests
+name: CI
+
 on:
   pull_request:
   push:
     branches: [main]
 
 jobs:
-  test:
+  lint-typecheck-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -14,11 +15,17 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
-      - run: npm test
+      - name: Biome check
+        run: npm run lint -- --reporter=github
+      - name: Type check
+        run: npm run typecheck
+      - name: Unit tests
+        run: npm test
+      - name: Production build
+        run: npm run build
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-results
-          path: e2e/test-results/
+          name: dist
+          path: dist
           retention-days: 7
