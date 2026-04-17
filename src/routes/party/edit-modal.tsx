@@ -642,7 +642,10 @@ function LevelAndNature({
         </div>
       )}
       {computed && (
-        <div className="font-[var(--font-pixel)] text-[9px] text-[var(--color-text-2)]">
+        <div
+          aria-label="Computed stats"
+          className="font-[var(--font-pixel)] text-[9px] text-[var(--color-text-2)]"
+        >
           ~ATK {computed.atk} · SpA {computed.spa} · Spe {computed.spe}
         </div>
       )}
