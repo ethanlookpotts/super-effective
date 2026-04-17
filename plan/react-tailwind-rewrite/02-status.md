@@ -69,7 +69,8 @@ See [03-phases.md](./03-phases.md) Phase 5. Subcomponents status:
 - [x] `routes/party/party-slot.tsx` — filled + empty slot cards (sprite, name, level, types, move chips)
 - [x] `routes/party/coverage-bar.tsx` — offensive type coverage strip (18 types)
 - [ ] `routes/party/edit-modal.tsx` — biggest piece: Pokémon picker, level, nature, moves, advanced stats
-- [ ] `routes/party/pc-box.tsx` — PC scroll grid + full-party-swap modal
+- [x] `routes/party/pc-box.tsx` — PC grid (collapsible, ADD NEW, remove w/ confirm, → party swap)
+- [x] `routes/party/full-party-swap-modal.tsx` — reusable swap picker when party is full
 - [x] `routes/party/suggestion-panel.tsx` — top-5 team suggestions from `calc.computeSuggestions` (strip + dialog + apply writes active playthrough)
 - [ ] `routes/party/tm-suggestion-panel.tsx` — "best moves to teach now"
 - [ ] Teach modal deep-link (`?teach=<dex>:<move>`)

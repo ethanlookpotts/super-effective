@@ -54,8 +54,8 @@ The biggest route (959 lines of vanilla). Split into subcomponents:
   - [ ] Advanced (collapsed by default): ability, item, gender, shiny, OT name/id, ball, memo, in-game max stats
   - [ ] Save / Cancel / Delete
   - [ ] Deep-link via `?teach=<dex>:<moveName>`
-- [ ] `routes/party/pc-box.tsx` — scrolling grid + "ADD NEW" tile
-- [ ] `routes/party/full-party-swap-modal.tsx` — when adding to full party
+- [x] `routes/party/pc-box.tsx` — scrolling grid + "ADD NEW" tile
+- [x] `routes/party/full-party-swap-modal.tsx` — when adding to full party
 - [x] `routes/party/suggestion-panel.tsx` — top-5 from `calc.computeSuggestions`
 - [ ] `routes/party/tm-suggestion-panel.tsx` — `calc.rankTeachTargets` best moves to teach
 

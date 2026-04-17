@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useActivePlaythrough } from "~/hooks/use-store";
 import { CoverageBar } from "./party/coverage-bar";
 import { PARTY_MAX, PartyGrid } from "./party/party-grid";
+import { PcBox } from "./party/pc-box";
 import { SuggestionPanel } from "./party/suggestion-panel";
 
 export function PartyRoute() {
@@ -47,6 +48,8 @@ export function PartyRoute() {
       <CoverageBar party={party} />
 
       <SuggestionPanel party={party} pc={active.pc} />
+
+      <PcBox party={party} pc={active.pc} />
     </section>
   );
 }
