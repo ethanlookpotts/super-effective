@@ -4,6 +4,7 @@
 
 - **Ask questions** — if anything is ambiguous, ask before implementing
 - **Small, focused commits** — one logical change per commit using conventional commit messages. Commit messages are single-line only — no body, no Co-Authored-By trailer, no Claude Code footer/URL. All commits are authored by Ethan Look-Potts <ethanlookpotts@gmail.com>; never set the author to Claude or any other identity, and never add a co-author trailer.
+- **Green CI before pushing** — every push must leave `npm run lint`, `npm run typecheck`, `npm test`, and `npm run build` all passing with zero Biome warnings. Run them locally before committing; if Biome warns, fix the code (or add a targeted `biome-ignore` with a one-line justification) — don't suppress at config level. New pure-logic modules land with matching tests in `test/`.
 - **WORKLOG flow** — use the `worklogger` skill (or `skills/worklogger.md`) to execute any Active Todo or manage the backlog; it owns the implement → test → mark → commit sequence and all WORKLOG structure rules.
 - **Keep docs current** — update README, WORKLOG, and CLAUDE.md alongside code changes
 - **WORKLOG.md** tracks progress, active todos, backlog, and session notes — update it every session so the next agent can pick up instantly
