@@ -6,6 +6,7 @@ import type { Settings, Store } from "~/schemas";
 import {
   createGist as createGistApi,
   fetchGist,
+  listGists as listGistsApi,
   pushGist,
   testToken as testTokenApi,
 } from "./gist-client";
@@ -193,6 +194,10 @@ export function useSync() {
     createGist: (store: Store) => {
       if (!settings?.githubToken) throw new Error("No token configured");
       return createGistApi(settings.githubToken, store);
+    },
+    listGists: () => {
+      if (!settings?.githubToken) throw new Error("No token configured");
+      return listGistsApi(settings.githubToken);
     },
   };
 }

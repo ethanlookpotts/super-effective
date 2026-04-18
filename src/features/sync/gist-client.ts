@@ -97,6 +97,38 @@ export async function pushGist(
   return { gistId, payload };
 }
 
+export interface GistSummary {
+  id: string;
+  description: string | null;
+  filenames: string[];
+  isSyncGist: boolean;
+  updatedAt: string;
+  htmlUrl: string;
+}
+
+export async function listGists(token: string): Promise<GistSummary[]> {
+  const resp = await fetch(`${GIST_API}?per_page=100`, { headers: headers(token) });
+  if (!resp.ok) throw new Error(`gist list failed: ${resp.status}`);
+  const json = (await resp.json()) as Array<{
+    id: string;
+    description: string | null;
+    files: Record<string, unknown>;
+    updated_at: string;
+    html_url: string;
+  }>;
+  return json.map((g) => {
+    const filenames = Object.keys(g.files);
+    return {
+      id: g.id,
+      description: g.description,
+      filenames,
+      isSyncGist: filenames.includes(GIST_FILENAME),
+      updatedAt: g.updated_at,
+      htmlUrl: g.html_url,
+    };
+  });
+}
+
 export async function deleteGist(token: string, gistId: string): Promise<void> {
   await fetch(`${GIST_API}/${gistId}`, { method: "DELETE", headers: headers(token) }).catch(
     () => undefined,

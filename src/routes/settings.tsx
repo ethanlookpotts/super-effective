@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useSyncContext } from "~/features/sync/sync-context";
 import type { SyncStatus } from "~/features/sync/types";
@@ -296,7 +297,7 @@ function GitHubSyncSection({
             <button
               type="button"
               onClick={() => sync.pull()}
-              disabled={sync.status.syncing}
+              disabled={sync.status.syncing || !settings.gistId}
               className="min-h-11 flex-1 rounded-card border border-blue px-3 text-xs text-blue disabled:opacity-40"
             >
               SYNC NOW
@@ -314,8 +315,169 @@ function GitHubSyncSection({
           </>
         )}
       </div>
+      {settings.githubToken && (
+        <GistPickerSection sync={sync} settings={settings} onPatch={onPatch} />
+      )}
       <SyncStatusLine sync={sync} testState={testState} testMsg={testMsg} />
     </fieldset>
+  );
+}
+
+function GistPickerSection({
+  sync,
+  settings,
+  onPatch,
+}: {
+  sync: ReturnType<typeof useSyncContext>;
+  settings: Settings;
+  onPatch: (update: Partial<Settings>) => void;
+}) {
+  const [picking, setPicking] = useState(!settings.gistId);
+
+  useEffect(() => {
+    if (!settings.gistId) setPicking(true);
+  }, [settings.gistId]);
+
+  if (settings.gistId && !picking) {
+    return (
+      <div className="mt-1 rounded-card border border-border bg-card-2 px-3 py-2 text-xs">
+        <div className="font-pixel text-[9px] tracking-wider text-text-3">LINKED GIST</div>
+        <div className="mt-1 flex items-center justify-between gap-2">
+          <code className="truncate text-text">{settings.gistId}</code>
+          <button
+            type="button"
+            onClick={() => setPicking(true)}
+            className="min-h-9 shrink-0 rounded-card border border-border px-3 text-[11px] text-text-2"
+          >
+            CHANGE
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <GistPicker
+      sync={sync}
+      currentGistId={settings.gistId ?? null}
+      onCancel={settings.gistId ? () => setPicking(false) : undefined}
+      onPick={(id) => {
+        onPatch({ gistId: id });
+        setPicking(false);
+      }}
+    />
+  );
+}
+
+function GistPicker({
+  sync,
+  currentGistId,
+  onPick,
+  onCancel,
+}: {
+  sync: ReturnType<typeof useSyncContext>;
+  currentGistId: string | null;
+  onPick: (id: string) => void;
+  onCancel?: () => void;
+}) {
+  const query = useQuery({
+    queryKey: ["gists"],
+    queryFn: () => sync.listGists(),
+    staleTime: 30_000,
+  });
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState("");
+
+  async function createNew() {
+    setCreating(true);
+    setCreateError("");
+    try {
+      await sync.push();
+    } catch (e) {
+      setCreateError((e as Error).message);
+    } finally {
+      setCreating(false);
+    }
+  }
+
+  return (
+    <div
+      aria-label="Pick sync gist"
+      className="mt-1 flex flex-col gap-2 rounded-card border border-border bg-card-2 p-3"
+    >
+      <div className="flex items-center justify-between">
+        <div className="font-pixel text-[9px] tracking-wider text-text-3">PICK A GIST</div>
+        {onCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            className="font-pixel text-[9px] tracking-wider text-text-3 underline"
+          >
+            CANCEL
+          </button>
+        )}
+      </div>
+
+      <button
+        type="button"
+        onClick={createNew}
+        disabled={creating}
+        className="min-h-11 rounded-card bg-gold px-3 text-xs font-semibold text-black disabled:opacity-40"
+      >
+        {creating ? "CREATING…" : "+ CREATE NEW SYNC GIST"}
+      </button>
+      {createError && <div className="text-xs text-red">{createError}</div>}
+
+      <div className="font-pixel text-[9px] tracking-wider text-text-3">YOUR GISTS</div>
+      {query.isLoading && <div className="text-xs text-text-3">Loading gists…</div>}
+      {query.error && (
+        <div className="text-xs text-red">Error: {(query.error as Error).message}</div>
+      )}
+      {query.data && query.data.length === 0 && (
+        <div className="text-xs text-text-3">No gists on this account yet.</div>
+      )}
+      {query.data && query.data.length > 0 && (
+        <ul className="flex flex-col gap-1">
+          {query.data.map((g) => {
+            const isCurrent = g.id === currentGistId;
+            return (
+              <li
+                key={g.id}
+                className="flex items-center justify-between gap-2 rounded-card border border-border bg-card px-3 py-2"
+              >
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <div className="truncate text-xs text-text">
+                      {g.description || "(no description)"}
+                    </div>
+                    {g.isSyncGist && (
+                      <span className="shrink-0 rounded-full bg-[color-mix(in_srgb,var(--color-green)_14%,transparent)] px-2 py-0.5 font-pixel text-[8px] text-green">
+                        SYNC-READY
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-0.5 truncate text-[10px] text-text-3">
+                    {g.filenames.join(", ")} · updated {timeSince(g.updatedAt)}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onPick(g.id)}
+                  disabled={isCurrent}
+                  className="min-h-9 shrink-0 rounded-card bg-blue px-3 text-[11px] font-semibold text-white disabled:opacity-40"
+                >
+                  {isCurrent ? "CURRENT" : "USE"}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+      <p className="text-[11px] text-text-3">
+        Picking a gist without the <code>super-effective-sync.json</code> file is fine — the next
+        local change will add it.
+      </p>
+    </div>
   );
 }
 
