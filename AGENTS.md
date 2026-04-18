@@ -131,7 +131,9 @@ Ad-hoc screenshots are git-ignored. Only the 4 README screenshots are tracked:
 - `screenshots/gyms-misty-expanded.png`
 - `screenshots/where-am-i-safari.png`
 
-README screenshot regeneration uses Playwright against the running Vite dev server — add a `scripts/screenshot-readme.ts` helper when the relevant routes are ported.
+Regenerate them with `npm run build && npm run screenshots` — `scripts/screenshot-readme.ts` spawns `vite preview`, seeds a deterministic full-party playthrough, and overwrites all four PNGs. Commit the regenerated images in the same PR as the change.
+
+**Keep README screenshots current.** Any PR that changes the UI of the Search, Gyms, or Where Am I routes — layout, styling, copy, iconography, seeded party/opponent data, or anything else visible in the four tracked images — must regenerate the screenshots and commit the updated PNGs. If a change visibly drifts the screenshots from the live app, the PR is incomplete. When in doubt, regenerate and diff.
 
 ## Commit Style
 
