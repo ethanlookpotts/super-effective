@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { dataLabel, timeSince } from "~/features/sync/data-label";
 import { useSyncContext } from "~/features/sync/sync-context";
-import type { SyncStatus } from "~/features/sync/types";
 import { useSaveSettings, useSettings } from "~/hooks/use-settings";
 import type { Settings } from "~/schemas";
 
@@ -521,22 +521,6 @@ function SyncStatusLine({
       {testLine && <div>{testLine}</div>}
     </div>
   );
-}
-
-function dataLabel(status: SyncStatus): string {
-  if (!status.hasToken) return "LOCAL ONLY";
-  if (status.syncing) return "SYNCING…";
-  if (status.error) return "SYNC ERROR";
-  if (status.lastSynced) return `SYNCED · ${timeSince(status.lastSynced).toUpperCase()}`;
-  return "LOCAL · SYNC PENDING";
-}
-
-function timeSince(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime();
-  if (diff < 60_000) return "just now";
-  if (diff < 3_600_000) return `${Math.floor(diff / 60_000)}m ago`;
-  if (diff < 86_400_000) return `${Math.floor(diff / 3_600_000)}h ago`;
-  return `${Math.floor(diff / 86_400_000)}d ago`;
 }
 
 function applyTheme(theme: "light" | "system" | "dark") {
