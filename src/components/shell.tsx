@@ -31,6 +31,7 @@ export function Shell({ children }: { children: ReactNode }) {
     : "NO PLAYTHROUGH";
   const gameSub = game ? "BATTLE AIDE · GEN III · KANTO" : "CHOOSE A GAME TO BEGIN";
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: close drawer on route change
   useEffect(() => {
     setDrawerOpen(false);
   }, [location.pathname]);
