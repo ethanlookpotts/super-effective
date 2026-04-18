@@ -155,8 +155,14 @@ function ClaudeKeySection({
           Copy the key — starts with <code className="text-gold">sk-ant-</code>
         </li>
       </ol>
-      <label className="mt-2 block font-pixel text-[9px] tracking-wider text-text-3">API KEY</label>
+      <label
+        htmlFor="settings-claude-key"
+        className="mt-2 block font-pixel text-[9px] tracking-wider text-text-3"
+      >
+        API KEY
+      </label>
       <input
+        id="settings-claude-key"
         type="password"
         aria-label="Claude API key"
         placeholder={claudeApiKey ? "Key saved — enter new key to replace" : "sk-ant-…"}
@@ -257,8 +263,14 @@ function GitHubSyncSection({
         Sync your playthroughs across devices via a private GitHub Gist. Requires a fine-grained
         personal access token with <strong>Gists</strong> read &amp; write permission.
       </p>
-      <label className="mt-2 block font-pixel text-[9px] tracking-wider text-text-3">TOKEN</label>
+      <label
+        htmlFor="settings-github-token"
+        className="mt-2 block font-pixel text-[9px] tracking-wider text-text-3"
+      >
+        TOKEN
+      </label>
       <input
+        id="settings-github-token"
         type="password"
         aria-label="GitHub personal access token"
         placeholder="ghp_… or github_pat_…"
