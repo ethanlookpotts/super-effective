@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSyncContext } from "~/features/sync/sync-context";
+import type { SyncStatus } from "~/features/sync/types";
 import { useSaveSettings, useSettings } from "~/hooks/use-settings";
-import { useStoreRepository } from "~/repositories";
 import type { Settings } from "~/schemas";
 
 const THEMES = ["light", "system", "dark"] as const;
@@ -9,7 +9,6 @@ const THEMES = ["light", "system", "dark"] as const;
 export function SettingsRoute() {
   const { data: settings, isLoading } = useSettings();
   const save = useSaveSettings();
-  const storeRepo = useStoreRepository();
   const sync = useSyncContext();
 
   useEffect(() => {
@@ -29,10 +28,7 @@ export function SettingsRoute() {
     <section aria-label="Settings page" className="flex flex-col">
       <div className="page-header-settings shrink-0 border-b border-border px-4 pt-3 pb-3">
         <h2 className="font-pixel text-[9px] tracking-wider text-gold">⚙ SETTINGS</h2>
-        <p className="mt-1 font-pixel text-[8px] text-text-3">
-          BACKEND: {storeRepo.id}
-          {storeRepo.capabilities.syncsRemotely ? " · SYNCS REMOTELY" : ""}
-        </p>
+        <p className="mt-1 font-pixel text-[8px] text-text-3">DATA: {dataLabel(sync.status)}</p>
       </div>
 
       <div className="flex flex-col gap-6 p-4 pb-12">
@@ -363,6 +359,14 @@ function SyncStatusLine({
       {testLine && <div>{testLine}</div>}
     </div>
   );
+}
+
+function dataLabel(status: SyncStatus): string {
+  if (!status.hasToken) return "LOCAL ONLY";
+  if (status.syncing) return "SYNCING…";
+  if (status.error) return "SYNC ERROR";
+  if (status.lastSynced) return `SYNCED · ${timeSince(status.lastSynced).toUpperCase()}`;
+  return "LOCAL · SYNC PENDING";
 }
 
 function timeSince(iso: string): string {
