@@ -20,86 +20,105 @@ Build the best, most useful mobile Pokémon game companion app. Prioritise:
 
 ## Architecture
 
+Single-page React app built with Vite, served as static files from GitHub Pages. Data layer is backend-agnostic so static data, localStorage, or GitHub Gists can be swapped behind the same interface.
+
 ### File Structure
 ```
-index.html              HTML shell — imports CSS + JS, no inline logic
-style.css               All styles — CSS variables, components, animations
-js/data-types.js        Gen III type chart, PHYS set, gm()/dmult() helpers
-js/data-abilities.js    ABILITY_MODS, getAbilityMod()
-js/data-pokemon.js      POKEMON (151), HOW obtain data, getObtain()
-js/data-locations.js    LOCATIONS encounter data (Where Am I)
-js/data-moves.js        ALL_MOVES, TM_HM (each entry tagged tmType + buyable)
-js/data-tutors.js       MOVE_TUTORS (18 FRLG tutors) + UTILITY_NPCS (Move Reminder / Deleter)
-js/data-bosses.js       BOSSES, RIVALS, tc() color helper
-js/breakdown.js         Sprite helpers, applyAbilityMod, breakdown overlay
-js/data-manager.js      DataManager — persistence gateway, GitHub Gist sync, conflict resolution
-js/state.js             Store global, playthrough state helpers, learnset cache, addRecent
-js/search.js            Search page, type filter pills, renderPokeDetail, renderPDrop
-js/party.js             Party page, edit modal, PC swap modal
-js/gyms.js              Gyms & Elite Four page rendering
-js/pages.js             Nav/drawer, masthead, Where Am I page, TMs page, goSearch
-js/playthroughs.js      Playthrough menu (create/switch/delete/rename)
-js/init.js              showToast, theme init, app initialisation
-js/settings.js          Settings page, theme toggle (light/system/dark)
-screenshot-readme.js    Playwright script to regenerate README screenshots
-skills/                 Flat skill files (any agent) — symlinked into .claude/skills/ for Claude Code
-AGENTS.md               Canonical build guide (this file)
-CLAUDE.md               Thin wrapper — @AGENTS.md include
-README.md               Brief overview, file map, deploy instructions
-WORKLOG.md              Session log, todos, backlog, notes
+index.html                Vite entry — references src/main.tsx
+vite.config.ts            base '/super-effective/' for GH Pages
+tsconfig.*.json           Strict TS; erasableSyntaxOnly; verbatimModuleSyntax
+biome.json                Lint + format + import-sort config (single tool)
+package.json              All deps; npm scripts for dev / build / lint / typecheck / test
+src/
+  main.tsx, App.tsx       Entry + StrictMode
+  providers.tsx           QueryClientProvider + RepositoryProvider
+  routes.tsx              HashRouter + route table
+  vite-env.d.ts           Vite client types
+  styles/index.css        Tailwind v4 @import + @theme tokens (palette + radii)
+  schemas/index.ts        Zod: Store, Playthrough, PartyMember, PartyMove, Settings
+  repositories/           Backend-agnostic data layer
+    types.ts                StoreRepository / SettingsRepository interfaces
+    local-storage.ts        Default — parses/validates via Zod
+    gist.ts                 GitHub Gist sync
+    in-memory.ts            Test + story impl
+    index.tsx               RepositoryProvider context + useRepositories hook
+  hooks/                  React Query hooks — one file per repo method cluster
+    use-store.ts            useStore, useSaveStore, useActivePlaythrough
+    use-settings.ts         useSettings, useSaveSettings
+  routes/                 One file per page
+    search.tsx, party.tsx, gyms.tsx, where-am-i.tsx, tms.tsx, settings.tsx
+  components/shell.tsx    Masthead + nav tabs (44px min touch target)
+  data/                   Typed game data (ported from vanilla js/data-*.js) — per-game modules
+  lib/                    Sprite URLs, colour helpers
+test/                     Vitest unit tests — mirror src/ layout
+e2e/                      Playwright tests (selectors re-ported for React DOM)
+  seed.spec.ts              Baseline environment setup
+  specs/*.md                Human-readable test plans
+skills/                   Flat skill files — symlinked into .claude/skills/
+.github/workflows/
+  ci.yml                    Biome + tsc + Vitest + build on every PR / main push
+  pages-deploy.yml          main → gh-pages root
+  pages-preview.yml         PR → gh-pages/pr-preview/pr-N/
+AGENTS.md                 Canonical build guide (this file)
+CLAUDE.md                 Thin wrapper — @AGENTS.md include
+README.md                 Brief overview, file map, deploy instructions
+WORKLOG.md                Session log, todos, backlog, notes
 ```
 
-**Keep files small and focused** — each file should cover one feature area. Small files reduce agent context overhead: when fixing a bug in party logic, an agent reads only `js/party.js` (~220 lines) instead of the entire codebase. When adding a new feature, identify the 1–2 relevant files before opening anything else.
+**Keep files small and focused** — each file should cover one feature area. Small files reduce agent context overhead: when fixing a bug in party logic, an agent reads only `src/routes/party.tsx` + `src/hooks/use-store.ts` instead of the entire codebase. When adding a new feature, identify the 1–2 relevant files before opening anything else. Components, routes, repositories, hooks, and schemas all follow one-thing-per-file.
 
-Split content into multiple files wherever it aids maintainability — e.g. separate data files per game, separate CSS files per feature area. The app is served directly from GitHub Pages so any file structure that is flat or uses relative paths works.
+Split content into multiple files wherever it aids maintainability — e.g. per-game data modules, per-route files, per-repository files.
 
 ### Rules
-- **No build step** — pure HTML/CSS/JS, edit files directly; GitHub Pages serves them as-is
-- **No frameworks** — vanilla JS only
-- **Single localStorage** store key: `se_v1` (JSON blob with all playthroughs)
-- **No personal data** — never commit credentials, usernames, or identifying info
-- **PokeAPI sprites** are loaded from CDN URLs — no API key needed
-- Split files for maintainability, but no module bundler
 
-### Key State (js/app.js)
-```
-store = { playthroughs: [...], activePtId: '...' }
-  playthrough = { id, name, gameId, party[], recents[] }
-  party member = { n, name, types[], moves[], level }
-  move = { name, type, cat }
+- **Build step required** — `npm run build` produces `dist/`, served by GitHub Pages. Dev loop is `npm run dev` (Vite HMR at localhost:5173).
+- **TypeScript strict** — no `any`, prefer `import type`, `erasableSyntaxOnly` (no parameter properties, no enums), `verbatimModuleSyntax`. Biome enforces `useImportType` and `noExplicitAny`.
+- **Data layer is backend-agnostic** — all persistence flows through a `Repository` implementation. Components and hooks depend on the `StoreRepository` / `SettingsRepository` interface, never on `localStorage` / `fetch` / gists directly.
+- **Zod at the boundary** — every repository read parses untrusted data through a schema. Invalid data never reaches components. Schemas in `src/schemas/` are the source of truth; types are `z.infer<typeof X>`.
+- **React Query owns server state** — no `useState` for anything that comes from a repository. Use query keys + `invalidateQueries` on mutations. Default `staleTime: 30_000`.
+- **Tailwind utility-first** — theme tokens in `src/styles/index.css` mirror the original CSS variables; dark mode via `[data-theme="dark"]` on `<html>`.
+- **Accessibility first** — `getByRole` / `getByLabel` / `getByText` over CSS selectors in tests. Add `aria-label` to JSX when an element lacks an accessible name. Minimum touch target 44px.
+- **Biome is the only linter/formatter** — no ESLint, no Prettier. `npm run lint` in CI blocks merges.
+- **Single localStorage** store key: `se_v1` (unchanged — data backwards-compatible with the vanilla app).
+- **No personal data** — never commit credentials, usernames, or identifying info.
+- **PokeAPI sprites** from CDN: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{id}.png`. Official artwork: `.../other/official-artwork/{id}.png`. No API key needed. Always render with a graceful fallback for offline.
+
+### Key State Shape (see `src/schemas/index.ts` for authoritative Zod)
+
+```ts
+Store = { playthroughs: Playthrough[], activePtId: string | null }
+Playthrough = { id, name, gameId, party: PartyMember[], pc: PartyMember[],
+                recents: number[], rivalStarter, tmInventory }
+PartyMember = { n, name, types, moves: PartyMove[], level?, ability?, item?, ... }
+PartyMove = { name, type, cat? }
 ```
 
 ### Gen III Type Chart Rules
 - Physical types (use Atk/Def): Normal Fighting Flying Poison Ground Rock Bug Ghost Steel
 - Special types (use SpAtk/SpDef): Fire Water Grass Electric Ice Psychic Dragon Dark
-- Type chart is STATIC in data.js — do not replace with PokeAPI (Gen IX chart differs)
+- Type chart is STATIC in `src/data/` — do not replace with PokeAPI (Gen IX chart differs)
 - Fairy type is included for completeness but is not catchable in FRLG
-
-### PokeAPI Usage
-- Sprites only: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{id}.png`
-- Official artwork: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{id}.png`
-- No API calls needed — these are static CDN URLs
-- Always add `onerror="this.style.display='none'"` for offline fallback
 
 ### Do Not Change
 - `HOW` obtain data (carefully compiled for FRLG)
-- `CHART` type effectiveness (Gen III specific)
+- Type effectiveness chart (Gen III specific)
 - `BOSSES` team compositions and levels
 - `LOCATIONS` encounter data
 
 ## GitHub Pages Setup
 
-1. Repo Settings → Pages → Deploy from branch
-2. Select the active `claude/...` branch, folder `/`
-3. Save → live in ~60 seconds at `https://USERNAME.github.io/super-effective/`
+Pages is served from the `gh-pages` branch (managed by GitHub Actions — do not edit directly).
 
-Every push to that branch auto-redeploys. No Actions needed.
+**One-time repo config (already done):**
+1. Settings → Actions → General → Workflow permissions: **Read and write**
+2. Settings → Pages → Source: Deploy from a branch → `gh-pages`, folder `/ (root)`
 
-### Leveraging GitHub Pages
-- All assets are served statically — no server-side logic needed
-- Split large data files (e.g. per-game data) so each is a separate `<script>` tag; this avoids one huge JS file and makes future game modules easy to add
-- Use relative paths only (`js/data.js`, not absolute URLs) so the app works both on GitHub Pages and locally via `file://`
-- Test locally by opening `index.html` directly in a browser — no dev server needed
+**Deployment flow:**
+- `.github/workflows/pages-deploy.yml` — every push to `main` builds and publishes to `gh-pages` root
+- `.github/workflows/pages-preview.yml` — every PR builds and publishes to `gh-pages/pr-preview/pr-N/`; preview URL auto-posted as a PR comment; teardown on PR close
+- Main deploys use `keep_files: true` so PR previews survive main pushes
+
+Live site: `https://ethanlookpotts.github.io/super-effective/`. PR previews: `https://ethanlookpotts.github.io/super-effective/pr-preview/pr-N/`.
 
 ## Browser Screenshots
 
@@ -111,11 +130,7 @@ Ad-hoc screenshots are git-ignored. Only the 4 README screenshots are tracked:
 - `screenshots/gyms-misty-expanded.png`
 - `screenshots/where-am-i-safari.png`
 
-To regenerate README screenshots in light mode, run:
-```bash
-node screenshot-readme.js
-```
-This Playwright script seeds a playthrough, navigates to each featured page, and overwrites the 4 tracked PNGs.
+README screenshot regeneration uses Playwright against the running Vite dev server — add a `scripts/screenshot-readme.ts` helper when the relevant routes are ported.
 
 ## Commit Style
 
@@ -125,7 +140,10 @@ Use conventional commits:
 - `refactor: description` — code restructure, no behaviour change
 - `docs: description` — README/AGENTS/WORKLOG updates
 - `data: description` — game data additions or corrections
-- `style: description` — CSS-only changes
+- `style: description` — Tailwind / CSS-only changes
+- `chore: description` — tooling, deps, scaffolding
+- `ci: description` — workflow changes
+- `test: description` — test-only changes
 
 Keep commits small and focused — one logical change per commit. Commit messages must be a single line only — no body, no Co-Authored-By trailer, and no "Generated with Claude Code" / `https://claude.ai/code/...` footer.
 
@@ -140,42 +158,47 @@ All skills live in `skills/` and are symlinked to `.claude/skills/` for automati
 | `skills/worklogger.md` | Executing Active Todos, managing backlog, maintaining WORKLOG structure |
 | `skills/pokemon.md` | Researching accurate game data (obtain methods, boss teams, move learnsets) |
 | `skills/playwright-planner.md` | Writing new E2E test plans in `e2e/specs/` |
-| `skills/playwright-generator.md` | Converting spec plans into runnable `e2e/*.spec.ts` files |
+| `skills/playwright-generator.md` | Converting spec plans into runnable `e2e/*.spec.ts` files against the Vite dev server |
 | `skills/playwright-healer.md` | Repairing broken tests after UI changes |
+
+## Developer Workflow
+
+```bash
+npm install        # install
+npm run dev        # Vite dev server at http://localhost:5173
+npm run build      # typecheck + production build to dist/
+npm run preview    # serve dist/ locally
+npm run lint       # Biome check (lint + format + import-sort)
+npm run lint:fix   # auto-fix
+npm run typecheck  # tsc --noEmit
+npm test           # Vitest
+```
+
+CI (`.github/workflows/ci.yml`) runs `lint → typecheck → test → build` on every PR and main push. All four must be green to merge. Biome uses `--reporter=github` in CI so lint errors annotate PR files inline.
 
 ## Testing
 
-`npm test` runs the full suite (unit + E2E). Both must pass before every commit and in CI.
+### Unit Tests (Vitest, `test/`)
 
-```bash
-npm run test:unit   # node:test unit tests — fast, no browser needed
-npm run test:e2e    # Playwright E2E tests — requires a browser
-npm test            # runs both in sequence
-```
-
-### Unit Tests (`test/`)
-
-Pure logic tests for calculation modules. Live in `test/`:
+Pure logic lives in `src/`, tests mirror the source layout in `test/`:
 
 ```
 test/
-  party-calc.test.js   # scoring, greedy algorithm, computeSuggestions
+  repositories.test.ts   # round-trip tests for StoreRepository / SettingsRepository
+  <module>.test.ts       # one test file per pure-logic module
 ```
 
-**Strategy:** load browser source files as-is via `node:vm` — tests run the literal browser code, no dual exports, no mocks of core logic.
+When adding a pure-logic module (scoring, parsing, type math), add a matching test file. Tests import from `~/` (the src alias).
 
-When adding a new pure-logic module, add a corresponding `test/<module>.test.js`.
+### E2E Tests (Playwright, `e2e/`)
 
-### E2E Tests (`e2e/`)
-
-Tests use [Playwright](https://playwright.dev). All test-related files live in `e2e/`:
+Tests use [Playwright](https://playwright.dev) and run against `npm run preview` (or `npm run dev` locally):
 
 ```
 e2e/
-  seed.spec.ts          # baseline environment setup (all tests build on this)
+  seed.spec.ts          # baseline environment setup
   *.spec.ts             # generated test files (one per spec plan)
-  specs/
-    *.md                # human-readable test plans (source of truth for generators)
+  specs/*.md            # human-readable test plans (source of truth for generators)
 ```
 
 **Workflow:**
@@ -193,50 +216,47 @@ Tests must behave like a real user, not a machine inspecting the DOM.
 | `getByText('Brock')` | `.locator('.gym-name')` |
 
 - Use `getByRole` / `getByLabel` / `getByText` as the default
-- Use `locator('#id')` only for stable semantic IDs (form fields, page containers)
+- Use `locator('#id')` only for stable semantic IDs
 - Never use CSS class selectors — they are implementation details and break silently
-- If an element has no accessible name, add `aria-label="..."` to the HTML before writing the test
-
-**Local setup:**
-```bash
-npm ci
-npx playwright install chromium
-npm test
-```
+- If an element has no accessible name, add `aria-label="..."` to the JSX before writing the test
 
 ## Adding a New Game Module
 
 Future games (RBY, GSC, RSE, etc.) follow this pattern:
 
-```js
-// In js/data-GAMEID.js:
-const GAME_GAMEID = {
-  id: 'gameid',
-  name: 'Game Name',
+```ts
+// src/data/games/<game-id>.ts
+import type { GameModule } from "~/data/games/types";
+
+export const GAME_GAMEID: GameModule = {
+  id: "gameid",
+  name: "Game Name",
   gen: 3,
   dexRange: [1, 251],   // which Pokémon are relevant
   bosses: [...],         // gym leaders, E4, champion
   locations: [...],      // encounter data
-  obtain: {},            // dex number → obtain methods
+  obtain: { /* dex number → obtain methods */ },
 };
 ```
 
-Shell UI (index.html, style.css, app.js) stays identical. The game module provides data.
+Shell UI (`App.tsx`, routes, components) stays identical. The game module provides data. Type chart differences per generation go through a `TypeChart` interface (Gen I lacks Dark/Steel; Gen II+ differs from Gen VI+).
 
 ## Recurring Patterns
 
 ### Toast notification
-```js
-showToast('Message text');       // gold style
-showToast('Error text', 'red');
-```
+Use the `useToast()` hook — renders into a portal. Call `toast("Message")` or `toast("Error", "red")`.
 
 ### Navigate to Search with type filter
-```js
-setTypeAndSearch('Electric');  // jumps to Search, activates Electric pill
-```
+Use `useNavigate()` + hash query: `navigate("/search?type=Electric")`. The Search route reads `useSearchParams()` and activates the Electric pill.
 
 ### Add Pokémon to current playthrough party
-```js
-addToParty(pokemonDexNumber);  // handles full-party swap modal automatically
+Call the `useAddToParty()` hook; it handles full-party swap via a modal automatically.
+
+### Read / write the active playthrough
+```ts
+const active = useActivePlaythrough();   // read-only
+const save = useSaveStore();             // mutation
+save.mutate({ ...store, playthroughs: [...] });
 ```
+
+Never touch `localStorage` directly — always go through `useStoreRepository()` or one of the hooks above.

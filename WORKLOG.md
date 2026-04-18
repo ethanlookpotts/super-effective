@@ -9,7 +9,9 @@ Evolving into a multi-game companion app with playthrough support.
 
 ## Backlog
 
-### High Priority
+### High Priority — React migration port
+
+🚧 **In progress on long-lived branch `refactor/react-tailwind`. See [`plan/react-tailwind-rewrite/`](./plan/react-tailwind-rewrite/) for the full rewrite plan — phases, status, risks, architecture, deployment.** Do not merge the tracking PR until every phase in [`plan/react-tailwind-rewrite/03-phases.md`](./plan/react-tailwind-rewrite/03-phases.md) is `DONE`.
 
 ### Medium Priority
 - [ ] IV/EV input — add back once accessible in-game (Gen III has no in-game IV/EV display; consider IV range calculator from scanned stats + nature + level, or EV tracking from battle history)
@@ -28,6 +30,59 @@ Evolving into a multi-game companion app with playthrough support.
 ---
 
 ## Progress
+
+### Session 31 — Visual / UX Parity Sweep on `refactor/react-tailwind`
+
+Phase 10 (parity sweep) was the last outstanding phase. A side-by-side comparison between `origin/main` and the refactor preview, run at 4 variants (mobile+desktop × light+dark) via a custom Playwright script, surfaced several unintended UX drifts introduced during the tech rewrite. Restored parity without changing how the app flows:
+
+- [x] **Hamburger drawer + desktop sidebar** replacing the tab-bar nav that snuck in (the refactor had tabs at top; main has always been hamburger → drawer on mobile and permanent sidebar ≥768px). New `DrawerBody` shared between the mobile slide-in drawer and the permanent desktop sidebar; mobile masthead gets a centred game-aware title ("🔴 FIRERED" + "BATTLE AIDE · GEN III · KANTO" subtitle).
+- [x] **Game-aware masthead content** — title block now reads "{icon} {GAME}" plus subtitle, matching main; run-switcher pill shows the active playthrough name (or "＋ NEW RUN" when empty) with a unique `Switch playthrough[: name]` aria-label so E2E `getByRole("button", { name: "Switch playthrough" })` and `name: /REMOTE-RUN/` patterns keep working.
+- [x] **Dotted "blueprint" page background + page-header gradient bars** — registered `--ph-masthead/search/party/gyms/loc/tms`, `--dot-pattern`, `--scanline` tokens in `@theme` for both themes; `body::before` paints the dot pattern; every route now wraps its toolbar in `.page-header-{search|party|gyms|loc|tms|settings}` matching main's warm gradient per page.
+- [x] **Page emoji headers with colour accents** — `🔍 SEARCH` (red), `🎒 MY PARTY` (red) + "TAP SLOT TO ADD OR EDIT · UP TO 6" sub, `🏆 GYMS, RIVAL & ELITE FOUR` (green) + "TAP ANY POKÉMON…" sub, `🗺 WHERE AM I?` (green), `📀 TMs & HMs` (blue), `⚙ SETTINGS` (gold).
+- [x] **Mixed-case rounded type pills** — `<TypeBadge>` dropped its forced `.toUpperCase()` + squarer radius and is now a Press-Start-2P pill with `rounded-[5px]`, `px-2 py-[3px]`, `text-[9px]`; type filter pills on the Search page flipped to a `rounded-full` colour-pill with opacity-55 inactive / opacity-100 active with a dark-outline ring — both match main.
+- [x] **Search input gold-shell** — `<SearchInput>` now uses the `.si`-equivalent (border-border-2 + bg-card-2) with a gold focus ring.
+- [x] **Party page ordering** — `CoverageBar` moved **above** `PartyGrid` (was below, which rearranged the flow vs main).
+- [x] **Settings page content gap** — theme section gained its descriptive paragraph + ☀/💻/🌙 icon labels, Claude-key section gained NO KEY SET / KEY ACTIVE status badge + the 4-step setup instructions, GitHub-sync gained CONNECTED / NOT SET UP status badge + cross-device description. Section separators restored.
+- [x] **TMs header scan button** — `ScanButton` moved inline next to the search input (matching main's compact `tms-top-row`) instead of a separate full-width button below.
+
+All 98 E2E tests pass (including `routing`, `playthrough`, `gyms`, `party-builder`, `tms-planner`, `search`, `settings`, `sync`, `desktop`). 77 unit tests still green. Mobile 390×844, desktop 1280×720, light and dark themes all render without unintended drift.
+
+Deferred as pre-existing drift (not introduced by rewrite):
+- Dashed separators between settings sections (main uses dashed, we use solid)
+- HM chip list on the HM Carrier card (main shows `Cut Surf Strength` with strikethroughs on uncarriable moves; refactor just shows the count). Worth a follow-up.
+- Strict pixel-spacing parity in several dense lists (main is slightly tighter).
+
+### Session 30 — LoC Simplification Pass on `refactor/react-tailwind`
+
+Reviewer-driven source shrink (-443 net LoC, 5 focused commits):
+
+- [x] **Tailwind `@theme` tokens consumed everywhere** — 467 raw `var(--color-…)` / `var(--radius-…)` / `var(--font-…)` arbitrary values across 30+ `.tsx` files replaced with the short utility classes that `@theme` already generates (`bg-card`, `text-text-3`, `rounded-card`, `font-pixel`, etc.). Biome re-wrap collapsed long multi-line classNames. 31 files, **−219 LoC**.
+- [x] **`<Sprite>` primitive** (`src/components/sprite.tsx`) replaces 11 duplicated `<img src={spriteUrl(...) } onError={(e) => ...hide}>` blocks. **−65 LoC**.
+- [x] **Generic `useStoreMutation<T>(reducer)`** inside `hooks/use-playthroughs.ts` replaces 5 near-identical mutation hooks (create/switch/rename/delete/updateActive). Public API unchanged. **−56 LoC**.
+- [x] **Dropped unjustified `useCallback`/`useMemo`** in `routes/search.tsx`, `routes/search/move-detail.tsx`, `routes/search/poke-detail.tsx`, `routes/tms.tsx`. No consumer was `React.memo`'d; stable refs were noise.
+- [x] **`tms.tsx` N+1 fix** — `learnersByMove` map built once per `(active, learnsets)` change; per-card render lookup goes from O(pool) to O(1). **−54 LoC combined with the `useCallback` sweep.**
+- [x] **`lib/party-calc.ts` cleanup** — dropped the `PartyCalc` interface boilerplate and the factory-closure pattern in favour of top-level named exports (`makePartyCalc()` kept as a thin back-compat wrapper so existing callers and the 49-test suite stay untouched). Exported `coveredSuper`/`exposedWeak` so `suggestion-panel.tsx` stopped redefining them, and `computeTeachImpact` now reuses `coveredSuper` instead of rebuilding two coverage sets by hand. **−66 LoC**.
+
+**Deferred (judgement call):**
+- `<FilterPill>` / `<ApiKeyFieldset>` primitives — the variants differ too much (coloured type pills vs text pills; Claude key section vs GitHub sync section with extra buttons + status line). Would have traded readability for a modest line count.
+- Inlining single-use sub-components in `edit-modal.tsx` / `settings.tsx` / `tms.tsx` — ~150 LoC on paper but hurts readability of the already-large files.
+- Collapsing the `repositories/` layer (`types.ts` + `index.tsx` + `local-storage.ts` + `in-memory.ts` = 228 LoC) to free functions — touches sync, tests, providers; ~100 LoC for noticeable risk during a parity sweep. Deferred until after merge.
+
+Bundle regenerates slightly smaller (`search` 45 KB → 41 KB, `party` 47 KB → 43 KB gzip unchanged). 77 unit tests, TS strict, Biome, and production build all green after each commit.
+
+### Session 29 — React + Tailwind Rewrite (ongoing, long-lived branch)
+
+**Branch**: `refactor/react-tailwind` (long-lived). **Plan**: [`plan/react-tailwind-rewrite/`](./plan/react-tailwind-rewrite/). **Tracking PR**: open against `main`, not to be merged until every phase in [`plan/react-tailwind-rewrite/03-phases.md`](./plan/react-tailwind-rewrite/03-phases.md) is `DONE`.
+
+**Highlights so far**
+- Full infra + data layer + repositories + sync client + playthrough hooks done
+- Routes ported: Search, Gyms, Where Am I, TMs, Settings — all live end-to-end behind the new Repository pattern
+- Party route in progress (subagent drafted subcomponents; assembly pending)
+- Breakdown overlay, OCR UI wiring, E2E re-port, screenshots all outstanding
+
+For the authoritative status snapshot, see [`plan/react-tailwind-rewrite/02-status.md`](./plan/react-tailwind-rewrite/02-status.md).
+
+Detailed per-commit progress lives in git log on `refactor/react-tailwind` (not mirrored here — the plan and git log are the two sources of truth).
 
 ### Session 28 — Accessible E2E Locators
 

@@ -1,0 +1,140 @@
+@import "tailwindcss";
+
+@theme {
+  --font-pixel: "Press Start 2P", monospace;
+  --font-body: "DM Mono", monospace;
+
+  --color-bg: #f0f1f6;
+  --color-card: #ffffff;
+  --color-card-2: #e8e9f0;
+  --color-border: #d0d1dc;
+  --color-border-2: #c0c1d0;
+  --color-text: #1a1b2e;
+  --color-text-2: #444560;
+  --color-text-3: #70718a;
+  --color-red: #d62040;
+  --color-gold: #b88a00;
+  --color-green: #1a8a40;
+  --color-blue: #2060c0;
+
+  --radius-card: 10px;
+  --radius-card-lg: 14px;
+
+  --ph-masthead: linear-gradient(160deg, #e8dde0 0%, #ddd8ec 60%, #e0e0ee 100%);
+  --ph-search: linear-gradient(160deg, #f0e4e8 0%, #ece4f4 100%);
+  --ph-party: linear-gradient(160deg, #e0eaf4, #e4e6f4);
+  --ph-gyms: linear-gradient(160deg, #e0f0e4, #e4e6f4);
+  --ph-loc: linear-gradient(160deg, #e0f0e8, #e4e6f4);
+  --ph-tms: linear-gradient(160deg, #e0e4f0, #e4e6f4);
+  --dot-pattern: radial-gradient(circle, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+  --scanline: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.02) 2px,
+    rgba(0, 0, 0, 0.02) 4px
+  );
+}
+
+@layer base {
+  :root[data-theme="dark"] {
+    --color-bg: #0b0c14;
+    --color-card: #13141f;
+    --color-card-2: #1a1b2a;
+    --color-border: #252638;
+    --color-border-2: #32334a;
+    --color-text: #e8e9f3;
+    --color-text-2: #b4b5d0;
+    --color-text-3: #6e6f94;
+    --color-red: #ff3d5a;
+    --color-gold: #ffc93c;
+    --color-green: #3ddc84;
+    --color-blue: #4dabf7;
+
+    --ph-masthead: linear-gradient(160deg, #1c0a14 0%, #18102a 60%, #0e0e1e 100%);
+    --ph-search: linear-gradient(160deg, #1a0812 0%, #1a102a 100%);
+    --ph-party: linear-gradient(160deg, #0a1520, #0e1228);
+    --ph-gyms: linear-gradient(160deg, #0e1a0a, #121228);
+    --ph-loc: linear-gradient(160deg, #0a1a0d, #0e1228);
+    --ph-tms: linear-gradient(160deg, #0a0d1a, #0e1228);
+    --dot-pattern: radial-gradient(circle, rgba(255, 255, 255, 0.016) 1px, transparent 1px);
+    --scanline: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.05) 2px,
+      rgba(0, 0, 0, 0.05) 4px
+    );
+  }
+
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--font-body);
+    color: var(--color-text);
+    background: var(--color-bg);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Dotted "blueprint" background pattern behind the whole app. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image: var(--dot-pattern);
+    background-size: 24px 24px;
+  }
+
+  /* Mobile-first shell — 480px cap. Desktop ≥768px gets a wider content pane beside the sidebar. */
+  #root {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100dvh;
+    position: relative;
+    z-index: 1;
+  }
+
+  @media (min-width: 768px) {
+    #root {
+      max-width: none;
+    }
+  }
+
+  /* Masthead + page-header gradient + scanline utilities. */
+  .masthead {
+    background: var(--ph-masthead);
+    position: relative;
+    overflow: hidden;
+  }
+  .masthead::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: var(--scanline);
+  }
+  .page-header-search {
+    background: var(--ph-search);
+  }
+  .page-header-party {
+    background: var(--ph-party);
+  }
+  .page-header-gyms {
+    background: var(--ph-gyms);
+  }
+  .page-header-loc {
+    background: var(--ph-loc);
+  }
+  .page-header-tms {
+    background: var(--ph-tms);
+  }
+  .page-header-settings {
+    background: var(--ph-masthead);
+  }
+}

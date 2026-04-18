@@ -1,17 +1,18 @@
-import { test, expect, SEED_STORE } from './fixtures';
+import { SEED_STORE, expect, test } from "./fixtures";
 
-// Helper: navigate to Settings page
-async function goSettings(page) {
-  await page.getByLabel('Open menu').click();
-  await page.getByRole('button', { name: 'SETTINGS' }).click();
+async function goSettings(page: import("@playwright/test").Page) {
+  await page.getByRole("link", { name: "SETTINGS" }).click();
 }
 
-// Mock gist data matching the seed store
-const MOCK_GIST_ID = 'gist-abc-123';
-const MOCK_TOKEN = 'ghp_fake_token_for_testing';
+function githubSection(page: import("@playwright/test").Page) {
+  return page.getByRole("group", { name: /GITHUB SYNC/ });
+}
+
+const MOCK_GIST_ID = "gist-abc-123";
+const MOCK_TOKEN = "ghp_fake_token_for_testing";
 
 function mockGistPayload(storeOverride?: object) {
-  const store = storeOverride || JSON.parse(SEED_STORE);
+  const store = storeOverride ?? JSON.parse(SEED_STORE);
   return {
     version: 1,
     lastModified: new Date().toISOString(),
@@ -23,224 +24,237 @@ function mockGistResponse(payload: object) {
   return {
     id: MOCK_GIST_ID,
     files: {
-      'super-effective-sync.json': {
+      "super-effective-sync.json": {
         content: JSON.stringify(payload),
       },
     },
   };
 }
 
+async function seedSettings(page: import("@playwright/test").Page, patch: Record<string, unknown>) {
+  await page.evaluate((p) => {
+    const raw = localStorage.getItem("se_settings_v1");
+    const current = raw ? JSON.parse(raw) : { theme: "system" };
+    localStorage.setItem("se_settings_v1", JSON.stringify({ ...current, ...p }));
+  }, patch);
+  await page.reload();
+  await page.getByLabel("Search Pokémon").waitFor({ state: "visible" });
+}
+
 // ── Settings UI tests ──
 
-test('GitHub Sync section visible in settings', async ({ page }) => {
+test("GitHub Sync section visible in settings", async ({ page }) => {
   await goSettings(page);
-  await expect(page.getByText('GITHUB SYNC')).toBeVisible();
-  await expect(page.getByLabel('GitHub personal access token')).toBeVisible();
-  await expect(page.getByLabel('Test GitHub token')).toBeVisible();
-  await expect(page.getByLabel('Save GitHub token')).toBeVisible();
+  const sync = githubSection(page);
+  await expect(sync).toBeVisible();
+  await expect(sync.getByLabel("GitHub personal access token")).toBeVisible();
+  await expect(sync.getByRole("button", { name: "TEST" })).toBeVisible();
+  await expect(sync.getByRole("button", { name: "SAVE" })).toBeVisible();
 });
 
-test('no token shows NOT SET UP badge', async ({ page }) => {
-  await page.evaluate(() => localStorage.removeItem('se_github_token'));
+test("no token shows 'No token.' status", async ({ page }) => {
   await goSettings(page);
-  await expect(page.getByLabel('Sync status: not set')).toBeVisible();
+  await expect(githubSection(page).getByText("No token.")).toBeVisible();
 });
 
-test('saving a token shows CONNECTED badge', async ({ page }) => {
-  // Mock the gist API so push after save doesn't fail
-  await page.route('**/api.github.com/gists**', route => {
-    route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: MOCK_GIST_ID, files: {} }) });
+test("saving a token transitions out of 'No token.' state", async ({ page }) => {
+  await page.route("**/api.github.com/gists*", (route) => {
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ id: MOCK_GIST_ID, files: {} }),
+    });
   });
 
   await goSettings(page);
-  await page.getByLabel('GitHub personal access token').fill(MOCK_TOKEN);
-  await page.getByLabel('Save GitHub token').click();
-  await expect(page.getByLabel('Sync status: connected')).toBeVisible();
+  const sync = githubSection(page);
+  await sync.getByLabel("GitHub personal access token").fill(MOCK_TOKEN);
+  await sync.getByRole("button", { name: "SAVE" }).click();
+  // Either "synced <t> ago" if the push succeeded, or "token saved; first sync pending".
+  await expect(sync.getByText("No token.")).not.toBeVisible();
 });
 
-test('test token validates gist scope', async ({ page }) => {
-  await page.route('**/api.github.com/gists**', route => {
+test("TEST shows 'Token OK' when the gist scope is present", async ({ page }) => {
+  await page.route("**/api.github.com/gists*", (route) => {
     route.fulfill({
       status: 200,
-      contentType: 'application/json',
+      contentType: "application/json",
       headers: {
-        'x-oauth-scopes': 'gist',
-        'access-control-expose-headers': 'x-oauth-scopes',
-        'access-control-allow-origin': '*',
+        "x-oauth-scopes": "gist",
+        "access-control-expose-headers": "x-oauth-scopes",
+        "access-control-allow-origin": "*",
       },
       body: JSON.stringify([]),
     });
   });
 
   await goSettings(page);
-  await page.getByLabel('GitHub personal access token').fill(MOCK_TOKEN);
-  await page.getByLabel('Test GitHub token').click();
-  await expect(page.getByText('TOKEN VALID')).toBeVisible();
+  const sync = githubSection(page);
+  await sync.getByLabel("GitHub personal access token").fill(MOCK_TOKEN);
+  await sync.getByRole("button", { name: "TEST" }).click();
+  await expect(sync.getByText(/Test:\s*Token OK/)).toBeVisible();
 });
 
-test('test token shows error for missing gist scope', async ({ page }) => {
-  await page.route('**/api.github.com/gists**', route => {
+test("TEST surfaces an error when the gist scope is missing", async ({ page }) => {
+  await page.route("**/api.github.com/gists*", (route) => {
     route.fulfill({
       status: 200,
-      contentType: 'application/json',
+      contentType: "application/json",
       headers: {
-        'x-oauth-scopes': 'repo',
-        'access-control-expose-headers': 'x-oauth-scopes',
-        'access-control-allow-origin': '*',
+        "x-oauth-scopes": "repo",
+        "access-control-expose-headers": "x-oauth-scopes",
+        "access-control-allow-origin": "*",
       },
       body: JSON.stringify([]),
     });
   });
 
   await goSettings(page);
-  await page.getByLabel('GitHub personal access token').fill(MOCK_TOKEN);
-  await page.getByLabel('Test GitHub token').click();
-  await expect(page.getByText('missing "gist" scope')).toBeVisible();
+  const sync = githubSection(page);
+  await sync.getByLabel("GitHub personal access token").fill(MOCK_TOKEN);
+  await sync.getByRole("button", { name: "TEST" }).click();
+  await expect(sync.getByText(/missing "gist" scope/)).toBeVisible();
 });
 
-test('forget token clears back to NOT SET UP', async ({ page }) => {
-  // Seed a token and gist id
-  await page.evaluate((token: string) => {
-    localStorage.setItem('se_github_token', token);
-    localStorage.setItem('se_gist_id', 'gist-xyz');
-  }, MOCK_TOKEN);
-
-  // Mock any gist API calls
-  await page.route('**/api.github.com/gists**', route => {
-    route.fulfill({ status: 200, contentType: 'application/json', body: '{}' });
+test("FORGET clears the token and returns to 'No token.'", async ({ page }) => {
+  await seedSettings(page, { githubToken: MOCK_TOKEN, gistId: MOCK_GIST_ID });
+  // Mock any gist API calls triggered by the initial pull.
+  await page.route("**/api.github.com/gists/**", (route) => {
+    route.fulfill({ status: 200, contentType: "application/json", body: "{}" });
   });
 
-  await page.reload();
-  await page.getByLabel('Search Pokémon').waitFor({ state: 'visible' });
   await goSettings(page);
-  await page.getByLabel('Forget GitHub token').click();
-  // Accept the confirm dialog
-  page.once('dialog', dialog => dialog.accept());
-  await page.getByLabel('Forget GitHub token').click();
-  await expect(page.getByLabel('Sync status: not set')).toBeVisible();
+  const sync = githubSection(page);
+  await sync.getByRole("button", { name: "FORGET" }).click();
+  await expect(sync.getByText("No token.")).toBeVisible();
 });
 
-// ── Sync Now button ──
+// ── SYNC NOW + conflict flows ──
+// The gist endpoint is mocked, and `se_last_synced` / `se_last_local_change`
+// are seeded in localStorage so `useSync.pull()`'s timestamp comparison is
+// deterministic: both-newer → conflict.
 
-test('sync now button triggers pull', async ({ page }) => {
-  const payload = mockGistPayload();
-  const gistResp = mockGistResponse(payload);
-  let pullCalled = false;
+const LAST_SYNCED = "2024-01-01T00:00:00.000Z";
+const LAST_LOCAL_CHANGE = "2024-01-02T00:00:00.000Z";
+const REMOTE_PT_ID = "11111111-2222-4333-8444-555555555555";
 
-  // Seed token + gist id
-  await page.evaluate(({ token, gistId }) => {
-    localStorage.setItem('se_github_token', token);
-    localStorage.setItem('se_gist_id', gistId);
-  }, { token: MOCK_TOKEN, gistId: MOCK_GIST_ID });
+async function seedSyncTimestamps(page: import("@playwright/test").Page) {
+  await page.evaluate(
+    ({ lastSynced, lastLocal }) => {
+      localStorage.setItem("se_last_synced", lastSynced);
+      localStorage.setItem("se_last_local_change", lastLocal);
+    },
+    { lastSynced: LAST_SYNCED, lastLocal: LAST_LOCAL_CHANGE },
+  );
+}
 
-  await page.route('**/api.github.com/gists/**', route => {
-    pullCalled = true;
-    route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(gistResp) });
+test("sync now button triggers pull", async ({ page }) => {
+  let gistGets = 0;
+  await page.route("**/api.github.com/gists/**", (route) => {
+    if (route.request().method() === "GET") gistGets++;
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(
+        mockGistResponse({
+          version: 1,
+          // Older than LAST_SYNCED so no change is applied on boot — avoids conflict races.
+          lastModified: "2020-01-01T00:00:00.000Z",
+          store: JSON.parse(SEED_STORE),
+        }),
+      ),
+    });
   });
-
-  await page.reload();
-  await page.getByLabel('Search Pokémon').waitFor({ state: 'visible' });
+  await page.evaluate((ts) => localStorage.setItem("se_last_synced", ts), LAST_SYNCED);
+  await seedSettings(page, { githubToken: MOCK_TOKEN, gistId: MOCK_GIST_ID });
   await goSettings(page);
-  await page.getByLabel('Sync now').click();
-  await expect(page.getByText('Sync complete')).toBeVisible();
-  expect(pullCalled).toBe(true);
+  const before = gistGets;
+  await githubSection(page).getByRole("button", { name: "SYNC NOW" }).click();
+  await expect.poll(() => gistGets).toBeGreaterThan(before);
 });
 
-// ── Conflict modal ──
-
-test('conflict modal appears when both local and remote changed', async ({ page }) => {
-  // Don't set token before reload — set it after so initial load() doesn't pull
-  const remoteStore = {
-    playthroughs: [{ id: 'seed-001', name: 'CLOUD RUN', gameId: 'frlg-fr', party: [], pc: [], recents: [] }],
-    activePtId: 'seed-001',
-  };
-  const remotePayload = { version: 1, lastModified: new Date().toISOString(), store: remoteStore };
-  const gistResp = mockGistResponse(remotePayload);
-
-  await page.route('**/api.github.com/gists/' + MOCK_GIST_ID, route => {
-    route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(gistResp) });
+test("conflict modal appears when both local and remote changed", async ({ page }) => {
+  await page.route("**/api.github.com/gists/**", (route) => {
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(mockGistResponse(mockGistPayload())),
+    });
   });
-
-  // After page has loaded (no token yet, so no initial pull), inject token + stale sync timestamp
-  await page.evaluate(({ token, gistId }) => {
-    localStorage.setItem('se_github_token', token);
-    localStorage.setItem('se_gist_id', gistId);
-    localStorage.setItem('se_last_synced', '2020-01-01T00:00:00.000Z');
-  }, { token: MOCK_TOKEN, gistId: MOCK_GIST_ID });
-
-  // Make a local change (sets _lastLocalChange > _lastSynced)
-  await page.evaluate(() => DataManager.save());
-  // Pull — remote lastModified > lastSynced AND local changed > lastSynced → conflict
-  await page.evaluate(() => DataManager.pull());
-
-  await expect(page.getByText('SYNC CONFLICT')).toBeVisible();
-  await expect(page.getByText('CLOUD RUN')).toBeVisible();
-  await expect(page.getByLabel('Keep this device data')).toBeVisible();
-  await expect(page.getByLabel('Keep cloud data')).toBeVisible();
+  await seedSyncTimestamps(page);
+  await seedSettings(page, { githubToken: MOCK_TOKEN, gistId: MOCK_GIST_ID });
+  await expect(page.getByRole("dialog", { name: "Sync conflict" })).toBeVisible();
 });
 
-test('choosing "Use Cloud" in conflict applies remote data', async ({ page }) => {
+test("choosing USE CLOUD in conflict applies remote data", async ({ page }) => {
   const remoteStore = {
-    playthroughs: [{ id: 'seed-001', name: 'FROM CLOUD', gameId: 'frlg-fr', party: [], pc: [], recents: [] }],
-    activePtId: 'seed-001',
+    playthroughs: [
+      {
+        id: REMOTE_PT_ID,
+        name: "REMOTE-RUN",
+        gameId: "frlg-fr",
+        party: [],
+        pc: [],
+        recents: [],
+        rivalStarter: "bulbasaur",
+        tmInventory: {},
+      },
+    ],
+    activePtId: REMOTE_PT_ID,
   };
-  const remotePayload = { version: 1, lastModified: new Date().toISOString(), store: remoteStore };
-  const gistResp = mockGistResponse(remotePayload);
-
-  await page.route('**/api.github.com/gists/' + MOCK_GIST_ID, route => {
-    route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(gistResp) });
+  await page.route("**/api.github.com/gists/**", (route) => {
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(mockGistResponse(mockGistPayload(remoteStore))),
+    });
   });
-
-  // Set token after load to avoid initial pull
-  await page.evaluate(({ token, gistId }) => {
-    localStorage.setItem('se_github_token', token);
-    localStorage.setItem('se_gist_id', gistId);
-    localStorage.setItem('se_last_synced', '2020-01-01T00:00:00.000Z');
-  }, { token: MOCK_TOKEN, gistId: MOCK_GIST_ID });
-
-  await page.evaluate(() => DataManager.save());
-  await page.evaluate(() => DataManager.pull());
-
-  await expect(page.getByText('SYNC CONFLICT')).toBeVisible();
-  await page.getByLabel('Keep cloud data').click();
-
-  await expect(page.getByText('SYNC CONFLICT')).not.toBeVisible();
-  await expect(page.getByText('Synced from cloud')).toBeVisible();
+  await seedSyncTimestamps(page);
+  await seedSettings(page, { githubToken: MOCK_TOKEN, gistId: MOCK_GIST_ID });
+  await page.getByRole("dialog", { name: "Sync conflict" }).waitFor();
+  await page.getByRole("button", { name: "USE CLOUD" }).click();
+  await expect(page.getByRole("button", { name: /REMOTE-RUN/ })).toBeVisible();
 });
 
-test('choosing "Keep Local" in conflict pushes local data', async ({ page }) => {
-  const remoteStore = {
-    playthroughs: [{ id: 'seed-001', name: 'CLOUD RUN', gameId: 'frlg-fr', party: [], pc: [], recents: [] }],
-    activePtId: 'seed-001',
-  };
-  const remotePayload = { version: 1, lastModified: new Date().toISOString(), store: remoteStore };
-  const gistResp = mockGistResponse(remotePayload);
-  let pushCalled = false;
-
-  await page.route('**/api.github.com/gists/' + MOCK_GIST_ID, route => {
-    if (route.request().method() === 'PATCH') {
-      pushCalled = true;
-      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(gistResp) });
-    } else {
-      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(gistResp) });
+test("choosing KEEP LOCAL in conflict pushes local data", async ({ page }) => {
+  let patched: string | null = null;
+  await page.route("**/api.github.com/gists/**", (route) => {
+    const req = route.request();
+    if (req.method() === "PATCH") {
+      const body = req.postDataJSON() as {
+        files?: Record<string, { content?: string } | undefined>;
+      };
+      patched = body.files?.["super-effective-sync.json"]?.content ?? null;
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ id: MOCK_GIST_ID }),
+      });
+      return;
     }
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(mockGistResponse(mockGistPayload())),
+    });
   });
+  await seedSyncTimestamps(page);
+  await seedSettings(page, { githubToken: MOCK_TOKEN, gistId: MOCK_GIST_ID });
+  await page.getByRole("dialog", { name: "Sync conflict" }).waitFor();
+  await page.getByRole("button", { name: "KEEP LOCAL" }).click();
+  await expect.poll(() => patched).toContain("RUN 1");
+});
 
-  // Set token after load to avoid initial pull
-  await page.evaluate(({ token, gistId }) => {
-    localStorage.setItem('se_github_token', token);
-    localStorage.setItem('se_gist_id', gistId);
-    localStorage.setItem('se_last_synced', '2020-01-01T00:00:00.000Z');
-  }, { token: MOCK_TOKEN, gistId: MOCK_GIST_ID });
-
-  await page.evaluate(() => DataManager.save());
-  await page.evaluate(() => DataManager.pull());
-
-  await expect(page.getByText('SYNC CONFLICT')).toBeVisible();
-  await page.getByLabel('Keep this device data').click();
-
-  await expect(page.getByText('SYNC CONFLICT')).not.toBeVisible();
-  await expect(page.getByText('Keeping local data')).toBeVisible();
-  await page.waitForTimeout(500);
-  expect(pushCalled).toBe(true);
+// SYNC NOW — reachable when a token is saved and no conflict is triggered.
+test("SYNC NOW button is visible once a token is saved", async ({ page }) => {
+  await page.route("**/api.github.com/gists/**", (route) => {
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(mockGistResponse(mockGistPayload())),
+    });
+  });
+  await seedSettings(page, { githubToken: MOCK_TOKEN, gistId: MOCK_GIST_ID });
+  await goSettings(page);
+  await expect(githubSection(page).getByRole("button", { name: "SYNC NOW" })).toBeVisible();
 });

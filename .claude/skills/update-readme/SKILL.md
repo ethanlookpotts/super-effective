@@ -1,1 +1,1 @@
-../../../../skills/update-readme.md
+../../../skills/update-readme.md
