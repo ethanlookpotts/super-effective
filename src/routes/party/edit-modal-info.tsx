@@ -12,7 +12,7 @@ const STAT_LABELS: Record<keyof PartyStats, string> = {
 };
 
 const ROW_INPUT =
-  "min-h-11 w-full rounded-card border border-border bg-card px-3 text-sm text-text outline-none";
+  "min-h-11 w-full rounded-card border border-border bg-card px-3 text-base text-text outline-none";
 const ROW_LABEL = "w-16 shrink-0 font-pixel text-[9px] text-text-3";
 
 export function AdvancedInfoSection({

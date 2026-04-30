@@ -484,7 +484,7 @@ function PokemonPicker({
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => setFocused(true)}
             aria-label="Search Pokémon"
-            className="min-h-11 flex-1 bg-transparent text-sm text-text outline-none"
+            className="min-h-11 flex-1 bg-transparent text-base text-text outline-none"
           />
           {query && (
             <button
@@ -589,7 +589,7 @@ function LevelAndNature({
             value={draft.level}
             onChange={(e) => onPatch({ level: e.target.value })}
             aria-label="Level"
-            className="min-h-11 w-20 rounded-card border border-border bg-card-2 px-3 text-sm text-text outline-none"
+            className="min-h-11 w-20 rounded-card border border-border bg-card-2 px-3 text-base text-text outline-none"
           />
         </div>
         <div className="flex flex-1 flex-col gap-1">
@@ -601,7 +601,7 @@ function LevelAndNature({
             value={draft.nature}
             onChange={(e) => onPatch({ nature: e.target.value })}
             aria-label="Nature"
-            className="min-h-11 w-full rounded-card border border-border bg-card-2 px-2 text-sm text-text outline-none"
+            className="min-h-11 w-full rounded-card border border-border bg-card-2 px-2 text-base text-text outline-none"
           >
             <option value="">— neutral</option>
             {NATURE_NAMES.map((n) => (

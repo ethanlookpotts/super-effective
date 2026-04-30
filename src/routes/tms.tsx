@@ -179,7 +179,7 @@ export function TmsRoute() {
               placeholder="Move name or TM number…"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="min-h-11 w-full rounded-card border border-border-2 bg-card-2 px-3 text-sm text-text focus:border-blue focus:outline-none"
+              className="min-h-11 w-full rounded-card border border-border-2 bg-card-2 px-3 text-base text-text focus:border-blue focus:outline-none"
             />
           </label>
           <ScanButton

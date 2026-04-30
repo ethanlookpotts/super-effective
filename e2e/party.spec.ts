@@ -1,6 +1,6 @@
 // spec: e2e/specs/party.md
 // seed: e2e/seed.spec.ts
-import { expect, test } from "./fixtures";
+import { expect, seedPlaythrough, test } from "./fixtures";
 
 function modal(page: import("@playwright/test").Page) {
   return page.getByRole("dialog", { name: /ADD POKÉMON|EDIT POKÉMON/ });
@@ -75,6 +75,26 @@ test("level and nature entry computes and saves", async ({ page }) => {
   await page.getByRole("button", { name: "Edit Pikachu" }).click();
   await expect(page.getByLabel("Level")).toHaveValue("50");
   await expect(page.getByLabel("Nature")).toHaveValue("Timid");
+});
+
+test("info button on party slot opens Pokémon detail page", async ({ page }) => {
+  await seedPlaythrough(page, { party: [{ n: 25 }] }); // Pikachu
+  await page.getByRole("link", { name: "PARTY" }).click();
+  await page.getByRole("button", { name: "View Pikachu details" }).click();
+  await expect(page).toHaveURL(/#\/search\?n=25/);
+  await expect(
+    page.getByRole("region", { name: "Search page" }).getByRole("heading", { name: "Pikachu" }),
+  ).toBeVisible();
+});
+
+test("info button on PC slot opens Pokémon detail page", async ({ page }) => {
+  await seedPlaythrough(page, { pc: [{ n: 94 }] }); // Gengar
+  await page.getByRole("link", { name: "PARTY" }).click();
+  await page.getByRole("button", { name: "View Gengar details" }).click();
+  await expect(page).toHaveURL(/#\/search\?n=94/);
+  await expect(
+    page.getByRole("region", { name: "Search page" }).getByRole("heading", { name: "Gengar" }),
+  ).toBeVisible();
 });
 
 test("Hidden Power type selection", async ({ page }) => {

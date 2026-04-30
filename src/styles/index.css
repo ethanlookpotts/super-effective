@@ -80,6 +80,14 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  /* iOS Safari zooms when a form control's font-size is < 16px on focus.
+     Force the floor here so the page never auto-zooms while typing. */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
   /* Dotted "blueprint" background pattern behind the whole app. */
   body::before {
     content: "";

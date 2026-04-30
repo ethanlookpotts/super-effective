@@ -11,11 +11,13 @@ export function PcBox({
   pc,
   onEdit,
   onAdd,
+  onInfo,
 }: {
   party: readonly PartyMember[];
   pc: readonly PartyMember[];
   onEdit: (idx: number) => void;
   onAdd: () => void;
+  onInfo: (dex: number) => void;
 }) {
   const [collapsed, setCollapsed] = useState(false);
   const [confirmIdx, setConfirmIdx] = useState<number | null>(null);
@@ -130,6 +132,7 @@ export function PcBox({
                   onEdit={() => onEdit(idx)}
                   onMove={() => moveToParty(idx)}
                   onRemove={() => setConfirmIdx(idx)}
+                  onInfo={() => onInfo(pm.n)}
                 />
               </li>
             ),
@@ -154,11 +157,13 @@ function PcSlot({
   onEdit,
   onMove,
   onRemove,
+  onInfo,
 }: {
   member: PartyMember;
   onEdit: () => void;
   onMove: () => void;
   onRemove: () => void;
+  onInfo: () => void;
 }) {
   const shortName = member.name.length > 9 ? `${member.name.slice(0, 8)}…` : member.name;
   return (
@@ -189,6 +194,14 @@ function PcSlot({
           className="min-h-11 flex-1 rounded-card bg-gold px-2 font-pixel text-[9px] text-black"
         >
           → PARTY
+        </button>
+        <button
+          type="button"
+          onClick={onInfo}
+          aria-label={`View ${member.name} details`}
+          className="min-h-11 w-11 rounded-card border border-border-2 bg-card-2 font-pixel text-[12px] text-text-3"
+        >
+          ⓘ
         </button>
         <button
           type="button"

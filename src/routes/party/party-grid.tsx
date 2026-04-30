@@ -9,16 +9,21 @@ export function PartyGrid({
   party,
   onEdit,
   onAdd,
+  onInfo,
 }: {
   party: readonly PartyMember[];
   onEdit: (idx: number) => void;
   onAdd: () => void;
+  onInfo: (dex: number) => void;
 }) {
   return (
     <div aria-label="Party grid" className="grid grid-cols-2 gap-2 md:grid-cols-3">
       {SLOT_IDS.map((id, i) => {
         const pm = party[i];
-        if (pm) return <PartySlot key={id} member={pm} onEdit={() => onEdit(i)} />;
+        if (pm)
+          return (
+            <PartySlot key={id} member={pm} onEdit={() => onEdit(i)} onInfo={() => onInfo(pm.n)} />
+          );
         return <EmptyPartySlot key={id} onAdd={onAdd} />;
       })}
     </div>

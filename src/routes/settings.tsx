@@ -165,7 +165,7 @@ function ClaudeKeySection({
         placeholder={claudeApiKey ? "Key saved — enter new key to replace" : "sk-ant-…"}
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
-        className="min-h-11 rounded-card border-[1.5px] border-border-2 bg-card-2 px-3 text-sm text-text focus:border-gold focus:outline-none"
+        className="min-h-11 rounded-card border-[1.5px] border-border-2 bg-card-2 px-3 text-base text-text focus:border-gold focus:outline-none"
       />
       <div className="flex gap-2">
         <button
@@ -273,7 +273,7 @@ function GitHubSyncSection({
         placeholder="ghp_… or github_pat_…"
         value={tokenDraft}
         onChange={(e) => setTokenDraft(e.target.value)}
-        className="min-h-11 rounded-card border-[1.5px] border-border-2 bg-card-2 px-3 text-sm text-text focus:border-gold focus:outline-none"
+        className="min-h-11 rounded-card border-[1.5px] border-border-2 bg-card-2 px-3 text-base text-text focus:border-gold focus:outline-none"
       />
       <div className="flex flex-wrap gap-2">
         <button

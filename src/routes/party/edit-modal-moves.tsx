@@ -140,7 +140,7 @@ export function MovesSection({
             autoCorrect="off"
             spellCheck={false}
             aria-label="Search moves"
-            className="min-h-11 w-full rounded-card border border-border bg-card-2 px-3 text-sm text-text outline-none"
+            className="min-h-11 w-full rounded-card border border-border bg-card-2 px-3 text-base text-text outline-none"
           />
           <div className="flex flex-wrap gap-1" role="group" aria-label="Filter by type">
             {TYPES.map((t) => {

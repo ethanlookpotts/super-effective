@@ -31,6 +31,16 @@ Evolving into a multi-game companion app with playthrough support.
 
 ## Progress
 
+### Session 32 — Mobile input zoom fix + Pokédex nav from party/PC
+
+Two small UX fixes shipped together; one struct change to the party slot card.
+
+- [x] **iOS Safari no longer zooms on input focus** — belt-and-suspenders fix per user request: (1) viewport `<meta>` gains `maximum-scale=1` so the page can't auto-zoom on focus, (2) `@layer base` rule in `src/styles/index.css` floors all `<input>` / `<select>` / `<textarea>` to `font-size: 16px` (iOS only auto-zooms when a focused control is `< 16px`), (3) every form-control Tailwind class swept from `text-sm`/`text-xs` to `text-base` so the utility doesn't out-specificity the base layer (search box, location filter, TM search, Claude API key, GitHub token, playthrough rename, move search, party-edit Pokémon picker, level input, nature select, all `ROW_INPUT` info fields). Note: `maximum-scale=1` also disables pinch-zoom site-wide; accepted as a deliberate trade-off for keeping the layout pinned at full screen width.
+- [x] **One-tap Pokédex link from any party / PC slot** — added a `ⓘ` info button (`min-h-11 min-w-11`, `aria-label="View {name} details"`) to `PartySlot` (top-right corner, absolute) and to `PcSlot` (third button in the action row, between → PARTY and ✕). Both call back into `PartyRoute`, which uses `useNavigate` to `navigate(`/search?n=${dex}`)`. The Search route already renders the full `PokeDetail` (type efficacy + evolution chain) for that param.
+- [x] **`PartySlot` restructure** — the slot was a single `<button>`, which can't legally contain another interactive button. Now it's a `<div role="group" aria-label="{name} party slot">` wrapping the original edit `<button>` (full content area) plus the ⓘ overlay. The dex#/Lv row dropped `justify-between` for `gap-2` left-alignment so the labels don't collide with the absolute-positioned ⓘ button at narrow card widths (175px on a 390px viewport, where `justify-between` was clipping `Lv.36` on long-name cards).
+- [x] **Tests** — 2 new E2E specs in `e2e/party.spec.ts`: tap ⓘ on a seeded party member → `#/search?n=<dex>` with the Pokémon's heading visible; same for a PC member. 100/100 E2E pass; 96/96 unit pass; lint, typecheck, build all green.
+- [x] **Memory hygiene** — saved a feedback memory ("avoid nav buttons inside open edit modals; risk losing unsaved drafts") capturing the rationale for choosing per-slot affordance over a button inside the EditModal. Stale `feedback_worklog_session_order.md` memory corrected — sessions are prepended at the top of Progress per the `worklogger` skill, not appended at the bottom.
+
 ### Session 31 — Visual / UX Parity Sweep on `refactor/react-tailwind`
 
 Phase 10 (parity sweep) was the last outstanding phase. A side-by-side comparison between `origin/main` and the refactor preview, run at 4 variants (mobile+desktop × light+dark) via a custom Playwright script, surfaced several unintended UX drifts introduced during the tech rewrite. Restored parity without changing how the app flows:

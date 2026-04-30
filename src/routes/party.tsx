@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { ALL_MOVES } from "~/data/moves";
 import { useActivePlaythrough } from "~/hooks/use-store";
 import { CoverageBar } from "./party/coverage-bar";
@@ -15,6 +15,11 @@ export function PartyRoute() {
   const [teachMove, setTeachMove] = useState<string | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const teachParam = searchParams.get("teach");
+  const navigate = useNavigate();
+
+  function viewDetails(dex: number) {
+    navigate(`/search?n=${dex}`);
+  }
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: we only want to run when the URL param changes.
   useEffect(() => {
@@ -72,6 +77,7 @@ export function PartyRoute() {
           party={party}
           onEdit={(idx) => setEditState({ mode: "party", slot: idx })}
           onAdd={() => setEditState({ mode: "party", slot: -1 })}
+          onInfo={viewDetails}
         />
 
         <TmSuggestionPanel party={party} inventory={active.tmInventory} />
@@ -83,6 +89,7 @@ export function PartyRoute() {
           pc={active.pc}
           onEdit={(idx) => setEditState({ mode: "pc", slot: idx })}
           onAdd={() => setEditState({ mode: "pc", slot: -1 })}
+          onInfo={viewDetails}
         />
       </div>
 

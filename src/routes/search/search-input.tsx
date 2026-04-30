@@ -52,7 +52,7 @@ export function SearchInput({
           value={value}
           onChange={(e) => onChangeValue(e.target.value)}
           onFocus={() => setFocused(true)}
-          className="min-h-11 flex-1 bg-transparent text-sm text-text outline-none"
+          className="min-h-11 flex-1 bg-transparent text-base text-text outline-none"
         />
         {value && (
           <button

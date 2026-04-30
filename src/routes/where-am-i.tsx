@@ -26,7 +26,7 @@ export function WhereAmIRoute() {
             placeholder="Location or Pokémon name…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="min-h-11 rounded-card border border-border-2 bg-card-2 px-3 text-sm text-text focus:border-green focus:outline-none"
+            className="min-h-11 rounded-card border border-border-2 bg-card-2 px-3 text-base text-text focus:border-green focus:outline-none"
           />
         </label>
       </div>

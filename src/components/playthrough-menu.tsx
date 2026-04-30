@@ -88,7 +88,7 @@ export function PlaythroughMenu({ open, onClose }: { open: boolean; onClose: () 
                       if (e.key === "Escape") setRenamingId(null);
                     }}
                     ref={(el) => el?.focus()}
-                    className="flex-1 rounded bg-transparent px-2 py-1 text-sm text-text"
+                    className="flex-1 rounded bg-transparent px-2 py-1 text-base text-text"
                   />
                 ) : (
                   <>
